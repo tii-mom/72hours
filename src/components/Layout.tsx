@@ -3,14 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "../lib/utils";
-
-const NAV_LINKS = [
-  { name: "首页", path: "/" },
-  { name: "生态应用", path: "/ecosystem" },
-  { name: "学习路径", path: "/learn" },
-  { name: "hours", path: "/hours" },
-  { name: "关于", path: "/about" },
-];
+import { siteConfig } from "../lib/content";
 
 export default function Layout() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,18 +33,18 @@ export default function Layout() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 lg:gap-12">
-            {NAV_LINKS.map((link) => (
+            {siteConfig.navItems.map((link) => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={link.href}
+                to={link.href}
                 className={cn(
                   "text-sm uppercase tracking-widest transition-colors font-medium hover:text-foreground relative group",
-                  location.pathname === link.path ? "text-primary" : "text-muted-foreground"
+                  location.pathname === link.href ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                {link.name}
+                {link.label}
                 {/* Active Indicator Glow */}
-                {location.pathname === link.path && (
+                {location.pathname === link.href && (
                   <motion.div layoutId="nav-indicator" className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]" />
                 )}
               </Link>
@@ -59,12 +52,12 @@ export default function Layout() {
           </nav>
 
           <div className="hidden md:flex items-center">
-            <Link
-              to="/join"
-              className="bg-nav-button hover:bg-nav-button/80 text-foreground border border-white/10 px-6 py-2.5 rounded-sm text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(34,197,94,0.1)]"
-            >
-              加入社区
-            </Link>
+              <Link
+                to={siteConfig.primaryJoinRoute}
+                className="bg-nav-button hover:bg-nav-button/80 text-foreground border border-white/10 px-6 py-2.5 rounded-sm text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(34,197,94,0.1)]"
+              >
+              {siteConfig.primaryCtaLabel}
+              </Link>
           </div>
 
           <button
@@ -107,24 +100,24 @@ export default function Layout() {
               </div>
               
               <nav className="relative z-10 flex flex-col gap-8">
-                {NAV_LINKS.map((link) => (
+                {siteConfig.navItems.map((link) => (
                   <Link
-                    key={link.path}
-                    to={link.path}
+                    key={link.href}
+                    to={link.href}
                     className={cn(
                       "text-lg uppercase tracking-widest transition-colors font-mono flex items-center gap-2",
-                      location.pathname === link.path ? "text-primary drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] before:content-['>'] before:text-primary" : "text-muted-foreground hover:text-foreground"
+                      location.pathname === link.href ? "text-primary drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] before:content-['>'] before:text-primary" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {link.name}
+                    {link.label}
                   </Link>
                 ))}
                 <div className="pt-8 border-t border-white/10 mt-4">
                   <Link
-                    to="/join"
+                    to={siteConfig.primaryJoinRoute}
                     className="bg-primary text-primary-foreground text-center block w-full px-6 py-4 rounded-sm text-sm uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(34,197,94,0.2)] active:scale-95 transition-transform"
                   >
-                    加入社区
+                    {siteConfig.primaryCtaLabel}
                   </Link>
                 </div>
               </nav>
@@ -179,15 +172,21 @@ export default function Layout() {
               <Link to="/" className="text-lg font-sora font-bold tracking-tighter hover:opacity-80 transition-opacity flex items-center magnetic-target">
                 <span className="text-white">72</span><span className="text-primary">hours</span>
               </Link>
-              <p className="font-sora font-light">先参与，再理解。 / <span className="glitch-text text-white font-mono text-xs uppercase" data-text="TACIT KNOWLEDGE">Tacit Knowledge</span></p>
+              <p className="font-sora font-light">先加入社区，再看生态与路径。 / <span className="glitch-text text-white font-mono text-xs uppercase" data-text="VIBE CODING">Vibe Coding</span></p>
             </div>
-            <div className="flex gap-8 uppercase tracking-widest">
-              <a href="https://t.me/the_72h" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors flex items-center gap-2 magnetic-target">
-                <span>[</span> Telegram <span>]</span>
-              </a>
-              <a href="https://x.com/taichi2077" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors flex items-center gap-2 magnetic-target">
-                <span>[</span> X <span>]</span>
-              </a>
+            <div className="flex flex-wrap gap-8 uppercase tracking-widest">
+              {siteConfig.footerGroups.flatMap((group) => group.links).map((link) => {
+                const classes = "hover:text-primary transition-colors flex items-center gap-2 magnetic-target";
+                return link.href.startsWith("http") ? (
+                  <a key={link.label} href={link.href} target="_blank" rel="noreferrer" className={classes}>
+                    <span>[</span> {link.label} <span>]</span>
+                  </a>
+                ) : (
+                  <Link key={link.label} to={link.href} className={classes}>
+                    <span>[</span> {link.label} <span>]</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

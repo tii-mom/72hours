@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Terminal } from "lucide-react";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { Reveal } from "../components/Reveal";
+import { homeHighlights, siteConfig } from "../lib/content";
 
 const Spline = React.lazy(() => import("@splinetool/react-spline"));
 
@@ -10,6 +11,7 @@ export default function Home() {
   const sectionRef = useRef<HTMLElement>(null);
   const [splineApp, setSplineApp] = useState<any>(null);
   const [isLowPowerMode, setIsLowPowerMode] = useState(false);
+  const [heroPrefix = "", heroSuffix = ""] = siteConfig.hero.title.split("，");
 
   useEffect(() => {
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -84,17 +86,18 @@ export default function Home() {
         <div className="relative z-10 w-full max-w-4xl mx-auto px-8 lg:px-16 flex flex-col gap-6 pointer-events-none">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold w-fit uppercase tracking-widest opacity-0 animate-fade-up pointer-events-auto shadow-[0_0_10px_rgba(34,197,94,0.1)]">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            社区招募中
+            入口宣言
           </div>
           
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground opacity-0 animate-fade-up sm:drop-shadow-md" style={{ animationDelay: "0.2s" }}>
-             进入生<span className="text-primary sm:drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">态，</span>
+            {heroPrefix.replace("社区", "")}
+            <span className="text-primary sm:drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">社区，</span>
             <br />
-            参与正在发生的事。
+            {heroSuffix}
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl opacity-0 animate-fade-up font-light" style={{ animationDelay: "0.4s" }}>
-            72hours 不是一堂理论课，而是一个由技术开发者发起的实验社区。我们帮助没有技术背景的普通人，通过指导和 Vibe coding，直接进入加密应用开发和生态协作的真实环节。
+            {siteConfig.hero.subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 pt-8 opacity-0 animate-fade-up pointer-events-auto" style={{ animationDelay: "0.6s" }}>
@@ -116,45 +119,27 @@ export default function Home() {
       <section className="px-8 lg:px-16 py-24 relative bg-background">
         <div className="container mx-auto max-w-7xl flex flex-col gap-16">
           <div className="flex flex-col gap-6 max-w-3xl">
-            <h2 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold tracking-tight text-foreground">消除焦虑的第一步：先看看这里有什么。</h2>
+            <h2 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold tracking-tight text-foreground">先从最值得进入的几个切口开始，再理解整个生态。</h2>
             <p className="text-muted-foreground text-lg leading-relaxed font-light">
-              很多人面对加密世界的第一反应是“去哪里学”。但在 72hours，我们推崇<span className="glitch-text font-bold" data-text="默会知识（Tacit Knowledge）">默会知识（Tacit Knowledge）</span>。你不必一开始就死磕复杂的底层代码或者代币经济学，你只需要先找到一个入口进去，感受社区的气氛。
+              这里不是为了把项目排成目录，而是让你更快判断：现在有哪些东西能看、能进、能继续跟。学习不是第一步，先参与才是。
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <SpotlightCard className="p-8 flex flex-col gap-6 group">
-              <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                <Terminal size={24} />
-              </div>
-              <h3 className="text-xl font-bold tracking-widest">1. 真实存在的应用</h3>
-              <p className="text-muted-foreground font-light leading-relaxed">
-                这里不是空壳。我们有正在进行中的生态应用项目，任何人都可以作为测试者、反馈者或共建者参与其中。
-              </p>
-              <Link to="/ecosystem" className="text-sm font-bold tracking-widest uppercase text-primary transition-colors mt-auto pt-4 inline-flex items-center">浏览应用 -&gt;</Link>
-            </SpotlightCard>
-
-            <SpotlightCard className="p-8 flex flex-col gap-6 group">
-              <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                <span className="font-bold text-lg">V</span>
-              </div>
-              <h3 className="text-xl font-bold tracking-widest"><span className="glitch-text" data-text="2. Vibe Coding 路径">2. Vibe Coding 路径</span></h3>
-              <p className="text-muted-foreground font-light leading-relaxed">
-                学习是第二阶段。当你准备好了，社区会指导你如何用自然语言通过 AI 协助撰写代码，甚至参与早期产品开发。
-              </p>
-              <Link to="/learn" className="text-sm font-bold tracking-widest uppercase text-primary transition-colors mt-auto pt-4 inline-flex items-center">了解路径 -&gt;</Link>
-            </SpotlightCard>
-
-            <SpotlightCard className="p-8 flex flex-col gap-6 group">
-              <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                <span className="font-bold text-lg">H</span>
-              </div>
-              <h3 className="text-xl font-bold tracking-widest">3. 场景驱动的 hours</h3>
-              <p className="text-muted-foreground font-light leading-relaxed">
-                没有空洞的愿景，只有真实的互动场景。hours 是这里的信任凭证和生态交互媒介。
-              </p>
-              <Link to="/hours" className="text-sm font-bold tracking-widest uppercase text-primary transition-colors mt-auto pt-4 inline-flex items-center">使用场景 -&gt;</Link>
-            </SpotlightCard>
+            {homeHighlights.map((highlight, index) => (
+              <SpotlightCard key={highlight.title} className="p-8 flex flex-col gap-6 group">
+                <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                  {index === 0 ? <Terminal size={24} /> : <span className="font-bold text-lg">{highlight.iconLabel}</span>}
+                </div>
+                <h3 className="text-xl font-bold tracking-widest">{highlight.title}</h3>
+                <p className="text-muted-foreground font-light leading-relaxed">
+                  {highlight.body}
+                </p>
+                <Link to={highlight.href} className="text-sm font-bold tracking-widest uppercase text-primary transition-colors mt-auto pt-4 inline-flex items-center">
+                  {highlight.cta} -&gt;
+                </Link>
+              </SpotlightCard>
+            ))}
           </div>
         </div>
       </section>
@@ -163,13 +148,13 @@ export default function Home() {
       <section className="px-8 lg:px-16 py-32 bg-secondary/10 border-t border-white/5 flex flex-col items-center justify-center text-center gap-8 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl h-40 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-2xl relative z-10 leading-[1.2]">
-          不需要准备完美，<br />直接从参与开始。
+          先参与，<br />再决定要不要继续深入。
         </h2>
         <Link
           to="/join"
           className="inline-flex h-14 items-center justify-center rounded-sm bg-primary px-10 text-base font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all hover:brightness-110 mt-6 active:scale-[0.98] relative z-10"
         >
-          立即进入 Telegram
+          加入社区
         </Link>
       </section>
     </div>

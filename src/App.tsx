@@ -3,6 +3,7 @@ import React, { useEffect, Suspense } from "react";
 import Layout from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollProgress } from "./components/Effects";
+import { getLegalTitle, siteConfig } from "./lib/content";
 
 // Lazy load pages for code splitting
 const Home = React.lazy(() => import("./pages/Home"));
@@ -11,6 +12,9 @@ const Learn = React.lazy(() => import("./pages/Learn"));
 const Hours = React.lazy(() => import("./pages/Hours"));
 const About = React.lazy(() => import("./pages/About"));
 const Join = React.lazy(() => import("./pages/Join"));
+const Faq = React.lazy(() => import("./pages/Faq"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const Legal = React.lazy(() => import("./pages/Legal"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 // Vibe-styled fallback loading screen
@@ -27,15 +31,23 @@ function RouteObserver() {
   useEffect(() => {
     // Analytics & SEO: Dynamic Titles
     const titles: Record<string, string> = {
-      "/": "首页 | 72hours - 先参与，再理解",
-      "/ecosystem": "生态应用 | 72hours",
-      "/learn": "学习路径 | 72hours",
-      "/hours": "hours 场景 | 72hours",
-      "/about": "关于我们 | 72hours",
-      "/join": "加入社区 | 72hours",
+      "/": `首页 | ${siteConfig.siteName}`,
+      "/join": `参与入口 | ${siteConfig.siteName}`,
+      "/ecosystem": `生态应用 | ${siteConfig.siteName}`,
+      "/learn": `学习路径 | ${siteConfig.siteName}`,
+      "/hours": `hours | ${siteConfig.siteName}`,
+      "/about": `关于 ${siteConfig.siteName}`,
+      "/faq": `常见问题 | ${siteConfig.siteName}`,
+      "/contact": `官方联系 | ${siteConfig.siteName}`,
     };
-    
-    document.title = titles[location.pathname] || "404 信号丢失 | 72hours";
+
+    if (location.pathname.startsWith("/legal/")) {
+      const slug = location.pathname.split("/").pop();
+      document.title = getLegalTitle(slug);
+      return;
+    }
+
+    document.title = titles[location.pathname] || `404 信号丢失 | ${siteConfig.siteName}`;
   }, [location.pathname]);
 
   return null;
@@ -52,10 +64,13 @@ export default function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="ecosystem" element={<Ecosystem />} />
+              <Route path="join" element={<Join />} />
               <Route path="learn" element={<Learn />} />
               <Route path="hours" element={<Hours />} />
               <Route path="about" element={<About />} />
-              <Route path="join" element={<Join />} />
+              <Route path="faq" element={<Faq />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="legal/:slug" element={<Legal />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
