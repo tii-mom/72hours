@@ -1,53 +1,55 @@
-import { channels } from "../content/channels";
-import { faqItems } from "../content/faqs";
-import { learnPaths } from "../content/learn-paths";
-import { legalDocs } from "../content/legal";
-import { projects } from "../content/projects";
-import { siteConfig } from "../content/site-config";
+import { getChannels } from "../content/channels";
+import { getFaqItems } from "../content/faqs";
+import { getLearnPaths } from "../content/learn-paths";
+import { getLegalDocs } from "../content/legal";
+import { getProjects } from "../content/projects";
+import { getSiteConfig } from "../content/site-config";
+import type { Locale } from "./locale";
 import type { AudienceTag, ParticipationMode } from "./content-types";
 
-export const primaryChannels = channels
+const defaultChannels = getChannels("zh-CN");
+const defaultProjects = getProjects("zh-CN");
+const defaultLearnPaths = getLearnPaths("zh-CN");
+const defaultFaqItems = getFaqItems("zh-CN");
+export const primaryChannels = defaultChannels
   .slice()
   .sort((left, right) => Number(right.isPrimary) - Number(left.isPrimary) || left.priority - right.priority);
 
-export const featuredProjects = projects
+export const featuredProjects = defaultProjects
   .slice()
   .filter((project) => project.featured)
   .sort((left, right) => left.priority - right.priority);
 
-export const secondaryProjects = projects
+export const secondaryProjects = defaultProjects
   .slice()
   .filter((project) => !project.featured && project.status !== "coming_soon")
   .sort((left, right) => left.priority - right.priority);
 
-export const directoryProjects = projects
+export const directoryProjects = defaultProjects
   .slice()
   .filter((project) => project.status === "coming_soon" || project.name === "72hours")
   .sort((left, right) => left.priority - right.priority);
 
-export const featuredLearnPath = learnPaths.find((path) => path.featured) ?? learnPaths[0];
+export const featuredLearnPath = defaultLearnPaths.find((path) => path.featured) ?? defaultLearnPaths[0];
 
-export const faqHighlights = faqItems
+export const faqHighlights = defaultFaqItems
   .slice()
   .filter((item) => item.isPinned ?? true)
   .sort((left, right) => left.priority - right.priority);
 
-export const legalDocsBySlug = Object.fromEntries(legalDocs.map((doc) => [doc.slug, doc])) as Record<
-  "privacy" | "terms" | "disclaimer",
-  (typeof legalDocs)[number]
->;
-
-export function getLegalDoc(slug?: string) {
-  if (!slug || !(slug in legalDocsBySlug)) {
+export function getLegalDoc(locale: Locale, slug?: string) {
+  const legalDocs = getLegalDocs(locale);
+  if (!slug) {
     return undefined;
   }
 
-  return legalDocsBySlug[slug as keyof typeof legalDocsBySlug];
+  return legalDocs.find((doc) => doc.slug === slug);
 }
 
-export function getLegalTitle(slug?: string) {
-  const doc = getLegalDoc(slug);
-  return doc ? `${doc.title} | ${siteConfig.siteName}` : `法律说明 | ${siteConfig.siteName}`;
+export function getLegalTitle(locale: Locale, slug?: string) {
+  const doc = getLegalDoc(locale, slug);
+  const siteConfig = getSiteConfig(locale);
+  return doc ? `${siteConfig.siteName} | ${doc.title}` : `${siteConfig.siteName} | ${locale === "en-US" ? "Legal" : "法律说明"}`;
 }
 
 const AUDIENCE_LABELS: Record<AudienceTag, string> = {
@@ -66,12 +68,30 @@ const PARTICIPATION_LABELS: Record<ParticipationMode, string> = {
   deeper_participation: "更深参与",
 };
 
-export function formatAudienceTags(tags: AudienceTag[]) {
-  return tags.map((tag) => AUDIENCE_LABELS[tag]);
+const AUDIENCE_LABELS_EN: Record<AudienceTag, string> = {
+  new_to_crypto: "New to crypto",
+  curious_explorer: "Curious observer",
+  community_participant: "Community participant",
+  builder_or_creator: "Builder / creator",
+  deeper_learner: "Deeper learner",
+};
+
+const PARTICIPATION_LABELS_EN: Record<ParticipationMode, string> = {
+  join_community: "Join community first",
+  try_now: "Try now",
+  apply_waitlist: "Apply for waitlist",
+  follow_updates: "Follow updates",
+  deeper_participation: "Deeper participation",
+};
+
+export function formatAudienceTags(tags: AudienceTag[], locale: Locale = "zh-CN") {
+  const labels = locale === "en-US" ? AUDIENCE_LABELS_EN : AUDIENCE_LABELS;
+  return tags.map((tag) => labels[tag]);
 }
 
-export function formatParticipationModes(modes: ParticipationMode[]) {
-  return modes.map((mode) => PARTICIPATION_LABELS[mode]);
+export function formatParticipationModes(modes: ParticipationMode[], locale: Locale = "zh-CN") {
+  const labels = locale === "en-US" ? PARTICIPATION_LABELS_EN : PARTICIPATION_LABELS;
+  return modes.map((mode) => labels[mode]);
 }
 
-export { homeHighlights, siteConfig } from "../content/site-config";
+export { getHomeHighlights, getSiteConfig, homeHighlights, siteConfig } from "../content/site-config";

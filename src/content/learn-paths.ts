@@ -1,48 +1,96 @@
 import type { LearnPath } from "../lib/content-types";
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
 
-export const learnPaths: LearnPath[] = [
+const learnPathsZh: LearnPath[] = [
   {
     slug: "vibe-coding-entry",
-    title: "通过指导和 Vibe coding 进入加密项目开发",
+    title: "先看绿书，\n再学开发。",
     audience: [
-      "完全没有技术背景，但想看懂真实项目的人",
-      "已经通过生态页跑通基础认知，现在想获得构建与修正能力的人",
+      "没技术背景，想先看懂",
+      "已经在看，想动手",
     ],
-    startingThreshold: "先进入社区，先看懂真实项目，再开始学习。",
+    startingThreshold: "先看入口。",
     stages: [
       {
-        name: "看懂真实项目",
-        goal: "先理解真实入口和真实协作是如何运作的。",
-        description:
-          "先进入社区对话和生态页面，看看真实项目现在怎么组织、怎么参与、怎么回流。",
-        exampleActivities: ["阅读项目说明", "查看社区更新", "判断适合自己的入口"],
-        estimatedCommitment: "低强度观察",
+        name: "看项目",
+        goal: "先懂入口和协作。",
+        description: "看绿书、社区和生态。",
+        exampleActivities: ["阅读绿书", "查看项目状态", "判断入口"],
+        estimatedCommitment: "低强度",
       },
       {
-        name: "学会用 Vibe coding 参与",
-        goal: "把想法转成可以被执行的具体动作。",
-        description:
-          "开始用自然语言配合 AI 来修改界面、补足逻辑、调整内容。",
-        exampleActivities: ["补一段页面文案", "修一个布局", "调整一个交互"],
-        estimatedCommitment: "中等投入",
+        name: "学动手",
+        goal: "把想法转成动作。",
+        description: "改页面、补逻辑、调内容。",
+        exampleActivities: ["补一段文案", "修一个布局", "调一个交互"],
+        estimatedCommitment: "中等",
       },
       {
-        name: "进入加密项目开发",
-        goal: "进入更深层的开发协作场景。",
-        description:
-          "当你已经能够看懂、修改并参与协作时，就可以进入更深层的开发场景。",
-        exampleActivities: ["协作开发", "参与 mini app", "和社区一起推进任务"],
-        estimatedCommitment: "稳定参与",
+        name: "进开发",
+        goal: "进入更深协作。",
+        description: "看懂并能改后，再深入。",
+        exampleActivities: ["协作开发", "参与 mini app", "推进任务"],
+        estimatedCommitment: "持续参与",
       },
     ],
     outcome: [
-      "看懂真实项目",
-      "学会用 Vibe coding 参与",
-      "进入加密项目开发",
+      "看懂项目",
+      "学会动手",
+      "进入开发",
     ],
-    entryMethod: "加入社区，进入路径。",
-    proofOrExpectation:
-      "学习不是第一步。先参与，再决定自己要不要继续往深处走。",
+    entryMethod: "先看入口",
+    proofOrExpectation: "先参与，再决定。",
     featured: true,
   },
 ];
+
+const learnPathsEn: LearnPath[] = [
+  {
+    slug: "vibe-coding-entry",
+    title: "Read Green Book first,\nthen build.",
+    audience: ["New to tech, want context", "Already watching, want to build"],
+    startingThreshold: "See the entry first.",
+    stages: [
+      {
+        name: "See the project",
+        goal: "Understand the entry and flow.",
+        description: "Read Green Book, community, and ecosystem.",
+        exampleActivities: ["Read Green Book", "Check project status", "Pick an entry"],
+        estimatedCommitment: "Low effort",
+      },
+      {
+        name: "Learn by doing",
+        goal: "Turn ideas into actions.",
+        description: "Edit pages, add logic, tune content.",
+        exampleActivities: [
+          "Add a line of copy",
+          "Fix a layout",
+          "Adjust an interaction",
+        ],
+        estimatedCommitment: "Medium",
+      },
+      {
+        name: "Enter development",
+        goal: "Move into deeper collaboration.",
+        description: "Once you can read and edit it, go deeper.",
+        exampleActivities: [
+          "Collaborate on dev",
+          "Join mini apps",
+          "Move tasks forward",
+        ],
+        estimatedCommitment: "Ongoing",
+      },
+    ],
+    outcome: ["Understand the project", "Learn to build", "Enter development"],
+    entryMethod: "Start from the entry point",
+    proofOrExpectation: "Participate first, then decide.",
+    featured: true,
+  },
+];
+
+export const learnPaths = learnPathsZh;
+
+export function getLearnPaths(locale: Locale) {
+  return localized(locale, learnPathsZh, learnPathsEn);
+}

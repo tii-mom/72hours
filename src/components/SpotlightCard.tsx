@@ -25,7 +25,7 @@ export function SpotlightCard({
       onMouseEnter={() => setOpacity(1)}
       onMouseLeave={() => setOpacity(0)}
       className={cn(
-        "relative overflow-hidden rounded-md border border-white/5 bg-secondary/20 transition-all duration-500 hover:border-primary/50 hover:bg-secondary/40 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]",
+        "relative overflow-hidden rounded-md border border-white/6 bg-secondary/14 transition-[border-color,background-color,box-shadow,transform] duration-300 md:hover:border-primary/35 md:hover:bg-secondary/24 md:hover:-translate-y-0.5 md:hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)]",
         className
       )}
     >
@@ -34,7 +34,7 @@ export function SpotlightCard({
         className="pointer-events-none absolute -inset-px transition duration-300 pointer-events-none z-0"
         style={{
           opacity,
-          background: `radial-gradient(500px circle at ${position.x}px ${position.y}px, rgba(34,197,94,0.08), transparent 40%)`,
+          background: `radial-gradient(500px circle at ${position.x}px ${position.y}px, rgba(34,197,94,0.05), transparent 42%)`,
         }}
       />
       {/* Delicate border-only spotlight edge glow */}
@@ -42,7 +42,7 @@ export function SpotlightCard({
         className="pointer-events-none absolute inset-0 transition duration-300 z-0 mix-blend-screen"
         style={{
           opacity,
-          background: `radial-gradient(800px circle at ${position.x}px ${position.y}px, rgba(34,197,94,0.04), transparent 40%)`,
+          background: `radial-gradient(800px circle at ${position.x}px ${position.y}px, rgba(34,197,94,0.025), transparent 42%)`,
         }}
       />
       <div className="relative z-10 w-full h-full flex flex-col">{children}</div>

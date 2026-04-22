@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { AtSign, MessageCircle, Users } from "lucide-react";
 import { SpotlightCard } from "../components/SpotlightCard";
-import { channels } from "../content/channels";
-import { joinContent } from "../content/join";
+import { getChannels } from "../content/channels";
+import { getJoinContent } from "../content/join";
+import { useLocale } from "../lib/locale";
 
 const channelIcons = {
   telegram: <MessageCircle size={36} />,
@@ -11,13 +12,14 @@ const channelIcons = {
   other: <Users size={36} />,
 } as const;
 
-const getChannel = (type: "telegram" | "x" | "wechat" | "other") =>
-  channels.find((channel) => channel.type === type);
-
 export default function Join() {
-  const telegram = getChannel("telegram");
-  const xChannel = getChannel("x");
-  const wechat = getChannel("wechat");
+  const { locale } = useLocale();
+  const isEnglish = locale === "en-US";
+  const joinContent = getJoinContent(locale);
+  const channels = getChannels(locale);
+  const telegram = channels.find((channel) => channel.type === "telegram");
+  const xChannel = channels.find((channel) => channel.type === "x");
+  const wechat = channels.find((channel) => channel.type === "wechat");
 
   return (
     <div className="flex-1 flex flex-col pt-24 font-sora relative">
@@ -49,8 +51,7 @@ export default function Join() {
                 主入口：{telegram?.label ?? "Telegram"}
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed">
-                {telegram?.suitableFor[0] ?? "想直接进入主语境的人"}
-                {telegram?.suitableFor[1] ? "。 " + telegram.suitableFor[1] : ""}
+                {telegram?.suitableFor.join(" / ") ?? "想直接进入主语境"}
               </p>
               <div className="mt-2">
                 <a
@@ -59,7 +60,7 @@ export default function Join() {
                   rel="noreferrer"
                   className="inline-flex px-8 py-3 bg-[#24A1DE] hover:bg-[#24A1DE]/90 text-white font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(36,161,222,0.3)]"
                 >
-                  {telegram?.ctaLabel ?? "进入 Telegram"}
+                  {telegram?.ctaLabel ?? (isEnglish ? "Enter Telegram" : "进入 Telegram")}
                 </a>
               </div>
             </div>
@@ -71,11 +72,13 @@ export default function Join() {
             </div>
             <div className="flex-1 flex flex-col gap-3">
               <h2 className="text-2xl font-bold tracking-widest">
-                轻关注入口：{xChannel?.label ?? "X"}
+                {isEnglish ? "Light observation entry:" : "轻关注入口："}{" "}
+                {xChannel?.label ?? "X"}
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed">
-                如果你想先看公开动态、项目预告和对外说明，先关注 X。
-                它更适合低承诺观察，不要求你先做出深入决定。
+                {isEnglish
+                  ? "For public updates, follow X first. Best for low-commitment observation."
+                  : "想先看公开动态，就先关注 X。适合低承诺观察。"}
               </p>
               <div className="mt-2">
                 <a
@@ -84,7 +87,7 @@ export default function Join() {
                   rel="noreferrer"
                   className="inline-flex px-8 py-3 border-2 border-foreground hover:bg-foreground hover:text-background text-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all"
                 >
-                  {xChannel?.ctaLabel ?? "关注 X"}
+                  {xChannel?.ctaLabel ?? (isEnglish ? "Follow X" : "关注 X")}
                 </a>
               </div>
             </div>
@@ -96,18 +99,20 @@ export default function Join() {
             </div>
             <div className="flex-1 flex flex-col gap-3">
               <h2 className="text-2xl font-bold tracking-widest">
-                次级补充：{wechat?.label ?? "微信"}
+                {isEnglish ? "Supplementary:" : "次级补充："}{" "}
+                {wechat?.label ?? "微信"}
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed">
-                如果你更需要中文补充说明，可以先通过 Telegram 或 X 建立认知，再查看微信相关说明。
-                微信是补充联系，不替代主入口。
+                {isEnglish
+                  ? "If you need Chinese notes, check Telegram or X first, then WeChat."
+                  : "如果你需要中文说明，先看 Telegram 或 X，再看微信。"}
               </p>
               <div className="mt-2">
                 <Link
                   to={wechat?.url ?? "/contact"}
                   className="inline-flex px-8 py-3 bg-primary text-primary-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
                 >
-                  {wechat?.ctaLabel ?? "查看微信说明"}
+                  {wechat?.ctaLabel ?? (isEnglish ? "Read WeChat notes" : "查看微信说明")}
                 </Link>
               </div>
             </div>
@@ -121,37 +126,39 @@ export default function Join() {
             <h3 className="text-2xl font-bold tracking-widest">{joinContent.joinedTitle}</h3>
             <p className="text-muted-foreground font-light leading-relaxed">{joinContent.joinedBody}</p>
             <p className="text-muted-foreground font-light leading-relaxed">
-              社区的作用不是先把你“教完”，而是先把你放进一个能看见真实入口和真实协作的语境里。
+              {locale === "en-US"
+                ? "The community shows real entry points and real collaboration."
+                : "社区先让你看到真实入口和真实协作。"}
             </p>
-          </SpotlightCard>
+            </SpotlightCard>
 
           <SpotlightCard className="p-8 md:p-10 flex flex-col gap-4">
             <h3 className="text-2xl font-bold tracking-widest">{joinContent.firstStepTitle}</h3>
-            <p className="text-muted-foreground font-light leading-relaxed">{joinContent.firstStepBody}</p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Link
-                to="/ecosystem"
+              <p className="text-muted-foreground font-light leading-relaxed">{joinContent.firstStepBody}</p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link
+                  to="/ecosystem"
                 className="inline-flex px-5 py-3 bg-primary text-primary-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
               >
-                先浏览生态应用
-              </Link>
-              <Link
-                to="/about"
+                  {locale === "en-US" ? "Browse ecosystem first" : "先浏览生态应用"}
+                </Link>
+                <Link
+                  to="/about"
                 className="inline-flex px-5 py-3 border border-white/10 text-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
               >
-                了解方法与原则
-              </Link>
-            </div>
-          </SpotlightCard>
+                  {locale === "en-US" ? "Learn the method and principles" : "了解方法与原则"}
+                </Link>
+              </div>
+            </SpotlightCard>
         </div>
       </section>
 
       <section className="px-8 lg:px-16 pb-20 relative z-10">
         <div className="container mx-auto max-w-5xl">
           <SpotlightCard className="p-8 md:p-10 border-l-4 border-l-primary">
-            <h3 className="text-2xl font-bold tracking-widest mb-4">{joinContent.verifyTitle}</h3>
-            <p className="text-muted-foreground font-light leading-relaxed">{joinContent.verifyBody}</p>
-          </SpotlightCard>
+              <h3 className="text-2xl font-bold tracking-widest mb-4">{joinContent.verifyTitle}</h3>
+              <p className="text-muted-foreground font-light leading-relaxed">{joinContent.verifyBody}</p>
+            </SpotlightCard>
         </div>
       </section>
     </div>

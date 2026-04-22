@@ -1,25 +1,24 @@
 import type { Channel } from "../lib/content-types";
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
 
-export const channels: Channel[] = [
+const channelsZh: Channel[] = [
   {
     type: "telegram",
     label: "Telegram",
     url: "https://t.me/the_72h",
     suitableFor: [
-      "想直接进入主语境的人",
-      "想先看项目更新和官方说明的人",
-      "已经愿意开始参与的人",
+      "想进主语境",
+      "先看绿书",
     ],
     expectationAfterJoining: [
-      "先看到真实讨论和入口说明",
-      "先理解社区当前在做什么",
-      "再决定要不要继续深入",
+      "先看绿书",
+      "再决定是否继续",
     ],
-    officialVerificationNote:
-      "Telegram 是主入口，只认官方公开的链接和站内说明。",
+    officialVerificationNote: "Telegram 是主入口。",
     isPrimary: true,
     priority: 1,
-    ctaLabel: "进入 Telegram",
+    ctaLabel: "进入",
     statusNote: "主社区入口",
   },
   {
@@ -27,20 +26,17 @@ export const channels: Channel[] = [
     label: "X",
     url: "https://x.com/taichi2077",
     suitableFor: [
-      "想先轻量观察的人",
-      "想先看公开动态和对外说明的人",
-      "还不想立刻深入的人",
+      "想先观察",
+      "想看公开动态",
     ],
     expectationAfterJoining: [
-      "先看到项目动态和公开说明",
-      "先建立基本判断",
-      "再决定是否进入主社区",
+      "先看动态和绿书",
+      "再决定是否进入",
     ],
-    officialVerificationNote:
-      "X 适合先观察，不要求你一次性做出深入决定。",
+    officialVerificationNote: "X 适合先观察。",
     isPrimary: false,
     priority: 2,
-    ctaLabel: "关注 X",
+    ctaLabel: "关注",
     statusNote: "轻关注入口",
   },
   {
@@ -48,18 +44,62 @@ export const channels: Channel[] = [
     label: "微信",
     url: "/contact",
     suitableFor: [
-      "需要中文补充说明的人",
-      "更习惯通过补充联系确认信息的人",
+      "需要中文补充",
+      "想要补充联系",
     ],
     expectationAfterJoining: [
-      "先通过 Telegram 或 X 建立认知",
-      "再查看微信说明和联系边界",
+      "先看绿书、Telegram 或 X",
+      "再看微信说明",
     ],
-    officialVerificationNote:
-      "微信只作为补充联系和中文说明保留，不承担主入口职责。",
+    officialVerificationNote: "微信只作补充联系。",
     isPrimary: false,
     priority: 3,
-    ctaLabel: "查看微信说明",
+    ctaLabel: "看说明",
     statusNote: "次级补充",
   },
 ];
+
+const channelsEn: Channel[] = [
+  {
+    type: "telegram",
+    label: "Telegram",
+    url: "https://t.me/the_72h",
+    suitableFor: ["Main context", "Green Book first"],
+    expectationAfterJoining: ["Read Green Book first", "Then continue"],
+    officialVerificationNote: "Telegram is the primary entry point.",
+    isPrimary: true,
+    priority: 1,
+    ctaLabel: "Enter",
+    statusNote: "Main community entry",
+  },
+  {
+    type: "x",
+    label: "X",
+    url: "https://x.com/taichi2077",
+    suitableFor: ["Quick look", "Public updates"],
+    expectationAfterJoining: ["Read updates and Green Book", "Then decide"],
+    officialVerificationNote: "X is best for observation first.",
+    isPrimary: false,
+    priority: 2,
+    ctaLabel: "Follow",
+    statusNote: "Light observation entry",
+  },
+  {
+    type: "wechat",
+    label: "WeChat",
+    url: "/contact",
+    suitableFor: ["Chinese notes", "Supplementary contact"],
+    expectationAfterJoining: ["Build context first", "Then read WeChat notes"],
+    officialVerificationNote: "WeChat is for supplementary contact only.",
+    isPrimary: false,
+    priority: 3,
+    ctaLabel: "Read notes",
+    statusNote: "Supplementary",
+  },
+];
+
+export const channels = channelsZh;
+
+export function getChannels(locale: Locale) {
+  return localized(locale, channelsZh, channelsEn);
+}

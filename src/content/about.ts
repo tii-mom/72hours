@@ -1,54 +1,108 @@
-export const aboutContent = {
-  title: "72hours 是怎么把普通人带进 Vibe coding 和加密项目开发世界的。",
-  subtitle:
-    "普通人很难直接进入真实应用世界。72hours 的任务，就是把入口、方法和连接关系一起做出来。",
-  whyTitle: "为什么会有 72hours",
-  whyBody:
-    "72hours 由一群技术开发者共同创建，面向没有技术背景的普通人。我们不想把人挡在只看不进的观望台上，而是希望通过指导和教学，让参与者先看见、再理解、最后能自己动手。",
-  principleQuote:
-    "先看到真实入口，再决定要不要继续往深处走。",
-  methodBody:
-    "我们相信，真正的理解来自参与过程，而不是只看概念。Vibe coding 只是方法之一，它的意义在于让普通人也能把想法直接转成可以运行、可以协作、可以被验证的东西。",
-  relationTitle: "社区、生态、学习与 hours 是怎么连起来的",
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
+
+const aboutContentZh = {
+  title: "72hours 如何连接使用、参与和学习。",
+  subtitle: "入口、方法、边界、关系。",
+  whyTitle: "为什么有 72hours",
+  whyBody: "把人接到真实使用和参与场景里。",
+  principleQuote: "理解来自参与。",
+  methodBody: "先看入口，再看动作，再看边界。",
+  relationTitle: "四层关系",
   relationCards: [
     {
-      title: "1. 社区入口",
-      body: "先进入 Telegram 或 X，先看到真实讨论和真实更新，再决定是否深入。",
+      title: "1. 社区",
+      body: "先看 Telegram 和 X。",
     },
     {
-      title: "2. 生态应用",
-      body: "项目不是空口号。每个应用都对应明确状态、适合人群和参与方式。",
+      title: "2. 生态",
+      body: "每个应用都有状态和下一步。",
     },
     {
-      title: "3. 学习路径",
-      body: "学习是第二阶段，它帮助你把参与变成更稳定的构建能力。",
+      title: "3. 学习",
+      body: "学习放在第二阶段。",
     },
     {
-      title: "4. hours",
-      body: "hours 只承接产品和服务、生态参与、以及学习路径，不做收益叙事。",
+      title: "4. 72H",
+      body: "连接使用、参与和学习。",
       featured: true,
     },
   ],
-  principlesTitle: "我们坚持什么",
+  principlesTitle: "我们坚持",
   principles: [
     {
-      title: "先参与后学习",
-      body: "不要把学习设成第一道门槛。先进入真实语境，再决定你要投入到哪一步。",
+      title: "先看入口",
+      body: "所有说明都回到真实场景与官方链接。",
     },
     {
-      title: "真实入口优先",
-      body: "所有说明都必须能导向真实入口，而不是停留在抽象口号上。",
-    },
-    {
-      title: "普通人也能进入",
-      body: "我们不默认用户有技术背景，路径必须尽可能让普通人也能理解和参与。",
+      title: "普通人可读",
+      body: "不默认术语，也不预设技术背景。",
     },
     {
       title: "边界清楚",
-      body: "不把官网写成课程页，不把 hours 写成价格页，不把参与写成收益承诺。",
+      body: "只说明用途，不写收益或承诺。",
+    },
+    {
+      title: "先参与再深入",
+      body: "先使用，再决定要不要更深入。",
     },
   ],
-  rejectTitle: "我们不做什么",
-  rejectBody:
-    "我们不做课程售卖，不做 token 叙事，不做只会让人停留的普通品牌介绍。",
+  rejectTitle: "我们不做",
+  rejectBody: "不做课程售卖、抽象叙事和收益包装。",
 };
+
+const aboutContentEn = {
+  title: "How 72hours connects use, participation, and learning.",
+  subtitle: "Entry points, methods, boundaries, and relationships.",
+  whyTitle: "Why 72hours exists",
+  whyBody: "It connects people to real use and participation.",
+  principleQuote: "Understanding comes from participation.",
+  methodBody: "See the entry point, the action, then the boundary.",
+  relationTitle: "Four relationships",
+  relationCards: [
+    {
+      title: "1. Community",
+      body: "Start with Telegram and X.",
+    },
+    {
+      title: "2. Ecosystem",
+      body: "Each app has a status and a next step.",
+    },
+    {
+      title: "3. Learning",
+      body: "Learning comes in the second stage.",
+    },
+    {
+      title: "4. Hours",
+      body: "Handles use, participation, and learning.",
+      featured: true,
+    },
+  ],
+  principlesTitle: "What we stand for",
+  principles: [
+    {
+      title: "Start with the entry point",
+      body: "Each explanation points to a real scenario and an official link.",
+    },
+    {
+      title: "Readable for newcomers",
+      body: "No jargon, and no assumed technical background.",
+    },
+    {
+      title: "Clear boundaries",
+      body: "We explain usage only, not returns or promises.",
+    },
+    {
+      title: "Participate before going deeper",
+      body: "Use first, then decide whether to go deeper.",
+    },
+  ],
+  rejectTitle: "What we do not do",
+  rejectBody: "No course selling, abstract narratives, or dressed-up return promises.",
+};
+
+export const aboutContent = aboutContentZh;
+
+export function getAboutContent(locale: Locale) {
+  return localized(locale, aboutContentZh, aboutContentEn);
+}

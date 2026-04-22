@@ -130,7 +130,7 @@ export interface LegalDocMeta {
 export interface SiteConfig {
   siteName: string;
   siteUrl: string;
-  language: "zh-CN";
+  language: "zh-CN" | "en-US";
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   primaryJoinRoute: string;
@@ -145,4 +145,12 @@ export interface SiteConfig {
     proofSignals: string[];
   };
   globalDisclaimerExcerpt: string;
+}
+
+export interface HomeHighlight {
+  title: string;
+  body: string;
+  cta: string;
+  href: string;
+  iconLabel: string;
 }

@@ -1,32 +1,68 @@
-export const hoursContent = {
-  title: "hours 先讲它的生态角色，\n再讲它可以被用在什么地方。",
-  subtitle:
-    "hours 不是 token 页，也不是价格页。它只承接三件事：产品和服务、生态应用参与、Vibe coding 学习。",
-  roleTitle: "hours 的生态角色",
-  roleBody:
-    "它不是让人停留在抽象概念里的“价值名词”，而是让用户理解：这个生态如何把参与、学习和使用串到一起。",
-  usageIntro: "三种用途都围绕同一件事：把人带回 72hours 的真实业务。",
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
+
+const hoursContentZh = {
+  title: "先看 72H 的用途，\n再看它的位置。",
+  subtitle: "72H 只连接使用、参与和学习。",
+  roleTitle: "72H 的位置",
+  roleBody: "把产品、参与和学习串起来。",
+  usageIntro: "三种用途",
   uses: [
     {
       category: "用于产品和服务",
-      title: "使用 hours 所有产品和服务",
-      body: "当你需要进入产品能力、使用服务或者参与某个具体流程时，hours 作为统一媒介出现。",
-      accent: "用于产品和服务",
+      title: "产品服务",
+      body: "进入产品或服务时，它就是统一入口。",
+      accent: "产品服务",
     },
     {
       category: "用于生态应用参与",
-      title: "参与 72hours 内的应用",
-      body: "你可以把它理解为进入、参与和确认场景的一部分，而不是单纯的价值投机入口。",
-      accent: "用于生态应用参与",
+      title: "生态参与",
+      body: "用于参与，不是治理入口。",
+      accent: "生态参与",
     },
     {
       category: "用于 Vibe coding 学习",
-      title: "学习和进入开发路径",
-      body: "当你已经通过社区建立基本判断后，hours 会与学习路径一起出现，帮助你把参与、学习和后续协作放到同一个语境里。",
-      accent: "用于 Vibe coding 学习",
+      title: "学习入口",
+      body: "先看绿书，再接学习路径。",
+      accent: "学习入口",
       featured: true,
     },
   ],
-  closingBody:
-    "理解 hours 的真实用途之后，下一步还是回到生态和社区。",
+  closingBody: "先看用途，再回到入口。",
 };
+
+const hoursContentEn = {
+  title: "Start with use.\nThen see its role.",
+  subtitle: "It handles use, participation, and learning.",
+  roleTitle: "The role of 72H",
+  roleBody: "It connects product, participation, and learning.",
+  usageIntro: "Three uses",
+  uses: [
+    {
+      category: "For products and services",
+      title: "Product use",
+      body: "It is the unified entry point for products and services.",
+      accent: "Product use",
+    },
+    {
+      category: "For ecosystem participation",
+      title: "Ecosystem participation",
+      body: "For participation, not a governance entry point.",
+      accent: "Ecosystem",
+    },
+    {
+      category: "For Vibe coding learning",
+      title: "Learning entry",
+      body: "Read Green Book first, then move into learning.",
+      accent: "Learning entry",
+      featured: true,
+    },
+  ],
+  closingBody: "See the use. Then return to the entry.",
+};
+
+export const hoursContent = hoursContentZh;
+
+export function getHoursContent(locale: Locale) {
+  return localized(locale, hoursContentZh, hoursContentEn);
+}

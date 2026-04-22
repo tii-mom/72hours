@@ -1,111 +1,167 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Fingerprint, Coins, ShieldCheck } from "lucide-react";
+import { ArrowRight, Coins, Fingerprint, ShieldCheck } from "lucide-react";
 import { SpotlightCard } from "../components/SpotlightCard";
-import { hoursContent } from "../content/hours";
+import { getHoursContent } from "../content/hours";
+import { useLocale } from "../lib/locale";
+
+const hourSignalsZh = ["产品", "参与", "学习"] as const;
+const hourSignalsEn = ["Product", "Participation", "Learning"] as const;
 
 export default function Hours() {
-  return (
-    <div className="flex-1 flex flex-col pt-24 font-sora relative">
-      <div className="absolute top-0 right-1/3 w-1/3 h-[400px] bg-primary/5 blur-[120px] pointer-events-none z-0"></div>
+  const { locale } = useLocale();
+  const isEnglish = locale === "en-US";
+  const hoursContent = getHoursContent(locale);
+  const hourSignals = isEnglish ? hourSignalsEn : hourSignalsZh;
 
-      <section className="px-8 lg:px-16 py-20 relative z-10 border-b border-white/5 overflow-hidden">
+  return (
+    <div className="page-shell pt-20 sm:pt-24">
+      <div className="absolute top-0 right-1/4 w-1/3 h-[400px] bg-primary/5 blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute top-0 left-0 w-[35vw] h-[30vh] bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.08)_0,transparent_65%)] pointer-events-none z-0"></div>
+
+      <section className="page-hero border-b border-white/5 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.05)_1px,transparent_1px)] bg-[size:15px_15px] opacity-20 pointer-events-none"></div>
-        <div className="container mx-auto max-w-4xl flex flex-col gap-6 text-center items-center relative z-10">
-          <div className="w-16 h-16 bg-primary/10 text-primary flex items-center justify-center rounded-full mb-2 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-            <Fingerprint size={32} />
+        <div className="page-container page-container-narrow max-w-4xl flex flex-col gap-6 sm:gap-8 text-left relative z-10">
+          <div className="page-kicker w-fit">{isEnglish ? "72H" : "72H 用途"}</div>
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="flex flex-col gap-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 text-primary flex items-center justify-center rounded-sm shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+                <Fingerprint size={24} className="sm:hidden" />
+                <Fingerprint size={32} className="hidden sm:block" />
+              </div>
+              <h1 className="page-title page-title-compact max-w-[11ch] drop-shadow-[0_0_15px_rgba(34,197,94,0.15)]">
+                {hoursContent.title.split("\n").map((line, index) => (
+                  <span key={line}>
+                    {line}
+                    {index === 0 ? <br className="md:hidden" /> : null}
+                  </span>
+                ))}
+              </h1>
+              <p className="page-lead max-w-2xl">{hoursContent.subtitle}</p>
+            </div>
+
+            <div className="hidden lg:flex flex-col items-end gap-2 text-right">
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary/60">
+                {isEnglish ? "Official role" : "官方角色"}
+              </span>
+              <span className="text-sm text-muted-foreground leading-relaxed max-w-[16ch]">
+                {isEnglish ? "Use / participate / learn" : "使用 / 参与 / 学习"}
+              </span>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter drop-shadow-[0_0_15px_rgba(34,197,94,0.15)]">
-            {hoursContent.title.split("\n").map((line, index) => (
-              <span key={line}>
-                {line}
-                {index === 0 ? <br className="md:hidden" /> : null}
+
+          <div className="page-chip-row pt-2">
+            {hourSignals.map((signal) => (
+              <span
+                key={signal}
+                className="inline-flex items-center px-3 py-2 rounded-sm border border-white/10 bg-secondary/10 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-muted-foreground"
+              >
+                {signal}
               </span>
             ))}
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl font-light">
-            {hoursContent.subtitle}
-          </p>
+          </div>
         </div>
       </section>
 
-      <section className="px-8 lg:px-16 py-16 relative z-10">
-        <div className="container mx-auto max-w-5xl flex flex-col gap-12">
-          <SpotlightCard className="p-8 border-l-4 !border-l-primary flex flex-col gap-4">
-            <h2 className="text-2xl font-bold tracking-widest">{hoursContent.roleTitle}</h2>
-            <p className="text-muted-foreground text-lg leading-relaxed font-light">
-              {hoursContent.roleBody}
-            </p>
+      <section className="page-section-tight">
+        <div className="page-container page-container-wide max-w-5xl flex flex-col gap-12 sm:gap-14">
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
+            <SpotlightCard className="page-card page-card-lg border-l-4 !border-l-primary bg-primary/5 flex flex-col gap-4 sm:gap-5">
+              <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.32em] text-primary/70">
+                {hoursContent.roleTitle}
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                {hoursContent.roleBody}
+              </h2>
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed font-light">
+                {hoursContent.closingBody}
+              </p>
+            </SpotlightCard>
+
+            <div className="flex flex-col gap-4 border-t border-white/10 pt-6">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="text-primary" size={24} />
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+                  {hoursContent.usageIntro}
+                </h2>
+              </div>
+              <div className="grid gap-0 border border-white/10 rounded-md overflow-hidden bg-secondary/10">
+                {hoursContent.uses.map((use, index) => {
+                  const Icon = index === 0 ? ShieldCheck : index === 1 ? Coins : Fingerprint;
+
+                  return (
+                    <div
+                      key={use.title}
+                      className={`grid gap-4 p-5 sm:p-6 lg:p-7 md:grid-cols-[88px_1fr_170px] items-start ${
+                        index !== hoursContent.uses.length - 1 ? "border-b border-white/10" : ""
+                      } ${use.featured ? "bg-primary/5" : "bg-background/20"}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-sm ${
+                            use.featured ? "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(34,197,94,0.35)]" : "bg-primary/10 text-primary"
+                          }`}
+                        >
+                          <Icon size={22} />
+                        </div>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-primary/60">
+                          0{index + 1}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <h3 className="text-lg sm:text-xl font-bold tracking-tight">{use.title}</h3>
+                        <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed">
+                          {use.body}
+                        </p>
+                      </div>
+                      <div className="flex md:justify-end">
+                        <span
+                          className={`inline-flex items-center px-3 py-2 rounded-sm text-[10px] sm:text-xs font-bold tracking-widest uppercase border ${
+                            use.featured
+                              ? "border-primary/30 bg-primary/15 text-primary"
+                              : "border-white/10 bg-background/20 text-muted-foreground"
+                          }`}
+                        >
+                          {use.accent}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <SpotlightCard className="page-card page-card-lg bg-foreground text-background flex flex-col gap-5 sm:gap-6 border-none shadow-[0_0_40px_rgba(34,197,94,0.1)]">
+            <div className="flex flex-col gap-3">
+              <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.32em] text-background/60">
+                {isEnglish ? "Next step" : "下一步"}
+              </p>
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight max-w-2xl">
+                {hoursContent.closingBody}
+              </h3>
+              <p className="text-sm sm:text-base text-background/70 leading-relaxed max-w-2xl">
+                {isEnglish
+                  ? "Review the use cases first, then return to the community."
+                  : "先看用途，再回社区。"}
+              </p>
+            </div>
+            <div className="page-chip-row pt-1">
+              <Link
+                to="/ecosystem"
+                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
+              >
+                {isEnglish ? "Browse ecosystem" : "浏览生态应用"}
+                <ArrowRight size={16} className="ml-2" />
+              </Link>
+              <Link
+                to="/join"
+                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
+              >
+                {isEnglish ? "Join community" : "加入社区"}
+                <ArrowRight size={16} className="ml-2" />
+              </Link>
+            </div>
           </SpotlightCard>
-
-          <div className="flex flex-col gap-8 mt-4">
-            <h2 className="text-2xl font-bold tracking-widest border-b border-white/10 pb-4 text-center sm:text-left">
-              <span className="glitch-text" data-text={hoursContent.usageIntro}>
-                {hoursContent.usageIntro}
-              </span>
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <SpotlightCard className="p-10 flex flex-col gap-6 group">
-                <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm">
-                  <ShieldCheck size={24} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs uppercase text-primary font-bold tracking-widest bg-primary/10 w-fit px-2 py-1 rounded">
-                    {hoursContent.uses[0].accent}
-                  </div>
-                  <h3 className="text-xl font-bold tracking-widest mt-2">{hoursContent.uses[0].title}</h3>
-                  <p className="text-muted-foreground font-light leading-relaxed">
-                    {hoursContent.uses[0].body}
-                  </p>
-                </div>
-              </SpotlightCard>
-
-              <SpotlightCard className="p-10 flex flex-col gap-6 group">
-                <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm">
-                  <Coins size={24} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs uppercase text-primary font-bold tracking-widest bg-primary/10 w-fit px-2 py-1 rounded">
-                    {hoursContent.uses[1].accent}
-                  </div>
-                  <h3 className="text-xl font-bold tracking-widest mt-2">{hoursContent.uses[1].title}</h3>
-                  <p className="text-muted-foreground font-light leading-relaxed">
-                    {hoursContent.uses[1].body}
-                  </p>
-                </div>
-              </SpotlightCard>
-
-              <SpotlightCard className="p-10 flex flex-col gap-6 md:col-span-2 relative overflow-hidden group border-primary/30 bg-primary/5">
-                <div className="absolute right-0 top-0 w-1/2 h-full bg-primary/10 blur-[80px] pointer-events-none group-hover:opacity-100 opacity-50 transition-opacity"></div>
-                <div className="relative z-10 w-12 h-12 bg-primary text-primary-foreground flex items-center justify-center rounded-sm shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-                  <Fingerprint size={24} />
-                </div>
-                <div className="relative z-10 flex flex-col gap-2">
-                  <div className="text-xs uppercase text-primary font-bold tracking-widest bg-primary/20 border border-primary/30 w-fit px-2 py-1 rounded">
-                    {hoursContent.uses[2].accent}
-                  </div>
-                  <h3 className="text-2xl font-bold tracking-widest mt-2 text-foreground">{hoursContent.uses[2].title}</h3>
-                  <p className="text-muted-foreground font-light leading-relaxed max-w-2xl">
-                    {hoursContent.uses[2].body}
-                  </p>
-                </div>
-              </SpotlightCard>
-            </div>
-          </div>
-
-          <div className="mt-8 border-t border-white/10 pt-10 flex flex-col items-center sm:items-start gap-4">
-            <p className="text-muted-foreground font-light">
-              {hoursContent.closingBody}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/ecosystem" className="inline-flex items-center text-primary font-bold tracking-widest uppercase hover:brightness-125 transition-all text-sm group">
-                浏览生态应用 <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link to="/join" className="inline-flex items-center text-foreground font-bold tracking-widest uppercase hover:text-primary transition-all text-sm group">
-                加入社区 <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
     </div>

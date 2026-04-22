@@ -1,0 +1,17 @@
+{
+  "name": "72hours",
+  "short_name": "72hours",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030603",
+  "theme_color": "#030603",
+  "description": "72hours official entry for ecosystem, Green Book, and participation paths.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -18,3 +18,8 @@ View your app in AI Studio: https://ai.studio/apps/68a2eee6-3353-4469-8a81-42a33
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Documentation
+
+- [72hours Green Book (中文正式版)](docs/spec/greenbook.md)
+- [72hours Green Book (English Official Version)](docs/spec/greenbook.en.md)

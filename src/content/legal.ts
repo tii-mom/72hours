@@ -1,6 +1,8 @@
 import type { LegalDocMeta } from "../lib/content-types";
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
 
-export const legalDocs: Array<
+const legalDocsZh: Array<
   LegalDocMeta & {
     intro: string;
     icon: "shield" | "file" | "scale";
@@ -13,82 +15,181 @@ export const legalDocs: Array<
   {
     slug: "privacy",
     title: "隐私政策",
-    summary: "说明 72hours 官网在访问、联系与跳转过程中如何收集、使用和最小化处理数据。",
+    summary: "说明官网如何最少化处理数据。",
     effectiveDate: "2026-04-21",
     owner: "72hours",
     version: "v1",
     contentSource: "Markdown / page source",
     requiresTopNotice: true,
     relatedDocs: ["terms", "disclaimer"],
-    intro: "本站仅收集完成社区入口和页面稳定性所必需的最少信息。",
+    intro: "只收最少信息。",
     icon: "shield",
     sections: [
       {
         heading: "我们会收集什么",
-        body: "只记录维持站点运行、访问稳定和入口跳转所必需的基础数据，不做超出业务需要的收集。",
+        body: "只记运行、跳转和基础可用性数据。",
       },
       {
         heading: "我们如何使用",
-        body: "这些信息仅用于页面可用性、社区入口识别和安全性判断，不用于与站点目标无关的跟踪。",
+        body: "仅用于可用性和安全判断。",
       },
       {
         heading: "如何联系",
-        body: "如需说明，请优先通过 Telegram、X 或 Contact 页面提供的官方路径联系。",
+        body: "如需说明，请走 Telegram、X 或联系页面。",
       },
     ],
   },
   {
     slug: "terms",
     title: "服务条款",
-    summary: "说明 72hours 官网和官方入口的使用边界、内容更新方式和责任范围。",
+    summary: "说明官网与官方入口的使用边界。",
     effectiveDate: "2026-04-21",
     owner: "72hours",
     version: "v1",
     contentSource: "Markdown / page source",
     requiresTopNotice: true,
     relatedDocs: ["privacy", "disclaimer"],
-    intro: "使用本站和相关入口时，请先确认你理解其定位、边界与参与方式。",
+    intro: "先看定位和边界。",
     icon: "file",
     sections: [
       {
         heading: "站点定位",
-        body: "72hours 是社区和生态入口，不是课程售卖页，也不是收益承诺页。",
+        body: "72hours 是社区、生态和绿书的入口。",
       },
       {
         heading: "使用边界",
-        body: "用户应通过官方入口查看生态、参与社区并按页面说明完成下一步，不要把站外相似名字节点视为官方来源。",
+        body: "只通过官方入口查看和核对信息。",
       },
       {
         heading: "内容更新",
-        body: "页面上的项目、入口和说明会随着真实业务变化而更新；如果有改动，请以当前页面为准。",
+        body: "页面随真实业务更新，以当前页为准。",
       },
     ],
   },
   {
     slug: "disclaimer",
     title: "免责声明",
-    summary: "明确 72hours 官网内容仅用于说明社区、生态和参与路径，不构成投资建议或收益承诺。",
+    summary: "内容不构成投资建议或收益承诺。",
     effectiveDate: "2026-04-21",
     owner: "72hours",
     version: "v1",
     contentSource: "Markdown / page source",
     requiresTopNotice: true,
     relatedDocs: ["privacy", "terms"],
-    intro: "站点内容仅用于说明社区、生态和参与路径，不构成投资建议或收益承诺。",
+    intro: "只说明社区、生态和路径。",
     icon: "scale",
     sections: [
       {
         heading: "非收益承诺",
-        body: "本站不会承诺收益、回报、涨幅或任何形式的金融结果。",
+        body: "本站不承诺收益、回报或结果。",
       },
       {
         heading: "非投资建议",
-        body: "hours、生态应用和社区参与路径都应被理解为业务说明，不应被当成投资建议。",
+        body: "72H、相关使用路径和生态材料仅作信息说明，不构成投资建议。",
       },
       {
         heading: "风险自担",
-        body: "参与前请自行判断信息来源、入口真假与适合程度，必要时先通过官方社区进一步确认。",
+        body: "参与前请自行判断来源、边界和适合程度。",
       },
     ],
   },
 ];
+
+const legalDocsEn: Array<
+  LegalDocMeta & {
+    intro: string;
+    icon: "shield" | "file" | "scale";
+    sections: Array<{
+      heading: string;
+      body: string;
+    }>;
+  }
+> = [
+  {
+    slug: "privacy",
+    title: "Privacy Policy",
+    summary: "Explains minimal data handling.",
+    effectiveDate: "2026-04-21",
+    owner: "72hours",
+    version: "v1",
+    contentSource: "Markdown / page source",
+    requiresTopNotice: true,
+    relatedDocs: ["terms", "disclaimer"],
+    intro: "We collect the minimum.",
+    icon: "shield",
+    sections: [
+      {
+        heading: "What we collect",
+        body: "We only record runtime, navigation, and basic usability data.",
+      },
+      {
+        heading: "How we use it",
+        body: "Only for usability, safety, and maintenance.",
+      },
+      {
+        heading: "How to contact us",
+        body: "For clarification, use Telegram, X, or the Contact page.",
+      },
+    ],
+  },
+  {
+    slug: "terms",
+    title: "Terms of Service",
+    summary: "Explains site and entry boundaries.",
+    effectiveDate: "2026-04-21",
+    owner: "72hours",
+    version: "v1",
+    contentSource: "Markdown / page source",
+    requiresTopNotice: true,
+    relatedDocs: ["privacy", "disclaimer"],
+    intro: "Confirm the boundaries first.",
+    icon: "file",
+    sections: [
+      {
+        heading: "Site positioning",
+        body: "72hours is the entry for community, ecosystem, and Green Book.",
+      },
+      {
+        heading: "Usage boundaries",
+        body: "Only use official entry points to view, participate, and verify.",
+      },
+      {
+        heading: "Content updates",
+        body: "The page follows real updates; the current page wins.",
+      },
+    ],
+  },
+  {
+    slug: "disclaimer",
+    title: "Disclaimer",
+    summary: "Not investment advice or a return promise.",
+    effectiveDate: "2026-04-21",
+    owner: "72hours",
+    version: "v1",
+    contentSource: "Markdown / page source",
+    requiresTopNotice: true,
+    relatedDocs: ["privacy", "terms"],
+    intro: "It only explains the community, ecosystem, and paths.",
+    icon: "scale",
+    sections: [
+      {
+        heading: "No return promise",
+        body: "This site does not promise returns or outcomes.",
+      },
+      {
+        heading: "Not investment advice",
+        body: "72H, related usage paths, and ecosystem materials are provided for informational purposes only.",
+      },
+      {
+        heading: "Risk is yours",
+        body: "Please judge the source, boundaries, and fit before participating.",
+      },
+    ],
+  },
+];
+
+export const legalDocs = legalDocsZh;
+
+export function getLegalDocs(locale: Locale) {
+  return localized(locale, legalDocsZh, legalDocsEn);
+}

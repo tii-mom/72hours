@@ -1,6 +1,8 @@
-import type { SiteConfig } from "../lib/content-types";
+import type { HomeHighlight, SiteConfig } from "../lib/content-types";
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
 
-export const siteConfig: SiteConfig = {
+const siteConfigZh: SiteConfig = {
   siteName: "72hours",
   siteUrl: "https://72hours.72h.lol",
   language: "zh-CN",
@@ -10,74 +12,154 @@ export const siteConfig: SiteConfig = {
   navItems: [
     { label: "首页", href: "/" },
     { label: "生态应用", href: "/ecosystem" },
+    { label: "绿书", href: "/greenbook" },
     { label: "参与入口", href: "/join" },
     { label: "学习路径", href: "/learn" },
-    { label: "hours", href: "/hours" },
+    { label: "72H 用途", href: "/hours" },
     { label: "关于 72hours", href: "/about" },
   ],
   footerGroups: [
     {
-      title: "参与",
+      title: "进入",
       links: [
         { label: "Telegram", href: "https://t.me/the_72h" },
         { label: "X", href: "https://x.com/taichi2077" },
-        { label: "参与入口", href: "/join" },
         { label: "生态应用", href: "/ecosystem" },
-        { label: "学习路径", href: "/learn" },
-        { label: "hours", href: "/hours" },
+        { label: "加入", href: "/join" },
       ],
     },
     {
       title: "理解",
       links: [
-        { label: "关于 72hours", href: "/about" },
-        { label: "FAQ", href: "/faq" },
-        { label: "联系说明", href: "/contact" },
+        { label: "绿书", href: "/greenbook" },
+        { label: "72H", href: "/hours" },
+        { label: "关于", href: "/about" },
       ],
     },
     {
-      title: "约束",
+      title: "规则",
       links: [
-        { label: "隐私政策", href: "/legal/privacy" },
-        { label: "服务条款", href: "/legal/terms" },
-        { label: "免责声明", href: "/legal/disclaimer" },
+        { label: "隐私", href: "/legal/privacy" },
+        { label: "条款", href: "/legal/terms" },
+        { label: "声明", href: "/legal/disclaimer" },
       ],
     },
   ],
   hero: {
-    title: "先加入社区，再看生态与路径。",
-    subtitle:
-      "72hours 是由一群技术开发者共同创建的社区，面向没有技术背景的普通人。我们通过指导和教学，帮助用户学会 Vibe coding，并逐步进入加密项目开发与参与。",
-    proofSignals: [
-      "1. 真实存在的入口",
-      "2. Vibe Coding 路径",
-      "3. 场景驱动的 hours",
-    ],
+    title: "持有 72H，再看路径。",
+    subtitle: "72hours 用 72H 串起使用、参与和学习。",
+    proofSignals: ["1. 持有 72H", "2. 三个场景", "3. 固定供给"],
   },
   globalDisclaimerExcerpt:
-    "本站内容用于说明社区、生态和参与路径，不构成投资建议或收益承诺。",
+    "本站只说明用途、参与和路径，不构成投资建议。",
 };
 
-export const homeHighlights = [
+const siteConfigEn: SiteConfig = {
+  ...siteConfigZh,
+  language: "en-US",
+  primaryCtaLabel: "Join Community",
+  secondaryCtaLabel: "Browse Ecosystem",
+  navItems: [
+    { label: "Home", href: "/" },
+    { label: "Ecosystem", href: "/ecosystem" },
+    { label: "Green Book", href: "/greenbook" },
+    { label: "Join", href: "/join" },
+    { label: "Learn", href: "/learn" },
+    { label: "Hours", href: "/hours" },
+    { label: "About 72hours", href: "/about" },
+  ],
+  footerGroups: [
+    {
+      title: "Enter",
+      links: [
+        { label: "Telegram", href: "https://t.me/the_72h" },
+        { label: "X", href: "https://x.com/taichi2077" },
+        { label: "Ecosystem", href: "/ecosystem" },
+        { label: "Join", href: "/join" },
+      ],
+    },
+    {
+      title: "Read",
+      links: [
+        { label: "Green Book", href: "/greenbook" },
+        { label: "72H", href: "/hours" },
+        { label: "About", href: "/about" },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Privacy", href: "/legal/privacy" },
+        { label: "Terms", href: "/legal/terms" },
+        { label: "Disclaimer", href: "/legal/disclaimer" },
+      ],
+    },
+  ],
+  hero: {
+    title: "Hold 72H. See the path.",
+    subtitle: "72H connects use, participation, and learning.",
+    proofSignals: ["1. Hold 72H", "2. Three scenarios", "3. Fixed supply"],
+  },
+  globalDisclaimerExcerpt:
+    "Use, participation, and paths only. Not investment advice.",
+};
+
+export const siteConfig = siteConfigZh;
+
+export function getSiteConfig(locale: Locale) {
+  return localized(locale, siteConfigZh, siteConfigEn);
+}
+
+const homeHighlightsZh: readonly HomeHighlight[] = [
   {
-    title: "1. 真实存在的入口",
-    body: "这里不是空壳。每个项目都对应一个明确的状态、参与方式和下一步动作，先看入口，再决定是否深入。",
+    title: "1. 真实入口",
+    body: "状态、参与、下一步。",
     cta: "浏览生态应用",
     href: "/ecosystem",
     iconLabel: "Terminal",
   },
   {
-    title: "2. Vibe Coding 路径",
-    body: "学习是第二阶段。先通过社区看懂真实项目，再学会用自然语言和 AI 生成、修正、参与代码。",
+    title: "2. 动手路径",
+    body: "先看项目，再动手。",
     cta: "了解学习路径",
     href: "/learn",
     iconLabel: "V",
   },
   {
-    title: "3. 场景驱动的 hours",
-    body: "hours 不是价格页，也不是投机页。它只承接三件事：产品和服务、生态应用参与、Vibe coding 学习。",
+    title: "3. 72H 的用途",
+    body: "使用、参与、学习。",
     cta: "查看使用场景",
     href: "/hours",
     iconLabel: "H",
   },
 ] as const;
+
+const homeHighlightsEn: readonly HomeHighlight[] = [
+  {
+    title: "1. Real entry",
+    body: "Status, participation, next step.",
+    cta: "Browse ecosystem",
+    href: "/ecosystem",
+    iconLabel: "Terminal",
+  },
+  {
+    title: "2. Hands-on path",
+    body: "See the project first, then build.",
+    cta: "Learn the path",
+    href: "/learn",
+    iconLabel: "V",
+  },
+  {
+    title: "3. What 72H is for",
+    body: "Use, participate, learn.",
+    cta: "View use cases",
+    href: "/hours",
+    iconLabel: "H",
+  },
+] as const;
+
+export function getHomeHighlights(locale: Locale) {
+  return localized(locale, homeHighlightsZh, homeHighlightsEn);
+}
+
+export const homeHighlights: readonly HomeHighlight[] = homeHighlightsZh;

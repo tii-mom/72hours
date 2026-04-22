@@ -1,21 +1,34 @@
-export const joinContent = {
-  badge: "加入社区",
-  title: "先进入主语境：\n再决定你要走到哪里。",
-  subtitle:
-    "你不需要先弄懂一切，先通过最合适的官方入口进来就够了。Telegram 适合直接进入主语境，X 更适合先轻量观察，微信作为补充联系保留。",
-  whyTitle: "为什么不是“先学完再进”？",
-  whyBody:
-    "更真实的路径是：先进入生态与社区，先看见真实入口和真实项目，再决定自己要不要继续往深处走。",
-  enteringTitle: "三个入口各自承担什么",
-  enteringBody:
-    "每个官方入口都有明确分工：主入口负责进入主语境，轻关注入口负责先观察，补充入口负责中文说明和联系边界。",
-  joinedTitle: "进入后会看到什么",
-  joinedBody:
-    "你会先看到真实讨论，不是空洞概念。你会更快知道哪些项目正在适合进入，哪些路径更适合你继续跟。",
-  firstStepTitle: "第一次进入建议动作",
-  firstStepBody:
-    "先进 Telegram 或先关注 X，不需要一次做完所有动作。如果暂时不确定，就先保持轻关注，不需要强行深入。",
-  verifyTitle: "官方验证与边界说明",
-  verifyBody:
-    "官方入口目前只有 Telegram 与 X。微信只作为补充联系和中文说明保留，不承担主入口职责。如果你在其他地方看到类似名字的节点，请先回到这里核对。",
+import type { Locale } from "../lib/locale";
+import { localized } from "../lib/locale";
+
+const joinContentZh = {
+  title: "先进入主语境。",
+  subtitle: "先看绿书，再进 Telegram。X 用来先观察。",
+  whyTitle: "为什么先看入口？",
+  whyBody: "先看入口，再决定要不要进。",
+  joinedTitle: "进来后看什么",
+  joinedBody: "先看绿书和真实讨论，再走下一步。",
+  firstStepTitle: "第一次先做什么",
+  firstStepBody: "先看绿书，再进 Telegram 或看 X。",
+  verifyTitle: "怎么核对",
+  verifyBody: "官方入口以本站、Telegram、X 和绿书为准。",
 };
+
+const joinContentEn = {
+  title: "Enter the main context first.",
+  subtitle: "Read Green Book first. Then join Telegram.",
+  whyTitle: "Why start from the entry point?",
+  whyBody: "Check the entry first, then decide whether to go deeper.",
+  joinedTitle: "What to look at after joining",
+  joinedBody: "Read Green Book and real discussion first, then decide.",
+  firstStepTitle: "What to do first",
+  firstStepBody: "Read Green Book first, then join Telegram or follow X.",
+  verifyTitle: "How to verify",
+  verifyBody: "Official entry points are this site, Telegram, X, and Green Book.",
+};
+
+export const joinContent = joinContentZh;
+
+export function getJoinContent(locale: Locale) {
+  return localized(locale, joinContentZh, joinContentEn);
+}
