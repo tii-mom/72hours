@@ -1,5 +1,4 @@
 import type { Locale } from "../lib/locale";
-import { localized } from "../lib/locale";
 
 const aboutContentZh = {
   title: "72hours 如何连接使用、参与和学习。",
@@ -23,7 +22,7 @@ const aboutContentZh = {
       body: "学习放在第二阶段。",
     },
     {
-      title: "4. 72H",
+      title: "4. 72H 用途",
       body: "连接使用、参与和学习。",
       featured: true,
     },
@@ -49,7 +48,7 @@ const aboutContentZh = {
   ],
   rejectTitle: "我们不做",
   rejectBody: "不做课程售卖、抽象叙事和收益包装。",
-};
+} as const;
 
 const aboutContentEn = {
   title: "How 72hours connects use, participation, and learning.",
@@ -73,8 +72,8 @@ const aboutContentEn = {
       body: "Learning comes in the second stage.",
     },
     {
-      title: "4. Hours",
-      body: "Handles use, participation, and learning.",
+      title: "4. 72H Use",
+      body: "Connects use, participation, and learning.",
       featured: true,
     },
   ],
@@ -99,10 +98,10 @@ const aboutContentEn = {
   ],
   rejectTitle: "What we do not do",
   rejectBody: "No course selling, abstract narratives, or dressed-up return promises.",
-};
+} as const;
 
 export const aboutContent = aboutContentZh;
 
 export function getAboutContent(locale: Locale) {
-  return localized(locale, aboutContentZh, aboutContentEn);
+  return locale === "en-US" ? aboutContentEn : aboutContentZh;
 }

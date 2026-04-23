@@ -1,153 +1,262 @@
+import {
+  Component,
+  Suspense,
+  lazy,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
+import type { Application } from "@splinetool/runtime";
 import { useLocale } from "../lib/locale";
-import { Link } from "react-router-dom";
-import { ArrowRight, Terminal } from "lucide-react";
-import { SpotlightCard } from "../components/SpotlightCard";
-import { Reveal } from "../components/Reveal";
-import { getHomeHighlights, getSiteConfig } from "../content/site-config";
+import { ArrowRight } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
+
+const SPLINE_HERO_SCENE = "/hero-spline.splinecode";
+const SplineHeroScene = lazy(() => import("@splinetool/react-spline"));
+
+type NavigatorPerformanceHints = Navigator & {
+  connection?: {
+    saveData?: boolean;
+  };
+  deviceMemory?: number;
+};
+
+type HeroSplineBoundaryProps = {
+  children: ReactNode;
+  onError: () => void;
+  resetKey: string;
+};
+
+type HeroSplineBoundaryState = {
+  hasError: boolean;
+};
+
+class HeroSplineBoundary extends Component<HeroSplineBoundaryProps, HeroSplineBoundaryState> {
+  state: HeroSplineBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): HeroSplineBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch() {
+    this.props.onError();
+  }
+
+  componentDidUpdate(previousProps: HeroSplineBoundaryProps) {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
+
+function shouldUseStaticHeroBackdrop() {
+  if (typeof window === "undefined") return true;
+
+  const navigatorHints = navigator as NavigatorPerformanceHints;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isDataSaver = navigatorHints.connection?.saveData === true;
+  const hasSmallMemory =
+    typeof navigatorHints.deviceMemory === "number" && navigatorHints.deviceMemory <= 2;
+  const hasFewCores =
+    typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 2;
+
+  return prefersReducedMotion || isDataSaver || hasSmallMemory || hasFewCores;
+}
+
+function HeroStaticBackdrop({ className = "" }: { className?: string }) {
+  return (
+    <div className={`absolute inset-0 overflow-hidden bg-hero-bg ${className}`} aria-hidden="true">
+      <div className="hero-square-field absolute inset-0" />
+      <div className="hero-square-depth absolute inset-0" />
+      <div className="hero-square-spotlight absolute inset-0" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0.22)_48%,rgba(0,0,0,0.54)_100%)]" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-80" />
+      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/60 to-transparent" />
+    </div>
+  );
+}
 
 export default function Home() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
-  const siteConfig = getSiteConfig(locale);
-  const homeHighlights = getHomeHighlights(locale);
+  const heroRef = useRef<HTMLElement>(null);
+  const splineAppRef = useRef<Application | null>(null);
+  const [useStaticHero, setUseStaticHero] = useState(shouldUseStaticHeroBackdrop);
+  const [shouldMountSpline, setShouldMountSpline] = useState(false);
+  const [isSplineReady, setIsSplineReady] = useState(false);
+  const [hasSplineFailed, setHasSplineFailed] = useState(false);
 
-  const HeroBackdrop = ({ animated }: { animated: boolean }) => (
-    <div className="absolute inset-0 overflow-hidden bg-hero-bg">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(34,197,94,0.32)_0,transparent_22%),radial-gradient(circle_at_80%_14%,rgba(34,197,94,0.18)_0,transparent_20%),radial-gradient(circle_at_62%_52%,rgba(34,197,94,0.14)_0,transparent_28%),radial-gradient(circle_at_48%_72%,rgba(34,197,94,0.2)_0,transparent_24%)] opacity-90" />
-      <div
-        className={`absolute inset-[-10%] bg-[radial-gradient(circle_at_20%_18%,rgba(34,197,94,0.36)_0,transparent_26%),radial-gradient(circle_at_78%_22%,rgba(34,197,94,0.22)_0,transparent_22%),radial-gradient(circle_at_52%_78%,rgba(34,197,94,0.22)_0,transparent_28%)] opacity-90 ${
-          animated ? "animate-hero-drift" : ""
-        }`}
-      />
-      <div className={`absolute inset-y-[8%] left-[18%] w-[1px] bg-gradient-to-b from-transparent via-primary/28 to-transparent blur-[0.4px] ${animated ? "animate-hero-float" : ""}`} />
-      <div className={`absolute inset-y-[12%] right-[24%] w-[1px] bg-gradient-to-b from-transparent via-primary/18 to-transparent ${animated ? "animate-hero-drift-reverse" : ""}`} />
-      <div className={`absolute left-[12%] top-[26%] h-[8rem] w-[8rem] rounded-full border border-primary/12 ${animated ? "animate-hero-float" : ""}`} />
-      <div className={`absolute right-[16%] top-[32%] h-[12rem] w-[12rem] rounded-full border border-primary/10 ${animated ? "animate-hero-drift" : ""}`} />
-      <div className={`absolute left-[-8%] top-[12%] h-[28rem] w-[28rem] rounded-full bg-primary/12 blur-[120px] ${animated ? "animate-hero-float" : ""}`} />
-      <div className={`absolute right-[-12%] top-[18%] h-[24rem] w-[24rem] rounded-full bg-primary/10 blur-[110px] ${animated ? "animate-hero-drift-reverse" : ""}`} />
-      <div className={`absolute bottom-[4%] left-[10%] h-[20rem] w-[20rem] rounded-full bg-primary/14 blur-[100px] ${animated ? "animate-hero-float" : ""}`} />
-      <div
-        className={`absolute inset-0 bg-[linear-gradient(90deg,transparent_0,rgba(34,197,94,0.22)_48%,transparent_62%)] bg-[length:240%_100%] mix-blend-screen opacity-70 ${
-          animated ? "animate-hero-scan" : ""
-        }`}
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.22]" />
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5" />
-    </div>
-  );
+  useEffect(() => {
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const updateBackdropMode = () => setUseStaticHero(shouldUseStaticHeroBackdrop());
+
+    updateBackdropMode();
+    reducedMotionQuery.addEventListener("change", updateBackdropMode);
+    mobileQuery.addEventListener("change", updateBackdropMode);
+
+    return () => {
+      reducedMotionQuery.removeEventListener("change", updateBackdropMode);
+      mobileQuery.removeEventListener("change", updateBackdropMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (useStaticHero) {
+      setShouldMountSpline(false);
+      return;
+    }
+
+    const mountDelay = window.setTimeout(() => setShouldMountSpline(true), window.innerWidth < 768 ? 240 : 0);
+    return () => window.clearTimeout(mountDelay);
+  }, [useStaticHero]);
+
+  useEffect(() => {
+    const heroElement = heroRef.current;
+    if (!heroElement || useStaticHero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const app = splineAppRef.current;
+        if (!app) return;
+
+        if (entry?.isIntersecting) {
+          app.play();
+        } else {
+          app.stop();
+        }
+      },
+      { rootMargin: "150px" },
+    );
+
+    observer.observe(heroElement);
+    return () => observer.disconnect();
+  }, [useStaticHero]);
+
+  useEffect(() => {
+    if (!useStaticHero) return;
+
+    splineAppRef.current = null;
+    setIsSplineReady(false);
+    setHasSplineFailed(false);
+  }, [useStaticHero]);
+
+  const handleSplineLoad = (app: Application) => {
+    splineAppRef.current = app;
+    setHasSplineFailed(false);
+    setIsSplineReady(true);
+
+    const rect = heroRef.current?.getBoundingClientRect();
+    const isNearViewport = rect ? rect.bottom > -150 && rect.top < window.innerHeight + 150 : true;
+
+    if (isNearViewport) {
+      app.play();
+    } else {
+      app.stop();
+    }
+  };
+
+  const handleHeroPointerMove = (event: PointerEvent<HTMLElement>) => {
+    const target = heroRef.current;
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    target.style.setProperty("--hero-spotlight-x", `${event.clientX - rect.left}px`);
+    target.style.setProperty("--hero-spotlight-y", `${event.clientY - rect.top}px`);
+    target.style.setProperty("--hero-spotlight-opacity", "1");
+  };
+
+  const handleHeroPointerLeave = () => {
+    heroRef.current?.style.setProperty("--hero-spotlight-opacity", "0.72");
+  };
+
+  const handleSplineError = () => {
+    splineAppRef.current = null;
+    setIsSplineReady(false);
+    setHasSplineFailed(true);
+  };
 
   return (
     <div className="flex flex-col w-full bg-background" style={{ marginTop: "-84px" /* counteract fixed header */ }}>
       {/* 3D Hero Section */}
-      <section className="relative min-h-[100svh] flex flex-col justify-end bg-hero-bg overflow-hidden pt-32 pb-16 sm:pb-24">
+      <section
+        ref={heroRef}
+        onPointerMove={handleHeroPointerMove}
+        onPointerLeave={handleHeroPointerLeave}
+        className="relative min-h-[100svh] flex flex-col justify-end bg-hero-bg overflow-hidden pt-32 pb-16 sm:pb-24 [--hero-spotlight-x:50%] [--hero-spotlight-y:42%] [--hero-spotlight-opacity:0.72]"
+      >
         <div className="absolute inset-0 z-0">
-          <HeroBackdrop animated />
+          <HeroStaticBackdrop
+            className={`transition-opacity duration-700 ${useStaticHero || !isSplineReady || hasSplineFailed ? "opacity-100" : "opacity-0"}`}
+          />
+          {!useStaticHero && shouldMountSpline && !hasSplineFailed ? (
+            <HeroSplineBoundary onError={handleSplineError} resetKey={useStaticHero ? "static" : "spline"}>
+              <Suspense fallback={null}>
+                <SplineHeroScene
+                  scene={SPLINE_HERO_SCENE}
+                  className="pointer-events-none absolute inset-0 h-full w-full opacity-95 [filter:saturate(1.04)_contrast(1.06)] md:pointer-events-auto"
+                  onLoad={handleSplineLoad}
+                />
+              </Suspense>
+            </HeroSplineBoundary>
+          ) : null}
         </div>
 
-        <div className="absolute inset-0 z-[0] pointer-events-none bg-[linear-gradient(90deg,transparent_0,rgba(34,197,94,0.08)_50%,transparent_100%)] bg-[length:200%_100%] mix-blend-screen opacity-25 animate-hero-scan" />
+        <div className="absolute inset-0 z-[0] pointer-events-none bg-[linear-gradient(90deg,transparent_0,rgba(34,197,94,0.08)_50%,transparent_100%)] bg-[length:200%_100%] mix-blend-screen opacity-20 animate-hero-scan" />
         
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent z-[1] pointer-events-none" />
 
         {/* Subtle Animated Wave Background (Optimized) */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] z-[2] pointer-events-none h-[15vh] sm:h-[25vh] min-h-[100px] sm:min-h-[150px]">
-          <svg className="absolute bottom-0 left-0 w-[400vw] sm:w-[200vw] h-[85%] animate-wave-2 text-primary will-change-transform opacity-[0.15] sm:opacity-20 translate-z-0" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] z-[2] pointer-events-none h-[10vh] min-h-[70px] sm:h-[18vh] sm:min-h-[120px]">
+          <svg className="absolute bottom-0 left-0 w-[400vw] sm:w-[200vw] h-[82%] animate-wave-2 text-primary will-change-transform opacity-[0.06] sm:opacity-10 translate-z-0" viewBox="0 0 1200 100" preserveAspectRatio="none">
             <path fill="currentColor" d="M0,50 C300,10 300,90 600,50 C900,10 900,90 1200,50 L1200,100 L0,100 Z" />
           </svg>
-          <svg className="absolute bottom-0 left-0 w-[400vw] sm:w-[200vw] h-[70%] animate-wave-1 text-primary will-change-transform opacity-[0.25] sm:opacity-30 translate-z-0" viewBox="0 0 1200 100" preserveAspectRatio="none">
+          <svg className="absolute bottom-0 left-0 w-[400vw] sm:w-[200vw] h-[66%] animate-wave-1 text-primary will-change-transform opacity-[0.12] sm:opacity-18 translate-z-0" viewBox="0 0 1200 100" preserveAspectRatio="none">
             <path fill="currentColor" d="M0,60 C300,20 300,100 600,60 C900,20 900,100 1200,60 L1200,100 L0,100 Z" />
           </svg>
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-4xl mx-auto px-8 lg:px-16 flex flex-col gap-6 pointer-events-none">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold w-fit uppercase tracking-widest opacity-0 animate-fade-up pointer-events-auto shadow-[0_0_10px_rgba(34,197,94,0.1)]">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            {isEnglish ? "Entry statement" : "入口宣言"}
-          </div>
-          
-          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground opacity-0 animate-fade-up sm:drop-shadow-md" style={{ animationDelay: "0.2s" }}>
-            {siteConfig.hero.title}
-          </h1>
-          
-          <p className="max-w-2xl text-lg leading-relaxed text-white/68 opacity-0 animate-fade-up font-light md:text-xl" style={{ animationDelay: "0.4s" }}>
-            {siteConfig.hero.subtitle}
-          </p>
+        {/* Hero Actions */}
+        <div className="relative z-10 mx-auto w-full max-w-[360px] px-6 pb-[30svh] pointer-events-none sm:max-w-[680px] sm:px-8 sm:pb-[22svh] lg:px-0">
+          <div className="flex flex-col items-center gap-6 opacity-0 animate-fade-up pointer-events-auto">
+            <div className="flex max-w-[18rem] flex-col items-center gap-3 text-center sm:max-w-[28rem]">
+              <h1 className="text-[clamp(1.85rem,7vw,3.25rem)] font-black leading-[0.94] tracking-[-0.08em] text-balance text-white sm:text-[clamp(2.25rem,4vw,3.8rem)]">
+                {isEnglish ? "72hours official entry" : "72hours 官方入口"}
+              </h1>
+              <p className="max-w-[24ch] text-[13px] leading-relaxed text-white/60 sm:max-w-none sm:text-base">
+                {isEnglish
+                  ? "Telegram / X / ecosystem / join first."
+                  : "Telegram / X / 生态应用 / 参与入口。"}
+              </p>
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 pt-8 opacity-0 animate-fade-up pointer-events-auto" style={{ animationDelay: "0.6s" }}>
-            <Link to="/join" className="group relative inline-flex h-14 w-full sm:w-auto items-center justify-center rounded-sm bg-primary px-10 text-base md:text-lg font-bold text-primary-foreground uppercase tracking-widest shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(34,197,94,0.6)] active:scale-95">
-              {/* Subtle Ping/Pulse Effect */}
-              <span className="absolute inset-0 rounded-sm bg-primary animate-ping opacity-25" style={{ animationDuration: '2.5s' }}></span>
-              <span className="relative flex items-center">
-                {isEnglish ? "Join community" : "加入社区"} <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:translate-x-1.5" />
-              </span>
-            </Link>
-            <Link to="/ecosystem" className="inline-flex h-14 w-full sm:w-auto items-center justify-center rounded-sm bg-white text-background px-10 text-base md:text-lg font-bold uppercase tracking-widest transition-all hover:brightness-90 active:scale-95">
-              {isEnglish ? "Browse ecosystem" : "浏览生态应用"}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Proof / "Why Real" Section */}
-      <section className="px-8 lg:px-16 py-24 relative bg-background">
-        <div className="container mx-auto max-w-7xl flex flex-col gap-16">
-          <div className="flex flex-col gap-6 max-w-3xl">
-            <h2 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold tracking-tight text-foreground">
-              {isEnglish
-                ? "Start with the key entry points, then read the rest."
-                : "先从几个入口开始，再看全局。"}
-            </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed font-light">
-              {isEnglish
-                ? "Choose what to view, enter, and follow now. Learn later."
-                : "先判断现在该看什么、进什么、跟什么。学习放后面。"}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {homeHighlights.map((highlight, index) => (
-              <SpotlightCard key={highlight.title} className="p-8 flex flex-col gap-6 group">
-                <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                  {index === 0 ? <Terminal size={24} /> : <span className="font-bold text-lg">{highlight.iconLabel}</span>}
-                </div>
-                <h3 className="text-xl font-bold tracking-widest">{highlight.title}</h3>
-                <p className="text-muted-foreground font-light leading-relaxed">
-                  {highlight.body}
-                </p>
-                <Link to={highlight.href} className="text-sm font-bold tracking-widest uppercase text-primary transition-colors mt-auto pt-4 inline-flex items-center">
-                  {highlight.cta} -&gt;
-                </Link>
-              </SpotlightCard>
-            ))}
+            <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:justify-center sm:gap-4">
+              <Link
+                to="/join"
+                className="group inline-flex h-[54px] w-full items-center justify-center rounded-sm border border-primary/35 bg-primary px-8 text-[13px] font-bold uppercase tracking-[0.22em] text-primary-foreground shadow-[0_18px_52px_rgba(34,197,94,0.24)] transition-all hover:brightness-110 hover:shadow-[0_22px_72px_rgba(34,197,94,0.34)] active:scale-[0.98] sm:h-14 sm:w-auto sm:min-w-[210px] sm:text-[14px]"
+              >
+                <span className="relative flex items-center">
+                  {isEnglish ? "Join community" : "加入社区"}{" "}
+                  <ArrowRight className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1.5 sm:h-5 sm:w-5" />
+                </span>
+              </Link>
+              <Link
+                to="/ecosystem"
+                className="inline-flex h-[54px] w-full items-center justify-center rounded-sm border border-white/14 bg-black/34 px-8 text-[13px] font-bold tracking-[0.18em] text-white/88 shadow-[0_18px_50px_rgba(0,0,0,0.34)] backdrop-blur-md transition-all hover:border-white/24 hover:bg-white/10 hover:text-white active:scale-[0.98] sm:h-14 sm:w-auto sm:min-w-[230px] sm:text-[14px]"
+              >
+                {isEnglish ? "Browse ecosystem" : "浏览生态应用"}
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Bottom CTA */}
-      <section className="px-8 lg:px-16 py-32 bg-secondary/10 border-t border-white/5 flex flex-col items-center justify-center text-center gap-8 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl h-40 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-2xl relative z-10 leading-[1.2]">
-          {isEnglish ? (
-            <>
-              Participate first,
-              <br />
-              then decide whether to go deeper.
-            </>
-          ) : (
-            <>
-              先参与，
-              <br />
-              再决定要不要继续深入。
-            </>
-          )}
-        </h2>
-        <Link
-          to="/join"
-          className="inline-flex h-14 items-center justify-center rounded-sm bg-primary px-10 text-base font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_rgba(34,197,94,0.2)] transition-all hover:brightness-110 mt-6 active:scale-[0.98] relative z-10"
-        >
-          {isEnglish ? "Join community" : "加入社区"}
-        </Link>
       </section>
     </div>
   );

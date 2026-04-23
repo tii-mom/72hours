@@ -298,7 +298,7 @@ function drawTitleBlock(
     width: 354,
   });
 
-  drawLabel(ctx, x + 370, y, "1080 × 1350", {
+  drawLabel(ctx, x + 370, y, "1600 × 2000", {
     fillStyle: "rgba(255, 255, 255, 0.04)",
     strokeStyle: "rgba(255, 255, 255, 0.12)",
     textStyle: "rgba(241, 255, 242, 0.82)",
@@ -427,7 +427,7 @@ function drawSimpleShareCard(
     width: 194,
   });
 
-  drawLabel(ctx, x + width - 274, y + 28, "1080 × 1350", {
+  drawLabel(ctx, x + width - 274, y + 28, "1600 × 2000", {
     fillStyle: "rgba(255,255,255,0.04)",
     strokeStyle: "rgba(255,255,255,0.12)",
     textStyle: "rgba(241,255,242,0.82)",
@@ -437,7 +437,7 @@ function drawSimpleShareCard(
   ctx.save();
   ctx.fillStyle = "rgba(124,255,102,0.88)";
   ctx.font = `700 26px ${MONO_FONT}`;
-  ctx.fillText(localized(locale, "72H 绿书", "72H GREEN BOOK"), x + 28, y + 118);
+  ctx.fillText(localized(locale, "72H 绿皮书", "72H GREEN BOOK"), x + 28, y + 118);
 
   ctx.fillStyle = "#f4fff4";
   ctx.font = `700 150px ${TITLE_FONT}`;
@@ -445,7 +445,7 @@ function drawSimpleShareCard(
 
   ctx.fillStyle = "#7cff66";
   ctx.font = `700 102px ${TITLE_FONT}`;
-  ctx.fillText(localized(locale, "绿书", "Green Book"), x + 28, y + 278);
+  ctx.fillText(localized(locale, "绿皮书", "Green Book"), x + 28, y + 278);
   ctx.restore();
 
   drawWrappedText(ctx, share.subtitle, x + 28, y + 404, width - 56, locale, {
@@ -953,6 +953,6 @@ export async function copyGreenBookLink(locale: Locale = "zh-CN"): Promise<Green
   await writeClipboardText(content.share.canonicalUrl);
 
   return {
-    message: locale === "en-US" ? "The Green Book link has been copied to the clipboard." : "绿书链接已复制到剪贴板。",
+    message: locale === "en-US" ? "The Green Book link has been copied to the clipboard." : "绿皮书链接已复制到剪贴板。",
   };
 }

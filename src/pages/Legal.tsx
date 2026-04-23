@@ -1,5 +1,6 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ShieldAlert, FileText, Scale } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getLegalDoc } from "../lib/content";
 import { getSiteConfig } from "../content/site-config";

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useSpring } from "motion/react";
 import GreenBookSharePanel from "../components/GreenBookSharePanel";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { getGreenBookContent } from "../content/greenbook";
 import { useLocale } from "../lib/locale";
 import { cn } from "../lib/utils";
@@ -156,7 +156,7 @@ export default function GreenBook() {
                   variants={sectionReveal}
                   initial="hidden"
                   animate="visible"
-                  className="text-[clamp(3.5rem,15vw,10.5rem)] font-black leading-[0.9] tracking-[-0.08em] text-foreground drop-shadow-[0_0_20px_rgba(34,197,94,0.12)] sm:text-[clamp(4.25rem,18vw,10.5rem)]"
+                  className="whitespace-pre-line text-[clamp(3.5rem,15vw,10.5rem)] font-black leading-[0.9] tracking-[-0.08em] text-foreground drop-shadow-[0_0_20px_rgba(34,197,94,0.12)] sm:text-[clamp(4.25rem,18vw,10.5rem)]"
                 >
                   {greenbookContent.hero.title}
                 </motion.h1>
@@ -214,7 +214,7 @@ export default function GreenBook() {
                     {greenbookContent.hero.eyebrow}
                   </div>
                   <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                  {isEnglish ? "72H / Green Book" : "72H / 绿书"}
+                  {isEnglish ? "72H / Green Book" : "72H / 绿皮书"}
                 </div>
                 </div>
 
@@ -281,15 +281,15 @@ export default function GreenBook() {
               </div>
 
               <nav
-                aria-label={isEnglish ? "Green Book chapters" : "绿书章节"}
+                aria-label={isEnglish ? "Green Book chapters" : "绿皮书章节"}
                 className="scrollbar-none -mx-5 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 px-5 sm:-mx-8 sm:px-8 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
               >
                 {chapterItems.map((item, index) => (
-                  <a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    className={cn(
-                      "shrink-0 snap-start rounded-full border px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all lg:rounded-sm sm:text-sm",
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      className={cn(
+                      "shrink-0 snap-start rounded-full border px-4 py-3.5 text-xs font-bold uppercase tracking-widest transition-all lg:rounded-sm sm:min-h-11 sm:text-sm",
                       activeChapter === item.id
                         ? "border-primary/30 bg-primary/12 text-primary shadow-[0_0_20px_rgba(34,197,94,0.08)]"
                         : "border-white/10 bg-secondary/10 text-muted-foreground hover:border-primary/20 hover:text-foreground"
@@ -457,20 +457,20 @@ export default function GreenBook() {
 
                     <div className="border-t border-white/10 pt-4 sm:pt-5">
                       <div className="text-[10px] font-bold uppercase tracking-[0.32em] text-primary/70">
-                        {isEnglish ? "Total supply" : "Total Supply"}
+                        {greenbookContent.supply.totalLabel}
                       </div>
                       <div className="mt-2 text-[clamp(2.1rem,5vw,3.3rem)] font-black leading-none tracking-[-0.06em] text-foreground">
                         {greenbookContent.supply.totalSupply}
                       </div>
                       <div className="mt-3 text-xs uppercase tracking-[0.28em] text-muted-foreground sm:text-sm">
-                        {isEnglish ? "Fixed supply" : "Fixed supply"}
+                        {greenbookContent.supply.fixedLabel}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col">
                     <div className="pb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-primary/80 sm:pb-5">
-                      {isEnglish ? "Buckets" : "Buckets"}
+                      {greenbookContent.supply.bucketsLabel}
                     </div>
                     <div className="border-y border-white/10">
                       {greenbookContent.supply.buckets.map((bucket, index) => (
@@ -576,7 +576,7 @@ export default function GreenBook() {
                         {isEnglish ? "07 / Share" : "07 / 出口"}
                       </div>
                       <h2 className="text-[clamp(1.7rem,4vw,2.8rem)] font-black tracking-tight text-foreground text-balance">
-                        {isEnglish ? "Share Green Book" : "分享绿书"}
+                        {isEnglish ? "Share Green Book" : "分享绿皮书"}
                       </h2>
                       <p className="page-lead max-w-2xl">
                         {isEnglish ? "Keep one clean card ready for public sharing." : "保留一张干净的卡片，用来公开分享。"}

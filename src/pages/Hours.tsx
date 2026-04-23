@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
 import { ArrowRight, Coins, Fingerprint, ShieldCheck } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
+import { getGlossary } from "../content/glossary";
 import { getHoursContent } from "../content/hours";
 import { useLocale } from "../lib/locale";
 
@@ -10,6 +11,7 @@ const hourSignalsEn = ["Product", "Participation", "Learning"] as const;
 export default function Hours() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
+  const glossary = getGlossary(locale);
   const hoursContent = getHoursContent(locale);
   const hourSignals = isEnglish ? hourSignalsEn : hourSignalsZh;
 
@@ -21,7 +23,7 @@ export default function Hours() {
       <section className="page-hero border-b border-white/5 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.05)_1px,transparent_1px)] bg-[size:15px_15px] opacity-20 pointer-events-none"></div>
         <div className="page-container page-container-narrow max-w-4xl flex flex-col gap-6 sm:gap-8 text-left relative z-10">
-          <div className="page-kicker w-fit">{isEnglish ? "72H" : "72H 用途"}</div>
+          <div className="page-kicker w-fit">{glossary.pageLabels.use72H}</div>
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="flex flex-col gap-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 text-primary flex items-center justify-center rounded-sm shadow-[0_0_20px_rgba(34,197,94,0.2)]">
@@ -148,14 +150,14 @@ export default function Hours() {
             <div className="page-chip-row pt-1">
               <Link
                 to="/ecosystem"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
               >
                 {isEnglish ? "Browse ecosystem" : "浏览生态应用"}
                 <ArrowRight size={16} className="ml-2" />
               </Link>
               <Link
                 to="/join"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
               >
                 {isEnglish ? "Join community" : "加入社区"}
                 <ArrowRight size={16} className="ml-2" />

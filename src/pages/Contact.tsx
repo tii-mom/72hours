@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { MessageCircle, AtSign, Users } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getChannels } from "../content/channels";
 import { getSiteConfig } from "../content/site-config";
@@ -22,13 +22,18 @@ export default function Contact() {
   const telegram = getChannel("telegram");
   const xChannel = getChannel("x");
   const wechat = getChannel("wechat");
+  const wechatHref = wechat?.url === "/contact" ? "/join" : (wechat?.url ?? "/join");
+  const wechatCta =
+    wechat?.url === "/contact"
+      ? (isEnglish ? "Back to entry" : "回入口")
+      : (wechat?.ctaLabel ?? (isEnglish ? "Read notes" : "看说明"));
   const contactChannels = [
     {
       icon: CHANNEL_ICONS.telegram,
       title: telegram?.label ?? "Telegram",
       status: telegram?.statusNote ?? "主社区入口",
       body: telegram?.suitableFor.join(" / ") ?? (isEnglish ? "Main context / Updates and notes" : "主语境 / 看更新和说明"),
-      expectation: telegram?.expectationAfterJoining ?? (isEnglish ? ["Read Green Book first", "Then review the discussion and notes"] : ["先看绿书", "再看讨论和说明"]),
+      expectation: telegram?.expectationAfterJoining ?? (isEnglish ? ["Read Green Book first", "Then review the discussion and notes"] : ["先看绿皮书", "再看讨论和说明"]),
       href: telegram?.url ?? "https://t.me/the_72h",
       cta: telegram?.ctaLabel ?? (isEnglish ? "Enter" : "进入"),
       note: telegram?.officialVerificationNote ?? (isEnglish ? "Telegram is the main entry point." : "Telegram 是主入口。"),
@@ -48,9 +53,9 @@ export default function Contact() {
       title: wechat?.label ?? "微信",
       status: wechat?.statusNote ?? "次级补充",
       body: wechat?.suitableFor.join(" / ") ?? (isEnglish ? "Chinese notes / supplementary contact" : "中文补充 / 补充联系"),
-      expectation: wechat?.expectationAfterJoining ?? (isEnglish ? ["Build context through Green Book first", "Then read the WeChat notes"] : ["先通过绿书建立认知", "再看微信说明"]),
-      href: wechat?.url ?? "/join",
-      cta: wechat?.ctaLabel ?? (isEnglish ? "Read notes" : "看说明"),
+      expectation: wechat?.expectationAfterJoining ?? (isEnglish ? ["Build context through Green Book first", "Then read the WeChat notes"] : ["先通过绿皮书建立认知", "再看微信说明"]),
+      href: wechatHref,
+      cta: wechatCta,
       note: wechat?.officialVerificationNote ?? (isEnglish ? "WeChat is only a supplementary contact path." : "微信只作补充联系。"),
     },
   ];

@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
 import { BookOpen, LifeBuoy, MessagesSquare, ShieldCheck } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getFaqItems } from "../content/faqs";
+import { getGlossary } from "../content/glossary";
 import { useLocale } from "../lib/locale";
 
 const ICONS = {
@@ -11,14 +12,17 @@ const ICONS = {
   hours: <LifeBuoy size={22} />,
 } as const;
 
-const labelsZh = ["入门", "安全", "学习", "小时"] as const;
-const labelsEn = ["Getting started", "Safety", "Learning", "Hours"] as const;
-
 export default function Faq() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
+  const glossary = getGlossary(locale);
   const faqHighlights = getFaqItems(locale).filter((item) => item.isPinned ?? true);
-  const chips = isEnglish ? labelsEn : labelsZh;
+  const chips = [
+    glossary.quickIndex.gettingStarted,
+    glossary.quickIndex.safety,
+    glossary.quickIndex.learning,
+    glossary.quickIndex.use72H,
+  ];
 
   return (
     <div className="page-shell pt-20 sm:pt-24">
@@ -35,7 +39,7 @@ export default function Faq() {
                 {isEnglish ? "Read the questions first, then decide." : "先看问题，再决定。"}
               </h1>
               <p className="page-lead max-w-2xl">
-                {isEnglish ? "Covers getting started, entry points, learning, and Hours." : "只回答开始、官方入口、学习和小时。"}
+                {isEnglish ? "Covers getting started, entry points, learning, and 72H Use." : "只回答开始、官方入口、学习和 72H 用途。"}
               </p>
             </div>
 
@@ -44,7 +48,7 @@ export default function Faq() {
                 {isEnglish ? "Quick index" : "快速索引"}
               </span>
               <span className="text-sm text-muted-foreground leading-relaxed max-w-[18ch]">
-                {isEnglish ? "Getting started / Safety / Learning / Hours" : "入门 / 安全 / 学习 / 小时"}
+                {chips.join(" / ")}
               </span>
             </div>
           </div>
@@ -95,7 +99,7 @@ export default function Faq() {
                           <Link
                             key={link.label}
                             to={link.href}
-                            className="inline-flex px-4 py-2 border border-white/10 text-foreground text-[10px] sm:text-xs font-bold tracking-widest uppercase rounded-sm hover:border-primary/30 hover:text-primary transition-colors"
+                            className="inline-flex min-h-11 items-center justify-center px-4 py-2 border border-white/10 text-foreground text-[10px] sm:text-xs font-bold tracking-widest uppercase rounded-sm hover:border-primary/30 hover:text-primary transition-colors"
                           >
                             {link.label}
                           </Link>
@@ -121,25 +125,25 @@ export default function Faq() {
                 {isEnglish ? "Review the main entry first, then decide whether to go deeper." : "先看主入口，再决定要不要深入。"}
               </h3>
               <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed max-w-2xl">
-                {isEnglish ? "Read Green Book first, or return to the entry." : "先看绿书，或者直接回到入口。"}
+                {isEnglish ? "Read Green Book first, or return to the entry." : "先看绿皮书，或者直接回到入口。"}
               </p>
             </div>
             <div className="page-chip-row">
               <Link
                 to="/join"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 bg-primary text-primary-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:brightness-110"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 bg-primary text-primary-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:brightness-110"
               >
                 {isEnglish ? "Join community" : "加入社区"}
               </Link>
               <Link
                 to="/greenbook"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-white/10 text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:border-primary/30 hover:text-primary"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 border border-white/10 text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:border-primary/30 hover:text-primary"
               >
-                {isEnglish ? "Read Green Book" : "看绿书"}
+                {isEnglish ? "Read Green Book" : "看绿皮书"}
               </Link>
               <Link
                 to="/ecosystem"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-white/10 text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:border-primary/30 hover:text-primary"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 border border-white/10 text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:border-primary/30 hover:text-primary"
               >
                 {isEnglish ? "Browse ecosystem" : "看生态"}
               </Link>

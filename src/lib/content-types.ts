@@ -51,12 +51,21 @@ export interface ProjectRelation {
   summary: string;
 }
 
+export type ProjectSignalTone = "new" | "hot" | "core" | "guide";
+export type ProjectCategory = "new_launch" | "main_entry" | "tools" | "coming_soon";
+
+export interface ProjectSignal {
+  tone: ProjectSignalTone;
+  label: string;
+}
+
 export interface Project {
   slug: string;
   name: string;
   oneLineValue: string;
   summary?: string;
   detailIntro?: string;
+  category: ProjectCategory;
   status: ProjectStatus;
   audienceFit: AudienceTag[];
   participationMode: ParticipationMode[];
@@ -68,6 +77,11 @@ export interface Project {
   priority: number;
   visibility?: "public" | "hidden";
   iconKey?: "box" | "beaker" | "check" | "spark" | "shield" | "relay";
+  logoSrc?: string;
+  logoAlt?: string;
+  brandStripSrc?: string;
+  brandStripAlt?: string;
+  signals?: ProjectSignal[];
 }
 
 export interface Channel {

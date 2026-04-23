@@ -9,10 +9,10 @@ const channelsZh: Channel[] = [
     url: "https://t.me/the_72h",
     suitableFor: [
       "想进主语境",
-      "先看绿书",
+      "先看绿皮书",
     ],
     expectationAfterJoining: [
-      "先看绿书",
+      "先看绿皮书",
       "再决定是否继续",
     ],
     officialVerificationNote: "Telegram 是主入口。",
@@ -30,7 +30,7 @@ const channelsZh: Channel[] = [
       "想看公开动态",
     ],
     expectationAfterJoining: [
-      "先看动态和绿书",
+      "先看动态和绿皮书",
       "再决定是否进入",
     ],
     officialVerificationNote: "X 适合先观察。",
@@ -48,7 +48,7 @@ const channelsZh: Channel[] = [
       "想要补充联系",
     ],
     expectationAfterJoining: [
-      "先看绿书、Telegram 或 X",
+      "先看绿皮书、Telegram 或 X",
       "再看微信说明",
     ],
     officialVerificationNote: "微信只作补充联系。",

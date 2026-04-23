@@ -1,39 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://72hours.72h.lol/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/ecosystem</loc>
+    <loc>https://72hours.72h.lol/en/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/greenbook</loc>
+    <loc>https://72hours.72h.lol/ecosystem/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/ecosystem/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/ecosystem/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/ecosystem/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/join</loc>
+    <loc>https://72hours.72h.lol/en/ecosystem/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/ecosystem/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/ecosystem/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/ecosystem/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/learn</loc>
+    <loc>https://72hours.72h.lol/greenbook/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/greenbook/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/greenbook/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/greenbook/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/hours</loc>
+    <loc>https://72hours.72h.lol/en/greenbook/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/greenbook/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/greenbook/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/greenbook/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/about</loc>
+    <loc>https://72hours.72h.lol/join/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/join/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/join/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/join/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/faq</loc>
+    <loc>https://72hours.72h.lol/en/join/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/join/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/join/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/join/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/contact</loc>
+    <loc>https://72hours.72h.lol/learn/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/learn/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/learn/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/learn/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/legal/privacy</loc>
+    <loc>https://72hours.72h.lol/en/learn/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/learn/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/learn/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/learn/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/legal/terms</loc>
+    <loc>https://72hours.72h.lol/hours/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/hours/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/hours/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/hours/" />
   </url>
   <url>
-    <loc>https://72hours.72h.lol/legal/disclaimer</loc>
+    <loc>https://72hours.72h.lol/en/hours/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/hours/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/hours/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/hours/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/about/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/about/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/about/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/about/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/about/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/about/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/about/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/about/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/faq/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/faq/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/faq/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/faq/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/faq/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/faq/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/faq/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/faq/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/contact/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/contact/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/contact/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/contact/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/contact/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/contact/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/legal/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/privacy/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/privacy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/privacy/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/legal/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/privacy/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/privacy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/privacy/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/legal/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/terms/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/terms/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/terms/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/legal/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/terms/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/terms/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/terms/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/legal/disclaimer/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/disclaimer/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/disclaimer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/disclaimer/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/legal/disclaimer/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/legal/disclaimer/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/legal/disclaimer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/legal/disclaimer/" />
   </url>
 </urlset>

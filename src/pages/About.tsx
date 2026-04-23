@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
 import { ArrowLeftRight, ArrowRight, TerminalSquare } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getAboutContent } from "../content/about";
+import { getGlossary } from "../content/glossary";
 import { useLocale } from "../lib/locale";
 
 const aboutSignalsZh = ["入口", "方法", "边界"] as const;
@@ -10,6 +11,7 @@ const aboutSignalsEn = ["Entry", "Method", "Boundary"] as const;
 export default function About() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
+  const glossary = getGlossary(locale);
   const aboutContent = getAboutContent(locale);
   const aboutSignals = isEnglish ? aboutSignalsEn : aboutSignalsZh;
 
@@ -39,7 +41,7 @@ export default function About() {
                 {isEnglish ? "Official note" : "官方说明"}
               </span>
               <span className="text-sm text-muted-foreground leading-relaxed max-w-[18ch]">
-                72H / {isEnglish ? "Use / participation / learning" : "使用 / 参与 / 学习"}
+                {glossary.pageLabels.use72H} / {isEnglish ? "Use / participation / learning" : "使用 / 参与 / 学习"}
               </span>
             </div>
           </div>
@@ -142,16 +144,16 @@ export default function About() {
             <div className="page-chip-row pt-1">
               <Link
                 to="/join"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
               >
                 {isEnglish ? "Join community" : "加入社区"}
                 <ArrowRight size={16} className="ml-2" />
               </Link>
               <Link
                 to="/hours"
-                className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
+                className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
               >
-                {isEnglish ? "View 72H" : "查看 72H 用途"}
+                {isEnglish ? "View 72H Use" : "查看 72H 用途"}
                 <ArrowRight size={16} className="ml-2" />
               </Link>
             </div>

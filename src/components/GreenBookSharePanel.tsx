@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Copy,
@@ -86,8 +86,14 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
   const [actionState, setActionState] = useState<ActionState>("idle");
   const [tone, setTone] = useState<ToneState>("idle");
   const [message, setMessage] = useState(
-    isEnglish ? "Save the card, share the image, or copy the Green Book link." : "保存卡片、分享图片或复制绿书链接。"
+    isEnglish ? "Save the card, share the image, or copy the Green Book link." : "保存卡片、分享图片或复制绿皮书链接。"
   );
+
+  useEffect(() => {
+    setActionState("idle");
+    setTone("idle");
+    setMessage(isEnglish ? "Save the card, share the image, or copy the Green Book link." : "保存卡片、分享图片或复制绿皮书链接。");
+  }, [isEnglish, locale]);
 
   const busy = actionState !== "idle";
   const statusTitle = tone === "success" ? (isEnglish ? "Completed" : "已完成") : tone === "error" ? (isEnglish ? "Needs attention" : "需要处理") : isEnglish ? "Ready" : "准备就绪";
@@ -162,7 +168,7 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
 
           <div className="space-y-2">
             <h2 className="text-[clamp(1.55rem,3.1vw,2.2rem)] font-bold tracking-[-0.05em] text-foreground">
-              {isEnglish ? "Share Green Book in one clean card." : "用一张卡片分享绿书。"}
+              {isEnglish ? "Share Green Book in one clean card." : "用一张卡片分享绿皮书。"}
             </h2>
           </div>
 

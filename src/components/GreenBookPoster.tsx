@@ -28,21 +28,21 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
             {locale === "en-US" ? "Share Ready" : "可分享"}
           </span>
           <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/60">
-            1080 × 1350
+            1600 × 2000
           </span>
         </div>
 
         <div className="mt-4 flex flex-1 flex-col gap-4">
           <section className="space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.42em] text-primary/75">
-              {locale === "en-US" ? "72H GREEN BOOK" : "72H 绿书"}
+              {locale === "en-US" ? "72H GREEN BOOK" : "72H 绿皮书"}
             </p>
             <h3 className="text-[clamp(3rem,13vw,5.4rem)] font-bold leading-[0.88] tracking-[-0.08em]">
               <span className="block text-foreground drop-shadow-[0_0_16px_rgba(124,255,102,0.12)]">
                 72H
               </span>
               <span className="block text-primary drop-shadow-[0_0_16px_rgba(124,255,102,0.28)]">
-                {locale === "en-US" ? "Green Book" : "绿书"}
+                {locale === "en-US" ? "Green Book" : "绿皮书"}
               </span>
             </h3>
             <p className="max-w-[28ch] text-[14px] leading-relaxed text-white/74 sm:max-w-[30ch] sm:text-[15px]">

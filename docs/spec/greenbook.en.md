@@ -4,7 +4,7 @@ Last updated: 2026-04-22
 
 ## Abstract
 
-72hours is a community and ecosystem entry point built by technical developers for non-technical users. It is not centered on protocol innovation. It is centered on token utility, application participation, and the commercial model. `72H` is the ecosystem token and the unified interface for entering 72hours.
+72hours is a community and ecosystem entry point built by technical developers for non-technical users. It is not centered on protocol innovation. It is centered on token utility, application participation, and the commercial model. `72H` is the ecosystem token and the unified entry point into 72hours.
 
 ## 1. What Holding `72H` Gives You
 

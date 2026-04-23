@@ -5,7 +5,7 @@ import { localized } from "../lib/locale";
 const learnPathsZh: LearnPath[] = [
   {
     slug: "vibe-coding-entry",
-    title: "先看绿书，\n再学开发。",
+    title: "先看绿皮书，\n再学开发。",
     audience: [
       "没技术背景，想先看懂",
       "已经在看，想动手",
@@ -15,8 +15,8 @@ const learnPathsZh: LearnPath[] = [
       {
         name: "看项目",
         goal: "先懂入口和协作。",
-        description: "看绿书、社区和生态。",
-        exampleActivities: ["阅读绿书", "查看项目状态", "判断入口"],
+        description: "看绿皮书、社区和生态。",
+        exampleActivities: ["阅读绿皮书", "查看项目状态", "判断入口"],
         estimatedCommitment: "低强度",
       },
       {

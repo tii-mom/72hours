@@ -1,25 +1,57 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 72hours Site
 
-# Run and deploy your AI Studio app
+72hours 的官网源码，基于 `Vite + React + Tailwind CSS`。
 
-This contains everything you need to run your app locally.
+## Local development
 
-View your app in AI Studio: https://ai.studio/apps/68a2eee6-3353-4469-8a81-42a33a54438f
+Prerequisites:
+- Node.js 20+
+- npm
 
-## Run Locally
+Install dependencies:
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+```
 
+Start the dev server:
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run dev
+```
 
-## Documentation
+The dev server listens on [http://localhost:3000](http://localhost:3000).
 
-- [72hours Green Book (中文正式版)](docs/spec/greenbook.md)
-- [72hours Green Book (English Official Version)](docs/spec/greenbook.en.md)
+## Production build
+
+Run the full production build:
+
+```bash
+npm run build
+```
+
+This does two things:
+- Builds the SPA bundle into `dist/`
+- Generates localized static HTML entry files, canonical metadata, and `sitemap.xml`
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+Vite preview listens on [http://localhost:4173](http://localhost:4173) by default.
+
+## Checks
+
+Type-check the project:
+
+```bash
+npm run lint
+```
+
+## Notes
+
+- Chinese is the default public path space, for example `/greenbook`
+- English lives under `/en/*`, for example `/en/greenbook`
+- Legacy `?lang=` URLs are normalized into canonical locale paths at runtime

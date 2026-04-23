@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { AtSign, MessageCircle, Users } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getChannels } from "../content/channels";
 import { getJoinContent } from "../content/join";
@@ -22,11 +22,11 @@ export default function Join() {
   const wechat = channels.find((channel) => channel.type === "wechat");
 
   return (
-    <div className="flex-1 flex flex-col pt-24 font-sora relative">
-      <section className="px-8 lg:px-16 py-24 relative z-10 overflow-hidden">
+    <div className="flex-1 flex flex-col pt-20 sm:pt-24 font-sora relative">
+      <section className="px-6 sm:px-8 lg:px-16 py-10 sm:py-14 lg:py-20 relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.05)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30 pointer-events-none"></div>
-        <div className="container mx-auto max-w-4xl flex flex-col items-center text-center gap-8 relative z-10">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter drop-shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+        <div className="container mx-auto max-w-4xl flex flex-col items-center text-center gap-5 sm:gap-8 relative z-10">
+          <h1 className="page-title page-title-compact max-w-[10ch] drop-shadow-[0_0_20px_rgba(34,197,94,0.2)]">
             {joinContent.title.split("\n").map((line, index) => (
               <span key={line}>
                 {line}
@@ -34,21 +34,21 @@ export default function Join() {
               </span>
             ))}
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed font-light max-w-2xl">
+          <p className="text-base sm:text-xl text-muted-foreground leading-relaxed font-light max-w-2xl">
             {joinContent.subtitle}
           </p>
         </div>
       </section>
 
-      <section className="px-8 lg:px-16 pb-20 relative z-10">
-        <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <SpotlightCard className="p-8 md:p-10 flex flex-col gap-6 min-h-full">
-            <div className="bg-[#24A1DE]/10 p-5 rounded-full flex-shrink-0 shadow-[0_0_20px_rgba(36,161,222,0.2)] w-fit">
+      <section className="px-5 sm:px-8 lg:px-16 pb-14 sm:pb-20 relative z-10">
+        <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <SpotlightCard className="page-card page-card-lg flex flex-col gap-4 sm:gap-6 min-h-full">
+            <div className="bg-[#24A1DE]/10 p-4 sm:p-5 rounded-full flex-shrink-0 shadow-[0_0_20px_rgba(36,161,222,0.2)] w-fit">
               {channelIcons.telegram}
             </div>
             <div className="flex-1 flex flex-col gap-3">
-              <h2 className="text-2xl font-bold tracking-widest text-[#24A1DE]">
-                主入口：{telegram?.label ?? "Telegram"}
+              <h2 className="text-lg sm:text-2xl font-bold tracking-widest text-[#24A1DE]">
+                {isEnglish ? "Main entry:" : "主入口："} {telegram?.label ?? "Telegram"}
               </h2>
               <p className="text-muted-foreground font-light leading-relaxed">
                 {telegram?.suitableFor.join(" / ") ?? "想直接进入主语境"}
@@ -58,7 +58,7 @@ export default function Join() {
                   href={telegram?.url ?? "https://t.me/the_72h"}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex px-8 py-3 bg-[#24A1DE] hover:bg-[#24A1DE]/90 text-white font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(36,161,222,0.3)]"
+                  className="inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-3 bg-[#24A1DE] hover:bg-[#24A1DE]/90 text-white font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(36,161,222,0.3)]"
                 >
                   {telegram?.ctaLabel ?? (isEnglish ? "Enter Telegram" : "进入 Telegram")}
                 </a>
@@ -66,12 +66,12 @@ export default function Join() {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="p-8 md:p-10 flex flex-col gap-6 min-h-full">
-            <div className="bg-foreground/10 p-5 text-foreground rounded-full flex-shrink-0 w-[76px] h-[76px] flex items-center justify-center">
+          <SpotlightCard className="page-card page-card-lg flex flex-col gap-4 sm:gap-6 min-h-full">
+            <div className="bg-foreground/10 p-4 sm:p-5 text-foreground rounded-full flex-shrink-0 w-16 h-16 sm:w-[76px] sm:h-[76px] flex items-center justify-center">
               {channelIcons.x}
             </div>
             <div className="flex-1 flex flex-col gap-3">
-              <h2 className="text-2xl font-bold tracking-widest">
+              <h2 className="text-lg sm:text-2xl font-bold tracking-widest">
                 {isEnglish ? "Light observation entry:" : "轻关注入口："}{" "}
                 {xChannel?.label ?? "X"}
               </h2>
@@ -85,7 +85,7 @@ export default function Join() {
                   href={xChannel?.url ?? "https://x.com/taichi2077"}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex px-8 py-3 border-2 border-foreground hover:bg-foreground hover:text-background text-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all"
+                  className="inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-3 border-2 border-foreground hover:bg-foreground hover:text-background text-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all"
                 >
                   {xChannel?.ctaLabel ?? (isEnglish ? "Follow X" : "关注 X")}
                 </a>
@@ -93,12 +93,12 @@ export default function Join() {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="p-8 md:p-10 flex flex-col gap-6 min-h-full">
-            <div className="bg-primary/10 p-5 text-primary rounded-full flex-shrink-0 w-[76px] h-[76px] flex items-center justify-center font-mono text-lg font-bold">
+          <SpotlightCard className="page-card page-card-lg flex flex-col gap-4 sm:gap-6 min-h-full">
+            <div className="bg-primary/10 p-4 sm:p-5 text-primary rounded-full flex-shrink-0 w-16 h-16 sm:w-[76px] sm:h-[76px] flex items-center justify-center font-mono text-lg font-bold">
               {channelIcons.wechat}
             </div>
             <div className="flex-1 flex flex-col gap-3">
-              <h2 className="text-2xl font-bold tracking-widest">
+              <h2 className="text-lg sm:text-2xl font-bold tracking-widest">
                 {isEnglish ? "Supplementary:" : "次级补充："}{" "}
                 {wechat?.label ?? "微信"}
               </h2>
@@ -110,7 +110,7 @@ export default function Join() {
               <div className="mt-2">
                 <Link
                   to={wechat?.url ?? "/contact"}
-                  className="inline-flex px-8 py-3 bg-primary text-primary-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                  className="inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-3 bg-primary text-primary-foreground font-bold tracking-widest uppercase rounded-sm text-sm active:scale-95 transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)]"
                 >
                   {wechat?.ctaLabel ?? (isEnglish ? "Read WeChat notes" : "查看微信说明")}
                 </Link>
@@ -122,7 +122,7 @@ export default function Join() {
 
       <section className="px-8 lg:px-16 pb-28 relative z-10">
         <div className="container mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
-          <SpotlightCard className="p-8 md:p-10 flex flex-col gap-4">
+          <SpotlightCard className="page-card page-card-lg flex flex-col gap-4">
             <h3 className="text-2xl font-bold tracking-widest">{joinContent.joinedTitle}</h3>
             <p className="text-muted-foreground font-light leading-relaxed">{joinContent.joinedBody}</p>
             <p className="text-muted-foreground font-light leading-relaxed">
@@ -130,35 +130,35 @@ export default function Join() {
                 ? "The community shows real entry points and real collaboration."
                 : "社区先让你看到真实入口和真实协作。"}
             </p>
-            </SpotlightCard>
+          </SpotlightCard>
 
-          <SpotlightCard className="p-8 md:p-10 flex flex-col gap-4">
+          <SpotlightCard className="page-card page-card-lg flex flex-col gap-4">
             <h3 className="text-2xl font-bold tracking-widest">{joinContent.firstStepTitle}</h3>
-              <p className="text-muted-foreground font-light leading-relaxed">{joinContent.firstStepBody}</p>
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Link
-                  to="/ecosystem"
-                className="inline-flex px-5 py-3 bg-primary text-primary-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
+            <p className="text-muted-foreground font-light leading-relaxed">{joinContent.firstStepBody}</p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link
+                to="/ecosystem"
+                className="inline-flex min-h-11 items-center justify-center px-5 py-3 bg-primary text-primary-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
               >
                   {locale === "en-US" ? "Browse ecosystem first" : "先浏览生态应用"}
                 </Link>
-                <Link
-                  to="/about"
-                className="inline-flex px-5 py-3 border border-white/10 text-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
+              <Link
+                to="/about"
+                className="inline-flex min-h-11 items-center justify-center px-5 py-3 border border-white/10 text-foreground text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all"
               >
                   {locale === "en-US" ? "Learn the method and principles" : "了解方法与原则"}
                 </Link>
-              </div>
-            </SpotlightCard>
+            </div>
+          </SpotlightCard>
         </div>
       </section>
 
       <section className="px-8 lg:px-16 pb-20 relative z-10">
         <div className="container mx-auto max-w-5xl">
-          <SpotlightCard className="p-8 md:p-10 border-l-4 border-l-primary">
-              <h3 className="text-2xl font-bold tracking-widest mb-4">{joinContent.verifyTitle}</h3>
-              <p className="text-muted-foreground font-light leading-relaxed">{joinContent.verifyBody}</p>
-            </SpotlightCard>
+          <SpotlightCard className="page-card page-card-lg border-l-4 border-l-primary">
+            <h3 className="text-2xl font-bold tracking-widest mb-4">{joinContent.verifyTitle}</h3>
+            <p className="text-muted-foreground font-light leading-relaxed">{joinContent.verifyBody}</p>
+          </SpotlightCard>
         </div>
       </section>
     </div>

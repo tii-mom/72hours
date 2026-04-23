@@ -1,10 +1,12 @@
-import { siteConfig } from "./site-config";
 import type { Locale } from "../lib/locale";
-import { localized } from "../lib/locale";
+import { localizePath } from "../lib/routes";
+import { getGlossary } from "./glossary";
+
+const SITE_URL = "https://72hours.72h.lol";
 
 const greenbookContentZh = {
   hero: {
-    eyebrow: "绿书 / 公开说明",
+    eyebrow: "绿皮书 / 公开说明",
     title: "72H",
     lead: "把使用、参与、学习串成一条清晰路径。",
     ctaPrimary: { label: "加入社区", href: "/join" },
@@ -77,6 +79,9 @@ const greenbookContentZh = {
   },
   supply: {
     title: "供给模型",
+    totalLabel: "总量",
+    fixedLabel: "固定供给",
+    bucketsLabel: "分配桶",
     totalSupply: "100,000,000,000",
     total: "100,000,000,000 72H",
     note: "固定总量，不增发。",
@@ -130,19 +135,14 @@ const greenbookContentZh = {
     "项目机制可能随阶段更新",
     "本文不构成投资建议",
   ],
-  goal:
-    "让持有 `72H` 成为进入产品、应用与学习的统一入口。",
+  goal: "让持有 `72H` 成为进入产品、应用与学习的统一入口。",
   share: {
-    title: "72H 绿书",
-    subtitle: "72H 是进入 72hours 的统一入口。",
     bullets: [
       "持有 72H 是使用权与参与权，不是治理权",
       "三大场景：产品服务、应用参与、学习开发",
       "固定总供应 100,000,000,000 72H",
     ],
     footerNote: "公开说明，不构成投资建议。",
-    canonicalUrl: `${siteConfig.siteUrl}/greenbook`,
-    shareText: "72hours 绿书：72H 是进入 72hours 的统一接口。",
   },
 } as const;
 
@@ -182,7 +182,7 @@ const greenbookContentEn = {
     },
     {
       title: "Learn to build",
-      body: "Use `72H` as a Vibe coding entry point for app development.",
+      body: "Use `72H` as an AI development entry point for app building.",
     },
     {
       title: "Priority access",
@@ -204,9 +204,9 @@ const greenbookContentEn = {
     },
     {
       title: "Learning and development",
-      kicker: "Builder Path",
+      kicker: "Builder path",
       body: "`72H` also opens a learning path for AI tools and app development.",
-      bullets: ["Enter the Vibe coding path", "Move from user to builder"],
+      bullets: ["Enter the AI development path", "Move from user to builder"],
     },
   ],
   businessModel: {
@@ -221,6 +221,9 @@ const greenbookContentEn = {
   },
   supply: {
     title: "Supply model",
+    totalLabel: "Total supply",
+    fixedLabel: "Fixed supply",
+    bucketsLabel: "Buckets",
     totalSupply: "100,000,000,000",
     total: "100,000,000,000 72H",
     note: "Fixed supply, no inflation.",
@@ -274,28 +277,38 @@ const greenbookContentEn = {
     "Project mechanics may change as the stage changes",
     "This document is not investment advice",
   ],
-  goal:
-    "Make holding `72H` the unified entry for products, apps, and learning.",
+  goal: "Make holding `72H` the unified entry for products, apps, and learning.",
   share: {
-    title: "72H Green Book",
-    subtitle: "72H is the unified interface into 72hours.",
     bullets: [
       "Holding 72H grants usage and participation rights, not governance rights",
       "Three scenarios: products, apps, learning",
       "Fixed total supply of 100,000,000,000 72H",
     ],
     footerNote: "Public notes only; not investment advice.",
-    canonicalUrl: `${siteConfig.siteUrl}/greenbook`,
-    shareText: "72hours Green Book: 72H is the unified 72hours interface.",
   },
 } as const;
 
-export const greenbookContent = greenbookContentZh;
+type GreenBookContent = typeof greenbookContentZh | typeof greenbookContentEn;
+
+function withShareMeta(content: GreenBookContent, locale: Locale) {
+  const glossary = getGlossary(locale);
+
+  return {
+    ...content,
+    share: {
+      ...content.share,
+      title: glossary.greenBookShareTitle,
+      subtitle: glossary.coreDefinition,
+      canonicalUrl: `${SITE_URL}${localizePath("/greenbook", locale)}`,
+      shareText: `${glossary.greenBookShareTitle}: ${glossary.coreDefinition}`,
+    },
+  };
+}
+
+export const greenbookContent = withShareMeta(greenbookContentZh, "zh-CN");
 
 export function getGreenBookContent(locale: Locale) {
-  return localized(
-    locale,
-    greenbookContentZh,
-    greenbookContentEn as unknown as typeof greenbookContentZh,
-  );
+  return locale === "en-US"
+    ? withShareMeta(greenbookContentEn, locale)
+    : withShareMeta(greenbookContentZh, locale);
 }

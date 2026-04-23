@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { Terminal } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { useLocale } from "../lib/locale";
 
 export default function NotFound() {

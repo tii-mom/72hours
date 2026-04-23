@@ -1,14 +1,13 @@
 import type { FAQItem } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
-import { localized } from "../lib/locale";
 
 const faqItemsZh: FAQItem[] = [
   {
     id: "start",
     category: "入门",
     question: "如何开始？",
-    answer: "先看绿书，再进 Telegram。",
-    relatedLinks: [{ label: "绿书", href: "/greenbook" }],
+    answer: "先看绿皮书，再进 Telegram。",
+    relatedLinks: [{ label: "绿皮书", href: "/greenbook" }],
     priority: 1,
     isPinned: true,
   },
@@ -16,7 +15,7 @@ const faqItemsZh: FAQItem[] = [
     id: "official",
     category: "安全",
     question: "怎么确认官方入口？",
-    answer: "只认本站、绿书和站内入口。",
+    answer: "只认本站、绿皮书和站内入口。",
     relatedLinks: [{ label: "官方联系", href: "/contact" }],
     priority: 2,
     isPinned: true,
@@ -32,14 +31,14 @@ const faqItemsZh: FAQItem[] = [
   },
   {
     id: "hours",
-    category: "小时",
-    question: "小时是什么？",
-    answer: "小时只承接使用、参与和学习。",
-    relatedLinks: [{ label: "小时", href: "/hours" }],
+    category: "72H 用途",
+    question: "72H 用途是什么？",
+    answer: "72H 只承接使用、参与和学习。",
+    relatedLinks: [{ label: "72H 用途", href: "/hours" }],
     priority: 4,
     isPinned: true,
   },
-];
+] as const;
 
 const faqItemsEn: FAQItem[] = [
   {
@@ -71,17 +70,17 @@ const faqItemsEn: FAQItem[] = [
   },
   {
     id: "hours",
-    category: "Hours",
-    question: "What is Hours?",
-    answer: "Hours only handles use, participation, and learning.",
-    relatedLinks: [{ label: "Hours", href: "/hours" }],
+    category: "72H Use",
+    question: "What is 72H Use?",
+    answer: "72H handles use, participation, and learning.",
+    relatedLinks: [{ label: "72H Use", href: "/hours" }],
     priority: 4,
     isPinned: true,
   },
-];
+] as const;
 
 export const faqItems = faqItemsZh;
 
 export function getFaqItems(locale: Locale) {
-  return localized(locale, faqItemsZh, faqItemsEn);
+  return locale === "en-US" ? faqItemsEn : faqItemsZh;
 }

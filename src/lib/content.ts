@@ -17,17 +17,17 @@ export const primaryChannels = defaultChannels
 
 export const featuredProjects = defaultProjects
   .slice()
-  .filter((project) => project.featured)
+  .filter((project) => project.category === "main_entry")
   .sort((left, right) => left.priority - right.priority);
 
 export const secondaryProjects = defaultProjects
   .slice()
-  .filter((project) => !project.featured && project.status !== "coming_soon")
+  .filter((project) => project.category === "tools" || project.category === "new_launch")
   .sort((left, right) => left.priority - right.priority);
 
 export const directoryProjects = defaultProjects
   .slice()
-  .filter((project) => project.status === "coming_soon" || project.name === "72hours")
+  .filter((project) => project.category === "coming_soon")
   .sort((left, right) => left.priority - right.priority);
 
 export const featuredLearnPath = defaultLearnPaths.find((path) => path.featured) ?? defaultLearnPaths[0];

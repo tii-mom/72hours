@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { ArrowRight, Eye, GitMerge, RefreshCw } from "lucide-react";
+import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { Reveal } from "../components/Reveal";
 import { getLearnPaths } from "../content/learn-paths";
@@ -166,22 +166,22 @@ export default function Learn() {
                   {isEnglish ? "Participate first, then learn." : "先参与，再学习。"}
                 </h3>
               <p className="text-sm sm:text-base text-background/70 leading-relaxed max-w-2xl">
-                  {isEnglish ? "Read Green Book first, then decide whether to go deeper." : "先看绿书，再决定要不要进。"}
+                  {isEnglish ? "Read Green Book first, then decide whether to go deeper." : "先看绿皮书，再决定要不要进。"}
                 </p>
               </div>
               <div className="page-chip-row pt-1">
                 <Link
                   to="/join"
-                  className="inline-flex items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
+                  className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 bg-background text-foreground text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/90"
                 >
                   {isEnglish ? "Join community" : "加入社区"}
                   <ArrowRight size={16} className="ml-2" />
                 </Link>
                 <Link
                   to="/greenbook"
-                  className="inline-flex items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
+                  className="inline-flex min-h-11 items-center justify-center px-5 sm:px-6 py-3 border border-background/20 text-background text-xs sm:text-sm font-bold tracking-widest uppercase rounded-sm active:scale-95 transition-all hover:bg-background/10"
                 >
-                  {isEnglish ? "Read Green Book" : "看绿书"}
+                  {isEnglish ? "Read Green Book" : "看绿皮书"}
                 </Link>
               </div>
             </SpotlightCard>
