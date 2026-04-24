@@ -6,8 +6,9 @@ Start here when you need project docs. For Codex work, open only the specific do
 
 - [72hours Green Book (中文正式版)](spec/greenbook.md)
 - [72hours Green Book (English Official Version)](spec/greenbook.en.md)
-- [72H Capital 功能开发文档](spec/capital.md)
 - [Launch Checklist](launch-checklist.md)
+
+Capital implementation specs are owned by the Capital thread. Add `spec/capital.md` here only after that thread approves it for repository history.
 
 ## Related Repos
 
@@ -20,7 +21,7 @@ Start here when you need project docs. For Codex work, open only the specific do
 
 - `spec/greenbook.md` is the primary reference for Chinese content.
 - `spec/greenbook.en.md` is the English official version.
-- `spec/capital.md` defines the 72H Capital seat, identity, allocation, contract, and launch requirements.
+- Capital contracts, indexer, API, admin, transaction states, and financial-risk copy are owned by the Capital thread.
 - The public website source defaults Capital data to `VITE_CAPITAL_DATA_MODE=preview`; testnet, staging, and production deployments opt into API mode with environment variables once the Capital service is live.
 - Launch security defaults live in `public/_headers`: production scripts should remain same-origin Vite assets plus the hashed theme bootstrap, with wallet bridge frames allowlisted explicitly.
 - Keep this index short so it stays a fast entry point for humans and agents.
