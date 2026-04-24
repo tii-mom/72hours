@@ -26,7 +26,7 @@ const legalDocsZh: Array<
     sections: [
       {
         heading: "最少化数据原则",
-        body: "本站不要求创建账户，也不要求提交身份信息才能阅读公开页面。我们尽量把数据处理控制在页面访问、静态资源加载、错误排查和基础安全判断所需的最小范围内。",
+        body: "本站不要求创建账户，也不要求提交身份信息才能阅读公开内容。我们尽量把数据处理控制在访问、静态资源加载、错误排查和基础安全判断所需的最小范围内。",
       },
       {
         heading: "第三方资源请求",
@@ -34,11 +34,11 @@ const legalDocsZh: Array<
       },
       {
         heading: "运行日志与可用性数据",
-        body: "为保证页面可访问、可排错和可维护，我们可能保留最少量的运行日志、错误信息、基础性能信号和访问记录。这些信息仅用于稳定性、安全性与服务维护，不用于对外出售，也不用于与公开身份信息做画像绑定。",
+        body: "为保证站点可访问、可排错和可维护，我们可能保留最少量的运行日志、错误信息、基础性能信号和访问记录。这些信息仅用于稳定性、安全性与服务维护，不用于对外出售，也不用于与公开身份信息做画像绑定。",
       },
       {
         heading: "官方联系与说明渠道",
-        body: "如果你通过 Telegram、X、微信说明页或 Contact 页面进一步联系 72hours，后续消息内容、用户名和时间戳会受对应平台自身规则约束。你应同时阅读相关第三方平台的隐私政策与使用规则。",
+        body: "如果你通过 Telegram、X、微信说明或 Contact 入口进一步联系 72hours，之后的消息内容、用户名和时间戳会受对应平台自身规则约束。你应同时阅读相关第三方平台的隐私政策与使用规则。",
       },
       {
         heading: "更新与适用边界",
@@ -61,15 +61,15 @@ const legalDocsZh: Array<
     sections: [
       {
         heading: "站点定位",
-        body: "72hours 官网用于说明官方入口、生态应用、绿皮书、72H 用途、学习路径和公开联系信息。它首先是信息入口与说明层，而不是托管账户、收益后台或保证性结算界面。",
+        body: "72hours 官网用于呈现官方入口、生态应用、绿皮书、72H 用途、学习内容和公开联系信息。本站不是托管账户、收益后台或保证性结算界面。",
       },
       {
         heading: "官方入口与验证",
-        body: "你应优先通过本站、站内链接、绿皮书、Contact 页面以及明确标记的官方渠道进入后续页面。任何站外截图、二次转述、非官方镜像或未标记来源的信息，都不应自动被视为官方内容。",
+        body: "本站、站内链接、绿皮书、Contact 入口以及明确标记的官方渠道共同构成核对范围。任何站外截图、二次转述、非官方镜像或未标记来源的信息，都不应自动被视为官方内容。",
       },
       {
         heading: "内容更新原则",
-        body: "生态应用状态、参与方式、说明文案、外链地址和展示顺序可能随真实业务推进而更新。除非另有明确说明，当前页面展示内容优先于历史版本、截图或外部转载内容。",
+        body: "生态应用状态、参与方式、说明文案、外链地址和展示顺序可能随真实业务推进而更新。除非另有明确说明，当前公开内容优先于历史版本、截图或外部转载内容。",
       },
       {
         heading: "用户使用责任",
@@ -77,7 +77,7 @@ const legalDocsZh: Array<
       },
       {
         heading: "服务可用性与变更",
-        body: "本站、站内链接或外部生态应用可能因维护、迭代、第三方依赖、地区网络环境或不可控因素而发生中断、延迟、替换或下线。72hours 保留调整、暂停或移除公开页面及其内容的权利。",
+        body: "本站、站内链接或外部生态应用可能因维护、迭代、第三方依赖、地区网络环境或不可控因素而发生中断、延迟、替换或下线。72hours 保留调整、暂停或移除公开内容的权利。",
       },
     ],
   },
@@ -91,16 +91,16 @@ const legalDocsZh: Array<
     contentSource: "Markdown / page source",
     requiresTopNotice: true,
     relatedDocs: ["privacy", "terms"],
-    intro: "本站只提供关于入口、生态、72H 用途和公开路径的说明，不构成回报承诺。",
+    intro: "本站只提供关于入口、生态和 72H 用途的说明，不构成回报承诺。",
     icon: "scale",
     sections: [
       {
         heading: "非投资建议",
-        body: "站内关于 72H、生态应用、学习路径、公开活动和参与方式的内容仅用于信息说明与路径介绍，不构成投资建议、财务建议、证券推介、税务建议或法律意见。",
+        body: "站内关于 72H、生态应用、学习内容、公开活动和参与方式的内容仅用于信息说明与入口导航，不构成投资建议、财务建议、证券推介、税务建议或法律意见。",
       },
       {
         heading: "非收益承诺",
-        body: "本站不承诺涨幅、回报、收益、空投、分红、额度、资格或结果。页面中出现的产品、场景、阶段、参与路径和公开用语，不应被理解为对未来结果的保证。",
+        body: "本站不承诺涨幅、回报、收益、空投、分红、额度、资格或结果。公开内容中出现的产品、场景、阶段、参与方式和公开用语，不应被理解为对未来结果的保证。",
       },
       {
         heading: "阶段变化与不确定性",
@@ -112,7 +112,7 @@ const legalDocsZh: Array<
       },
       {
         heading: "信息边界",
-        body: "若你需要正式的法律、财务、税务、合规或安全意见，应寻求具备相应资质的专业顾问。72hours 官网、绿皮书和公开页面不替代专业服务。",
+        body: "若你需要正式的法律、财务、税务、合规或安全意见，应寻求具备相应资质的专业顾问。72hours 官网、绿皮书和公开内容不替代专业服务。",
       },
     ],
   },
@@ -143,7 +143,7 @@ const legalDocsEn: Array<
     sections: [
       {
         heading: "Minimum-data principle",
-        body: "This site does not require an account or identity submission to read public pages. We try to keep data handling limited to what is necessary for page delivery, static asset loading, troubleshooting, and basic security checks.",
+        body: "This site does not require an account or identity submission to read public content. We try to keep data handling limited to what is necessary for site delivery, static asset loading, troubleshooting, and basic security checks.",
       },
       {
         heading: "Third-party resource requests",
@@ -155,7 +155,7 @@ const legalDocsEn: Array<
       },
       {
         heading: "Official contact channels",
-        body: "If you continue through Telegram, X, WeChat notes, or the Contact page, your follow-up messages, usernames, and timestamps are subject to the rules of those platforms. You should also review the privacy policies and rules of the relevant third-party services.",
+        body: "If you continue through Telegram, X, WeChat notes, or the Contact entry, your follow-up messages, usernames, and timestamps are subject to the rules of those platforms. You should also review the privacy policies and rules of the relevant third-party services.",
       },
       {
         heading: "Updates and scope",
@@ -178,15 +178,15 @@ const legalDocsEn: Array<
     sections: [
       {
         heading: "Site positioning",
-        body: "The 72hours site explains official entry points, ecosystem apps, Green Book, 72H Use, learning paths, and public contact routes. It is an information and navigation surface first, not a custody account, return dashboard, or guaranteed settlement interface.",
+        body: "The 72hours site explains official entries, ecosystem apps, Green Book, 72H Use, learning content, and public contact channels. It is an information and navigation surface, not a custody account, return dashboard, or guaranteed settlement interface.",
       },
       {
         heading: "Official entry and verification",
-        body: "You should prioritize this site, on-site links, Green Book, the Contact page, and clearly marked official channels when entering related properties. Off-site screenshots, reposts, mirrors, and unverified copies should not automatically be treated as official content.",
+        body: "You should prioritize this site, on-site links, Green Book, the Contact entry, and clearly marked official channels when entering related properties. Off-site screenshots, reposts, mirrors, and unverified copies should not automatically be treated as official content.",
       },
       {
         heading: "Content update policy",
-        body: "App status, participation paths, explanatory text, external links, and presentation order may change as real operations evolve. Unless stated otherwise, the currently published page takes precedence over older copies, screenshots, or third-party reposts.",
+        body: "App status, participation modes, explanatory text, external links, and presentation order may change as real operations evolve. Unless stated otherwise, the currently published content takes precedence over older copies, screenshots, or third-party reposts.",
       },
       {
         heading: "User responsibility",
@@ -194,7 +194,7 @@ const legalDocsEn: Array<
       },
       {
         heading: "Availability and change",
-        body: "This site, its linked resources, or ecosystem apps may be interrupted, delayed, replaced, or removed due to maintenance, iteration, third-party dependencies, regional network conditions, or other external factors. 72hours may revise, pause, or remove public pages at any time.",
+        body: "This site, its linked resources, or ecosystem apps may be interrupted, delayed, replaced, or removed due to maintenance, iteration, third-party dependencies, regional network conditions, or other external factors. 72hours may revise, pause, or remove public content at any time.",
       },
     ],
   },
@@ -208,16 +208,16 @@ const legalDocsEn: Array<
     contentSource: "Markdown / page source",
     requiresTopNotice: true,
     relatedDocs: ["privacy", "terms"],
-    intro: "This site explains entry points, ecosystem context, 72H Use, and public paths only. It does not promise outcomes.",
+    intro: "This site explains entry points, ecosystem context, and 72H Use only. It does not promise outcomes.",
     icon: "scale",
     sections: [
       {
         heading: "Not investment advice",
-        body: "Any content about 72H, ecosystem apps, learning paths, public activities, or participation routes is provided for informational and navigational purposes only. It is not investment advice, financial advice, securities solicitation, tax advice, or legal advice.",
+        body: "Any content about 72H, ecosystem apps, learning content, public activities, or participation modes is provided for informational and navigational purposes only. It is not investment advice, financial advice, securities solicitation, tax advice, or legal advice.",
       },
       {
         heading: "No return promise",
-        body: "This site does not promise appreciation, yield, return, airdrops, allocations, eligibility, or outcomes. Product language, participation paths, stages, and public descriptions should not be interpreted as guarantees of future results.",
+        body: "This site does not promise appreciation, yield, return, airdrops, allocations, eligibility, or outcomes. Product language, participation modes, stages, and public descriptions should not be interpreted as guarantees of future results.",
       },
       {
         heading: "Stage changes and uncertainty",
@@ -229,7 +229,7 @@ const legalDocsEn: Array<
       },
       {
         heading: "Professional advice boundary",
-        body: "If you need formal legal, financial, tax, compliance, or security advice, you should seek qualified professionals. The 72hours site, Green Book, and public pages do not replace professional services.",
+        body: "If you need formal legal, financial, tax, compliance, or security advice, you should seek qualified professionals. The 72hours site, Green Book, and public content do not replace professional services.",
       },
     ],
   },

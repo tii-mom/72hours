@@ -8,9 +8,13 @@ import { getSiteConfig } from "./site-config";
 import { getLegalDoc } from "../lib/content";
 
 const LEGAL_SLUGS = ["privacy", "terms", "disclaimer"] as const;
+const CAPITAL_APP_PATHS = ["/capital/multi-millionaire", "/capital/72hours", "/capital/wan"] as const;
 const STATIC_BARE_PATHS = [
   "/",
   "/ecosystem",
+  "/capital",
+  "/capital/me",
+  ...CAPITAL_APP_PATHS,
   "/greenbook",
   "/join",
   "/learn",
@@ -79,6 +83,28 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
   const aboutContent = getAboutContent(locale);
   const hoursContent = getHoursContent(locale);
   const joinContent = getJoinContent(locale);
+  const isEnglish = locale === "en-US";
+
+  const capitalVerifyMatch = barePath.match(/^\/capital\/([^/]+)\/(reserve|alpha)\/(\d+)$/);
+
+  if (capitalVerifyMatch) {
+    const [, appSlug, seatType, seatNumber] = capitalVerifyMatch;
+    const appLabel =
+      appSlug === "multi-millionaire" ? "multi-millionaire" : appSlug === "wan" ? "WAN" : "72hours";
+    const seatLabel = seatType === "reserve" ? "Reserve Seat" : "Alpha Seat";
+
+    return buildResolvedMeta(
+      locale,
+      barePath,
+      `${siteConfig.siteName} | ${appLabel} ${seatLabel} #${seatNumber}`,
+      isEnglish
+        ? "Verified capital identity page. Public seat details only. No amount or yield data is disclosed."
+        : "资本身份验证页，仅公开席位信息，不展示金额或收益数据。",
+      {
+        robots: "noindex, nofollow",
+      }
+    );
+  }
 
   if (barePath.startsWith("/legal/")) {
     const slug = barePath.split("/").pop();
@@ -97,14 +123,44 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/ecosystem": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.ecosystem}`,
       description:
-        locale === "en-US"
+        isEnglish
           ? "Browse ecosystem apps by category, status, and next step."
           : "按分类、状态和下一步查看 72hours 生态应用。",
+    },
+    "/capital": {
+      title: `${siteConfig.siteName} | ${glossary.pageLabels.capital}`,
+      description: isEnglish
+        ? "Review limited capital seats, reserve and alpha allocations, and the first launch surfaces in 72H Capital."
+        : "查看限量资本席位、Reserve 与 Alpha 配置规则，以及 72H Capital 首批开放应用。",
+    },
+    "/capital/me": {
+      title: `${siteConfig.siteName} | My Capital Identity`,
+      description: isEnglish
+        ? "Inspect active, historical, and completed capital identities, reserve lots, alpha cycles, and credentials."
+        : "查看 Capital 身份、Reserve 批次、Alpha 周期与 Credential 展示。",
+    },
+    "/capital/multi-millionaire": {
+      title: `${siteConfig.siteName} | multi-millionaire Capital`,
+      description: isEnglish
+        ? "See the capital seat structure, alpha threshold, and verified identity surfaces for multi-millionaire."
+        : "查看 multi-millionaire 的 Capital Seat 结构、Alpha 门槛与身份展示。",
+    },
+    "/capital/72hours": {
+      title: `${siteConfig.siteName} | 72hours Capital`,
+      description: isEnglish
+        ? "See reserve and alpha seat rules, tiers, and verified identity surfaces for the 72hours core surface."
+        : "查看 72hours 主场对应的 Reserve 与 Alpha 席位规则、评级与身份展示。",
+    },
+    "/capital/wan": {
+      title: `${siteConfig.siteName} | WAN Capital`,
+      description: isEnglish
+        ? "Review WAN capital seats, reserve and alpha allocation terms, and verified identity pages."
+        : "查看 WAN 的 Capital Seat、Reserve 与 Alpha 配置条款及验证页面。",
     },
     "/greenbook": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.greenBook}`,
       description:
-        locale === "en-US"
+        isEnglish
           ? "Read Green Book to see how 72H connects use, participation, and learning."
           : "看绿皮书，了解 72H 如何串起使用、参与和学习。",
     },
@@ -115,7 +171,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/learn": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.learn}`,
       description:
-        locale === "en-US" ? "Read Green Book first, then decide how to learn and build." : "先看绿皮书，再决定如何学习和动手。",
+        isEnglish ? "Learning path for the 72hours project." : "72hours 项目的学习路径。",
     },
     "/hours": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.use72H}`,
@@ -128,16 +184,16 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/faq": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.faq}`,
       description:
-        locale === "en-US"
-          ? "Getting started, safety, learning, and 72H Use."
-          : "关于 72hours 的入门、安全、学习和 72H 用途常见问题。",
+        isEnglish
+          ? "Common questions about entry, safety, learning, and 72H Use."
+          : "关于入口、安全、学习和 72H 用途的常见问题。",
     },
     "/contact": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.contact}`,
       description:
-        locale === "en-US"
+        isEnglish
           ? "Official contact paths for Telegram, X, and WeChat notes."
-          : "核对 Telegram、X 和微信说明页的官方联系路径。",
+          : "Telegram、X 和微信说明页对应的官方联系路径。",
     },
   };
 
@@ -148,7 +204,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       locale,
       barePath,
       `${siteConfig.siteName} | 404`,
-      locale === "en-US"
+      isEnglish
         ? "This page does not exist or has moved. Return home and choose a valid entry."
         : "页面不存在或已迁移。返回首页并重新选择入口。",
       {

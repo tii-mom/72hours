@@ -8,7 +8,7 @@ const greenbookContentZh = {
   hero: {
     eyebrow: "绿皮书 / 公开说明",
     title: "72H",
-    lead: "把使用、参与、学习串成一条清晰路径。",
+    lead: "把使用、参与和学习放在同一套清晰关系里。",
     ctaPrimary: { label: "加入社区", href: "/join" },
     ctaSecondary: { label: "看生态", href: "/ecosystem" },
   },
@@ -26,7 +26,7 @@ const greenbookContentZh = {
     {
       label: "作用",
       value: "使用 / 参与 / 学习",
-      body: "围绕真实场景和业务循环。",
+      body: "围绕真实场景和实际使用。",
     },
   ],
   holdings: [
@@ -39,8 +39,8 @@ const greenbookContentZh = {
       body: "可参与成熟应用，也可进入更早期机会。",
     },
     {
-      title: "学习开发",
-      body: "把 `72H` 当作 AI 开发入口，进入应用开发。",
+      title: "学习构建",
+      body: "把 `72H` 当作学习入口，进入工具和应用构建。",
     },
     {
       title: "优先资格",
@@ -61,10 +61,10 @@ const greenbookContentZh = {
       bullets: ["分阶段参与", "不提供收益保证"],
     },
     {
-      title: "学习与开发",
-      kicker: "开发路径",
-      body: "`72H` 也是学习入口，连接 AI 工具、模板与应用开发。",
-      bullets: ["进入 AI 开发路径", "从用户走向建设者"],
+      title: "学习与构建",
+      kicker: "构建入口",
+      body: "`72H` 也是学习入口，连接工具、模板和应用构建。",
+      bullets: ["进入构建协作", "从使用者走向参与者"],
     },
   ],
   businessModel: {
@@ -73,7 +73,7 @@ const greenbookContentZh = {
     streams: [
       "产品和服务收入",
       "应用上架与孵化",
-      "学习路径、训练营和开发支持",
+      "学习内容、训练营和支持服务",
       "生态合作与分发",
     ],
   },
@@ -127,7 +127,7 @@ const greenbookContentZh = {
         note: "影子供应。",
       },
     ],
-    summary: "总量固定，释放规则后续公布。",
+    summary: "总量固定，释放规则以公开更新为准。",
   },
   boundaries: [
     "`72H` 不承担治理权",
@@ -139,7 +139,7 @@ const greenbookContentZh = {
   share: {
     bullets: [
       "持有 72H 是使用权与参与权，不是治理权",
-      "三大场景：产品服务、应用参与、学习开发",
+      "三大场景：产品服务、应用参与、学习与构建",
       "固定总供应 100,000,000,000 72H",
     ],
     footerNote: "公开说明，不构成投资建议。",
@@ -150,7 +150,7 @@ const greenbookContentEn = {
   hero: {
     eyebrow: "Green Book / Public notes",
     title: "72H\nGreen Book",
-    lead: "Put use, participation, and learning on the same path.",
+    lead: "Put use, participation, and learning into one clear relationship.",
     ctaPrimary: { label: "Join community", href: "/join" },
     ctaSecondary: { label: "Browse ecosystem", href: "/ecosystem" },
   },
@@ -168,7 +168,7 @@ const greenbookContentEn = {
     {
       label: "Purpose",
       value: "Use / participate / learn",
-      body: "Built around real scenarios and business loops.",
+      body: "Built around real scenarios and real usage.",
     },
   ],
   holdings: [
@@ -182,7 +182,7 @@ const greenbookContentEn = {
     },
     {
       title: "Learn to build",
-      body: "Use `72H` as an AI development entry point for app building.",
+      body: "Use `72H` as a learning entry for tools, templates, and app building.",
     },
     {
       title: "Priority access",
@@ -203,10 +203,10 @@ const greenbookContentEn = {
       bullets: ["Stage-based participation", "No return guarantee"],
     },
     {
-      title: "Learning and development",
-      kicker: "Builder path",
-      body: "`72H` also opens a learning path for AI tools and app development.",
-      bullets: ["Enter the AI development path", "Move from user to builder"],
+      title: "Learning and building",
+      kicker: "Builder entry",
+      body: "`72H` also opens a learning entry for tools, templates, and app building.",
+      bullets: ["Enter builder collaboration", "Move from user to participant"],
     },
   ],
   businessModel: {
@@ -215,7 +215,7 @@ const greenbookContentEn = {
     streams: [
       "Product and service revenue",
       "App listings and incubation",
-      "Learning paths, bootcamps, and dev support",
+      "Learning content, bootcamps, and support services",
       "Ecosystem partnerships and distribution",
     ],
   },

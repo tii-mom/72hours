@@ -1,14 +1,20 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 import Layout from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollProgress } from "./components/Effects";
 import { LocaleProvider, useLocale } from "./lib/locale";
+import { ThemeProvider, getThemeColor, useTheme } from "./lib/theme";
 import { resolveRouteMeta } from "./content/route-meta";
 import { stripLocalePrefix } from "./lib/routes";
 
+const CapitalRouteBoundary = React.lazy(() => import("./components/CapitalRouteBoundary"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Ecosystem = React.lazy(() => import("./pages/Ecosystem"));
+const Capital = React.lazy(() => import("./pages/Capital"));
+const CapitalApp = React.lazy(() => import("./pages/CapitalApp"));
+const CapitalIdentity = React.lazy(() => import("./pages/CapitalIdentity"));
+const CapitalVerify = React.lazy(() => import("./pages/CapitalVerify"));
 const GreenBook = React.lazy(() => import("./pages/GreenBook"));
 const Learn = React.lazy(() => import("./pages/Learn"));
 const Hours = React.lazy(() => import("./pages/Hours"));
@@ -18,13 +24,6 @@ const Faq = React.lazy(() => import("./pages/Faq"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const Legal = React.lazy(() => import("./pages/Legal"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
-
-const PageLoader = () => (
-  <div className="min-h-[60vh] flex flex-col items-center justify-center font-mono text-primary text-sm tracking-widest gap-4 opacity-70">
-    <div className="w-8 h-8 rounded-sm animate-spin border-t-2 border-l-2 border-primary"></div>
-    <span className="animate-pulse">[ LOADING_MODULE... ]</span>
-  </div>
-);
 
 function setMeta(attribute: "name" | "property", key: string, content: string) {
   const selector = `meta[${attribute}="${key}"]`;
@@ -63,6 +62,7 @@ function setLink(rel: string, href: string, options?: { hreflang?: string }) {
 function RouteObserver() {
   const location = useLocation();
   const { locale } = useLocale();
+  const { theme } = useTheme();
   const barePath = stripLocalePrefix(location.pathname);
   const routeMeta = resolveRouteMeta(locale, barePath);
 
@@ -72,7 +72,7 @@ function RouteObserver() {
     document.title = routeMeta.title;
     setMeta("name", "description", routeMeta.description);
     setMeta("name", "robots", routeMeta.robots);
-    setMeta("name", "theme-color", "#030603");
+    setMeta("name", "theme-color", getThemeColor(theme));
     setMeta("property", "og:title", routeMeta.title);
     setMeta("property", "og:description", routeMeta.description);
     setMeta("property", "og:url", routeMeta.canonicalUrl);
@@ -98,6 +98,7 @@ function RouteObserver() {
     routeMeta.siteName,
     routeMeta.title,
     routeMeta.xDefaultUrl,
+    theme,
   ]);
 
   return null;
@@ -108,11 +109,23 @@ function AppShell() {
     <>
       <ScrollProgress />
       <RouteObserver />
-      <Suspense fallback={<PageLoader />}>
-        <Layout />
-      </Suspense>
+      <Layout />
     </>
   );
+}
+
+function AppProviders() {
+  return (
+    <LocaleProvider>
+      <ThemeProvider>
+        <AppShell />
+      </ThemeProvider>
+    </LocaleProvider>
+  );
+}
+
+function withCapitalBoundary(element: React.ReactNode) {
+  return <CapitalRouteBoundary>{element}</CapitalRouteBoundary>;
 }
 
 function AppRoutes() {
@@ -120,6 +133,10 @@ function AppRoutes() {
     <>
       <Route index element={<Home />} />
       <Route path="ecosystem" element={<Ecosystem />} />
+      <Route path="capital" element={withCapitalBoundary(<Capital />)} />
+      <Route path="capital/me" element={withCapitalBoundary(<CapitalIdentity />)} />
+      <Route path="capital/:slug" element={withCapitalBoundary(<CapitalApp />)} />
+      <Route path="capital/:slug/:type/:seatNumber" element={withCapitalBoundary(<CapitalVerify />)} />
       <Route path="greenbook" element={<GreenBook />} />
       <Route path="join" element={<Join />} />
       <Route path="learn" element={<Learn />} />
@@ -134,24 +151,10 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <LocaleProvider>
-            <AppShell />
-          </LocaleProvider>
-        }
-      >
+      <Route path="/" element={<AppProviders />}>
         {sharedRoutes}
       </Route>
-      <Route
-        path="/en"
-        element={
-          <LocaleProvider>
-            <AppShell />
-          </LocaleProvider>
-        }
-      >
+      <Route path="/en" element={<AppProviders />}>
         {sharedRoutes}
       </Route>
     </Routes>

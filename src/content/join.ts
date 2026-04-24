@@ -2,29 +2,29 @@ import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
 const joinContentZh = {
-  title: "先进入主语境。",
-  subtitle: "先看绿皮书，再进 Telegram。X 用来先观察。",
-  whyTitle: "为什么先看入口？",
-  whyBody: "先看入口，再决定要不要进。",
-  joinedTitle: "进来后看什么",
-  joinedBody: "先看绿皮书和真实讨论，再走下一步。",
-  firstStepTitle: "第一次先做什么",
-  firstStepBody: "先看绿皮书，再进 Telegram 或看 X。",
-  verifyTitle: "怎么核对",
-  verifyBody: "官方入口以本站、Telegram、X 和绿皮书为准。",
+  title: "社区、公开动态与补充说明。",
+  subtitle: "Telegram 是主社区入口，X 对应公开动态，微信提供补充说明。",
+  whyTitle: "社区入口",
+  whyBody: "Telegram、X 与微信构成当前的官方联系层。",
+  joinedTitle: "进入后可见",
+  joinedBody: "社区讨论、公开动态和补充说明共同构成当前联系层。",
+  contactTitle: "联系入口",
+  contactBody: "Telegram、X 和微信说明页。",
+  verifyTitle: "核对方式",
+  verifyBody: "本站、Telegram、X 和绿皮书共同提供公开核对信息。",
 };
 
 const joinContentEn = {
-  title: "Enter the main context first.",
-  subtitle: "Read Green Book first. Then join Telegram.",
-  whyTitle: "Why start from the entry point?",
-  whyBody: "Check the entry first, then decide whether to go deeper.",
-  joinedTitle: "What to look at after joining",
-  joinedBody: "Read Green Book and real discussion first, then decide.",
-  firstStepTitle: "What to do first",
-  firstStepBody: "Read Green Book first, then join Telegram or follow X.",
+  title: "Community, public updates, and supplementary notes.",
+  subtitle: "Telegram is the main community entry. X covers public updates, and WeChat is supplementary.",
+  whyTitle: "Community entry",
+  whyBody: "Telegram, X, and WeChat make up the current contact layer.",
+  joinedTitle: "What you see inside",
+  joinedBody: "Community discussion, public updates, and supplementary notes make up the current contact layer.",
+  contactTitle: "Contact entry",
+  contactBody: "Telegram, X, and WeChat notes.",
   verifyTitle: "How to verify",
-  verifyBody: "Official entry points are this site, Telegram, X, and Green Book.",
+  verifyBody: "This site, Telegram, X, and Green Book provide public verification context.",
 };
 
 export const joinContent = joinContentZh;

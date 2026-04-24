@@ -4,9 +4,31 @@ import path from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
+  const capitalProxyTarget = process.env.VITE_CAPITAL_PROXY_TARGET || "http://localhost:3001";
+
   const manualChunks = (id: string) => {
     if (!id.includes("node_modules")) {
       return;
+    }
+
+    if (
+      id.includes("/node_modules/react/") ||
+      id.includes("/node_modules/react-dom/") ||
+      id.includes("/node_modules/scheduler/")
+    ) {
+      return "react-vendor";
+    }
+
+    if (
+      id.includes("@tonconnect") ||
+      id.includes("tweetnacl") ||
+      id.includes("ua-parser-js") ||
+      id.includes("deepmerge") ||
+      id.includes("eventsource") ||
+      id.includes("node-fetch") ||
+      id.includes("whatwg-url")
+    ) {
+      return "tonconnect";
     }
 
     if (id.includes("motion")) {
@@ -40,6 +62,12 @@ export default defineConfig(() => {
     },
     server: {
       hmr: process.env.DISABLE_HMR !== "true",
+      proxy: {
+        "/v1/capital": {
+          target: capitalProxyTarget,
+          changeOrigin: true,
+        },
+      },
     },
     build: {
       rollupOptions: {

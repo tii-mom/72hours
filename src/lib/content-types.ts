@@ -150,6 +150,7 @@ export interface SiteConfig {
   primaryJoinRoute: string;
   navItems: Array<{ label: string; href: string }>;
   footerGroups: Array<{
+    id: string;
     title: string;
     links: Array<{ label: string; href: string }>;
   }>;

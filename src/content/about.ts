@@ -1,25 +1,25 @@
 import type { Locale } from "../lib/locale";
 
 const aboutContentZh = {
-  title: "72hours 如何连接使用、参与和学习。",
-  subtitle: "入口、方法、边界、关系。",
+  title: "72hours 连接使用、参与和学习。",
+  subtitle: "入口、方法、边界与关系。",
   whyTitle: "为什么有 72hours",
-  whyBody: "把人接到真实使用和参与场景里。",
+  whyBody: "把真实使用、公开参与和项目边界放在同一处。",
   principleQuote: "理解来自参与。",
-  methodBody: "先看入口，再看动作，再看边界。",
+  methodBody: "入口、动作和边界保持一致。",
   relationTitle: "四层关系",
   relationCards: [
     {
       title: "1. 社区",
-      body: "先看 Telegram 和 X。",
+      body: "Telegram、X 与联系页构成联系层。",
     },
     {
       title: "2. 生态",
-      body: "每个应用都有状态和下一步。",
+      body: "每个应用都有状态、用途和进入方式。",
     },
     {
       title: "3. 学习",
-      body: "学习放在第二阶段。",
+      body: "学习帮助用户理解用途、边界和协作。",
     },
     {
       title: "4. 72H 用途",
@@ -30,8 +30,8 @@ const aboutContentZh = {
   principlesTitle: "我们坚持",
   principles: [
     {
-      title: "先看入口",
-      body: "所有说明都回到真实场景与官方链接。",
+      title: "入口清晰",
+      body: "所有说明都对应真实场景与官方链接。",
     },
     {
       title: "普通人可读",
@@ -42,8 +42,8 @@ const aboutContentZh = {
       body: "只说明用途，不写收益或承诺。",
     },
     {
-      title: "先参与再深入",
-      body: "先使用，再决定要不要更深入。",
+      title: "参与优先",
+      body: "真实使用比抽象判断更重要。",
     },
   ],
   rejectTitle: "我们不做",
@@ -54,22 +54,22 @@ const aboutContentEn = {
   title: "How 72hours connects use, participation, and learning.",
   subtitle: "Entry points, methods, boundaries, and relationships.",
   whyTitle: "Why 72hours exists",
-  whyBody: "It connects people to real use and participation.",
+  whyBody: "It connects people to real use, participation, and context.",
   principleQuote: "Understanding comes from participation.",
-  methodBody: "See the entry point, the action, then the boundary.",
+  methodBody: "The entry, the action, and the boundary stay aligned.",
   relationTitle: "Four relationships",
   relationCards: [
     {
       title: "1. Community",
-      body: "Start with Telegram and X.",
+      body: "Telegram, X, and the contact page make up the contact layer.",
     },
     {
       title: "2. Ecosystem",
-      body: "Each app has a status and a next step.",
+      body: "Each app has a status, a purpose, and an entry point.",
     },
     {
       title: "3. Learning",
-      body: "Learning comes in the second stage.",
+      body: "Learning helps people understand utility, boundaries, and collaboration.",
     },
     {
       title: "4. 72H Use",
@@ -80,7 +80,7 @@ const aboutContentEn = {
   principlesTitle: "What we stand for",
   principles: [
     {
-      title: "Start with the entry point",
+      title: "Clear entry",
       body: "Each explanation points to a real scenario and an official link.",
     },
     {
@@ -92,8 +92,8 @@ const aboutContentEn = {
       body: "We explain usage only, not returns or promises.",
     },
     {
-      title: "Participate before going deeper",
-      body: "Use first, then decide whether to go deeper.",
+      title: "Participation focus",
+      body: "Use and participation stay in the same view.",
     },
   ],
   rejectTitle: "What we do not do",

@@ -5,6 +5,7 @@ const glossaryZh = {
   pageLabels: {
     home: "首页",
     ecosystem: "生态应用",
+    capital: "资本",
     greenBook: "绿皮书",
     join: "参与入口",
     learn: "学习路径",
@@ -35,6 +36,7 @@ const glossaryEn = {
   pageLabels: {
     home: "Home",
     ecosystem: "Ecosystem",
+    capital: "Capital",
     greenBook: "Green Book",
     join: "Join",
     learn: "Learn",
