@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "border border-primary/25 bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-line bg-background hover:bg-surface hover:text-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-surface hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        navCta: "text-foreground bg-nav-button hover:bg-nav-button/80 active:scale-[0.97] transition-all",
-        hero: "bg-primary text-primary-foreground hover:brightness-110 transition-all active:scale-[0.97]",
-        heroOutline: "bg-white text-background hover:brightness-90 transition-all active:scale-[0.97]",
+        navCta: "border border-line/70 bg-nav-button text-foreground hover:bg-surface-elevated active:scale-[0.97]",
+        hero: "border border-primary/25 bg-[#07110a] text-[#d7ffe1] hover:border-primary/35 hover:bg-[#0a160e] active:scale-[0.97]",
+        heroOutline: "border border-line/70 bg-surface/70 text-foreground hover:border-primary/30 hover:bg-surface-elevated active:scale-[0.97]",
       },
       size: {
         default: "h-10 px-4 py-2",

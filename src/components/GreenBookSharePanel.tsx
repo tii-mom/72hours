@@ -42,7 +42,7 @@ function ActionButton({
   const base =
     tone === "primary"
       ? "border-primary/30 bg-primary text-background shadow-[0_18px_40px_rgba(124,255,102,0.18)] hover:border-primary/40 hover:shadow-[0_20px_48px_rgba(124,255,102,0.22)]"
-      : "border-white/10 bg-white/4 text-foreground hover:border-primary/30 hover:bg-white/8";
+      : "border-line/70 bg-surface/70 text-foreground hover:border-primary/30 hover:bg-surface-elevated";
 
   return (
     <button
@@ -50,7 +50,7 @@ function ActionButton({
       onClick={onClick}
       disabled={busy || disabled}
       className={cn(
-        "inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[20px] border px-4 py-3.5 text-sm font-semibold tracking-[0.08em] transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:text-[13px]",
+        "inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[20px] border px-4 py-3.5 text-sm font-semibold tracking-[0.08em] transition-colors transition-transform duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:text-[13px]",
         base
       )}
     >
@@ -70,8 +70,8 @@ function StatusIcon({ tone }: { tone: ToneState }) {
         tone === "success"
           ? "border-primary/20 bg-primary/10 text-primary"
           : tone === "error"
-            ? "border-red-500/20 bg-red-500/10 text-red-200"
-            : "border-white/10 bg-white/5 text-white/72"
+            ? "border-destructive/20 bg-destructive/10 text-destructive"
+            : "border-line/70 bg-surface/70 text-muted-foreground"
       )}
     >
       <Icon className="h-4 w-4" />
@@ -150,12 +150,12 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[30px] bg-[linear-gradient(180deg,rgba(4,8,5,0.84),rgba(2,4,3,0.72))] px-0 py-0 shadow-[0_24px_90px_rgba(0,0,0,0.32)]",
+        "relative overflow-hidden rounded-[30px] border border-line/70 bg-read-panel/90 px-0 py-0 shadow-[0_24px_90px_rgba(0,0,0,0.24)]",
         className
       )}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_16%,rgba(124,255,102,0.15),transparent_28%),radial-gradient(circle_at_16%_84%,rgba(89,255,138,0.1),transparent_32%)]" />
-      <div className="absolute inset-0 opacity-18 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:42px_42px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_16%,color-mix(in_srgb,hsl(var(--primary))_15%,transparent),transparent_28%),radial-gradient(circle_at_16%_84%,color-mix(in_srgb,hsl(var(--gold))_10%,transparent),transparent_32%)]" />
+      <div className="absolute inset-0 opacity-18 bg-[linear-gradient(color-mix(in_srgb,hsl(var(--foreground))_4%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,hsl(var(--foreground))_4%,transparent)_1px,transparent_1px)] bg-[size:42px_42px]" />
 
       <div className="relative z-10 grid gap-5 lg:grid-cols-[minmax(0,0.68fr)_minmax(320px,0.96fr)] lg:gap-6">
         <div className="space-y-4 px-4 py-5 sm:px-6 sm:py-6">
@@ -177,20 +177,20 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
               <p className="text-[10px] font-bold uppercase tracking-[0.36em] text-primary/80">
                 {isEnglish ? "Card Preview" : "卡片预览"}
               </p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/52">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
                 {isEnglish ? "X / Telegram / WeChat" : "X / Telegram / 微信"}
               </p>
             </div>
 
             <div className="relative">
-              <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_78%_18%,rgba(124,255,102,0.18),transparent_26%),linear-gradient(180deg,rgba(124,255,102,0.06),transparent_28%)] blur-sm" />
+              <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_78%_18%,color-mix(in_srgb,hsl(var(--primary))_18%,transparent),transparent_26%),linear-gradient(180deg,color-mix(in_srgb,hsl(var(--primary))_6%,transparent),transparent_28%)] blur-sm" />
               <GreenBookPoster locale={locale} className="mx-auto max-w-[344px] shadow-[0_18px_54px_rgba(0,0,0,0.42)] sm:max-w-[392px]" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-4 px-4 pb-5 sm:gap-5 sm:px-6 sm:pb-6">
-          <div className="rounded-[28px] border border-white/8 bg-white/[0.035] p-4 sm:p-5">
+          <div className="rounded-[28px] border border-line/70 bg-surface/65 p-4 sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.36em] text-primary/80">
@@ -206,7 +206,7 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
               {content.share.bullets.map((bullet) => (
                 <li
                   key={bullet}
-                  className="flex gap-3 rounded-2xl border border-white/8 bg-black/25 px-3 py-3 text-sm leading-relaxed text-white/82"
+                  className="flex gap-3 rounded-2xl border border-line/70 bg-background/25 px-3 py-3 text-sm leading-relaxed text-foreground/88"
                 >
                   <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary shadow-[0_0_12px_rgba(124,255,102,0.8)]" />
                   <span>{bullet}</span>
@@ -259,18 +259,18 @@ export function GreenBookSharePanel({ className }: { className?: string }) {
               tone === "success"
                 ? "border-primary/25 bg-primary/10 text-primary"
                 : tone === "error"
-                  ? "border-red-500/20 bg-red-500/10 text-red-200"
-                  : "border-white/10 bg-black/25 text-white/72"
+                  ? "border-destructive/20 bg-destructive/10 text-destructive"
+                  : "border-line/70 bg-surface/65 text-muted-foreground"
             )}
             aria-live="polite"
           >
             <div className="flex items-center gap-3">
               <StatusIcon tone={tone} />
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/54">
+                <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-muted-foreground">
                   {statusTitle}
                 </p>
-                <p className="mt-1">{message}</p>
+                <p className="mt-1 text-foreground/88">{message}</p>
               </div>
             </div>
           </div>

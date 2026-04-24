@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
             <button
               onClick={() => window.location.assign(homePath)}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-red-500 px-5 sm:px-6 py-3 sm:py-4 bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white font-bold tracking-widest uppercase text-xs sm:text-sm rounded-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-red-500 px-5 sm:px-6 py-3 sm:py-4 bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white font-bold tracking-widest uppercase text-xs sm:text-sm rounded-sm transition-colors transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <Terminal size={18} />
               {isEnglish ? "Back home" : "返回首页"}

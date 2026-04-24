@@ -28,16 +28,24 @@ const chapterItemsEn = [
 ] as const;
 
 type ChapterId = (typeof chapterItemsZh)[number]["id"];
+type ChapterItem = { id: ChapterId; label: string };
+type QuickFact = {
+  label: string;
+  value: string;
+  body: string;
+};
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const sectionReveal = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.72, ease },
+    transition: { duration: 0.68, ease },
   },
 } as const;
+
+const chapterScrollMargin = "scroll-mt-[8.75rem] sm:scroll-mt-[9.5rem] lg:scroll-mt-32";
 
 function SectionHeader({
   eyebrow,
@@ -49,18 +57,157 @@ function SectionHeader({
   body?: string;
 }) {
   return (
-    <div className="flex max-w-3xl flex-col gap-3 sm:gap-4">
+    <div className="flex max-w-3xl flex-col gap-2.5 sm:gap-3">
       {eyebrow ? (
         <div className="page-kicker w-fit">
           <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
           {eyebrow}
         </div>
       ) : null}
-      <h2 className="text-[clamp(1.4rem,3.4vw,2.35rem)] font-bold tracking-tight text-foreground text-balance">
+      <h2 className="text-[clamp(1.45rem,3.1vw,2.3rem)] font-bold leading-[1.08] tracking-tight text-foreground text-balance">
         {title}
       </h2>
-      {body ? <p className="page-lead max-w-2xl">{body}</p> : null}
+      {body ? (
+        <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
+          {body}
+        </p>
+      ) : null}
     </div>
+  );
+}
+
+function QuickFactsPanel({
+  facts,
+  isEnglish,
+}: {
+  facts: readonly QuickFact[];
+  isEnglish: boolean;
+}) {
+  return (
+    <motion.section
+      variants={sectionReveal}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      className="flex flex-col gap-4 sm:gap-5"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="page-kicker w-fit">
+          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+          {isEnglish ? "Quick facts" : "关键事实"}
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+          {isEnglish ? "Essentials" : "要点"}
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-md border border-line/70 bg-read-panel/90">
+        <div className="divide-y divide-line/70">
+          {facts.map((fact, index) => (
+            <div
+              key={fact.label}
+              className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(7.5rem,0.84fr)_minmax(0,1.16fr)] sm:gap-5 sm:px-5 sm:py-5"
+            >
+              <div className="flex items-start justify-between gap-3 sm:flex-col sm:items-start sm:gap-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-primary/75">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+                  {fact.label}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                  {fact.value}
+                </div>
+                <p className="text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
+                  {fact.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function ChapterRail({
+  chapterItems,
+  activeChapter,
+  progress,
+  isEnglish,
+}: {
+  chapterItems: readonly ChapterItem[];
+  activeChapter: ChapterId;
+  progress: ReturnType<typeof useSpring>;
+  isEnglish: boolean;
+}) {
+  const activeIndex = Math.max(
+    chapterItems.findIndex((item) => item.id === activeChapter),
+    0
+  );
+  const activeLabel = chapterItems[activeIndex]?.label ?? chapterItems[0]?.label ?? "";
+  const activeNumber = String(activeIndex + 1).padStart(2, "0");
+  const totalNumber = String(chapterItems.length).padStart(2, "0");
+
+  return (
+    <aside className="sticky top-16 z-30 -mx-5 border-y border-line/70 bg-background/90 px-5 py-3 backdrop-blur-xl sm:-mx-8 sm:px-8 sm:top-[4.75rem] lg:mx-0 lg:top-24 lg:z-auto lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:self-start">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.32em] text-primary/80">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            {isEnglish ? "Chapters" : "章节"}
+          </div>
+          <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            {activeLabel}
+          </div>
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+          {activeNumber}/{totalNumber}
+        </div>
+      </div>
+
+      <div className="mt-3 h-px overflow-hidden rounded-full bg-line/70 lg:mt-4">
+        <motion.div
+          className="h-full w-full origin-left bg-primary"
+          style={{ scaleX: progress }}
+        />
+      </div>
+
+      <nav
+        aria-label={isEnglish ? "Green Book chapters" : "绿皮书章节"}
+        className="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mt-4 lg:flex-col lg:overflow-visible lg:pb-0"
+      >
+        {chapterItems.map((item, index) => {
+          const isActive = activeChapter === item.id;
+
+          return (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              aria-current={isActive ? "location" : undefined}
+              className={cn(
+                "group inline-flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-full border px-4 py-3 text-sm font-semibold tracking-tight transition-colors transition-transform lg:grid lg:w-full lg:grid-cols-[2rem_minmax(0,1fr)] lg:gap-3 lg:rounded-md lg:px-4 lg:py-3",
+                isActive
+                  ? "border-primary/30 bg-primary/10 text-primary shadow-[0_0_20px_rgba(34,197,94,0.08)]"
+                  : "border-line/70 bg-surface/60 text-muted-foreground hover:border-primary/30 hover:text-foreground"
+              )}
+            >
+              <span
+                className={cn(
+                  "font-mono text-[10px] font-bold uppercase tracking-[0.24em]",
+                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                )}
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="whitespace-nowrap">{item.label}</span>
+            </a>
+          );
+        })}
+      </nav>
+    </aside>
   );
 }
 
@@ -121,11 +268,11 @@ export default function GreenBook() {
 
   return (
     <div className="page-shell pt-20 sm:pt-24">
-      <section className="relative isolate overflow-hidden border-b border-white/6">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_18%,transparent_52%),radial-gradient(circle_at_16%_18%,rgba(34,197,94,0.14),transparent_30%),radial-gradient(circle_at_84%_12%,rgba(34,197,94,0.08),transparent_26%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:56px_56px] opacity-14 mix-blend-overlay" />
+      <section className="relative isolate overflow-hidden border-b border-line/70 px-5 sm:px-8 lg:px-16">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,color-mix(in_srgb,hsl(var(--foreground))_4%,transparent)_0%,transparent_42%),radial-gradient(circle_at_16%_18%,color-mix(in_srgb,hsl(var(--primary))_14%,transparent),transparent_30%),radial-gradient(circle_at_84%_12%,color-mix(in_srgb,hsl(var(--gold))_10%,transparent),transparent_26%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(color-mix(in_srgb,hsl(var(--foreground))_7%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,hsl(var(--foreground))_7%,transparent)_1px,transparent_1px)] bg-[size:56px_56px] opacity-20" />
         <div className="absolute inset-0 bg-noise opacity-[0.08] sm:opacity-[0.12]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-transparent to-background/30" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
 
         <motion.div
@@ -133,178 +280,87 @@ export default function GreenBook() {
           initial={{ opacity: 0, y: 24, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.95, ease, delay: 0.04 }}
-          className="pointer-events-none absolute left-1/2 top-[15%] -translate-x-1/2 select-none text-[clamp(8rem,30vw,22rem)] font-black leading-none tracking-[-0.1em] text-primary/10 sm:left-auto sm:right-[-0.06em] sm:top-[48%] sm:-translate-y-1/2"
+          className="pointer-events-none absolute right-[-0.08em] top-[16%] hidden select-none text-[10rem] font-black leading-none tracking-normal text-primary/10 sm:block sm:text-[clamp(8rem,30vw,22rem)] lg:top-[40%] lg:-translate-y-1/2"
         >
           72H
         </motion.div>
 
         <div className="relative z-10 page-container page-container-wide max-w-7xl">
-          <div className="grid min-h-[auto] grid-cols-1 gap-7 py-6 sm:py-10 lg:min-h-[calc(100svh-5rem)] lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:items-end lg:gap-12 lg:py-14">
-            <div className="flex flex-col gap-8 pt-1 sm:pt-3 lg:min-h-full lg:justify-between lg:pt-0">
-              <div className="flex max-w-3xl flex-col gap-4 sm:gap-5">
-                <motion.div
-                  variants={sectionReveal}
-                  initial="hidden"
-                  animate="visible"
-                  className="page-kicker w-fit"
-                >
-                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                  {greenbookContent.hero.eyebrow}
-                </motion.div>
+          <div className="grid grid-cols-1 gap-8 py-8 sm:py-10 lg:min-h-[calc(100svh-5rem)] lg:items-center lg:gap-12 lg:py-14">
+            <div className="flex max-w-3xl flex-col gap-5 sm:gap-6 lg:gap-7">
+              <motion.div
+                variants={sectionReveal}
+                initial="hidden"
+                animate="visible"
+                className="page-kicker w-fit"
+              >
+                <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                {greenbookContent.hero.eyebrow}
+              </motion.div>
 
-                <motion.h1
-                  variants={sectionReveal}
-                  initial="hidden"
-                  animate="visible"
-                  className="whitespace-pre-line text-[clamp(3.5rem,15vw,10.5rem)] font-black leading-[0.9] tracking-[-0.08em] text-foreground drop-shadow-[0_0_20px_rgba(34,197,94,0.12)] sm:text-[clamp(4.25rem,18vw,10.5rem)]"
-                >
-                  {greenbookContent.hero.title}
-                </motion.h1>
+              <motion.h1
+                variants={sectionReveal}
+                initial="hidden"
+                animate="visible"
+                className="max-w-[10ch] whitespace-pre-line text-[clamp(3.35rem,14vw,9.5rem)] font-black leading-[0.9] tracking-normal text-foreground"
+              >
+                {greenbookContent.hero.title}
+              </motion.h1>
 
-                <motion.p
-                  variants={sectionReveal}
-                  initial="hidden"
-                  animate="visible"
-                  className="max-w-xl text-base leading-[1.75] text-white/68 sm:text-lg sm:leading-relaxed md:text-xl"
-                >
-                  {greenbookContent.hero.lead}
-                </motion.p>
-              </div>
+              <motion.p
+                variants={sectionReveal}
+                initial="hidden"
+                animate="visible"
+                className="max-w-xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8 md:text-xl md:leading-8"
+              >
+                {greenbookContent.hero.lead}
+              </motion.p>
 
               <motion.div
                 variants={sectionReveal}
                 initial="hidden"
                 animate="visible"
-                className="flex flex-col gap-4 sm:gap-5"
+                className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap sm:gap-3"
               >
-                <div className="h-px w-full bg-white/10" />
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-3">
-                  <Link
-                    to={greenbookContent.hero.ctaPrimary.href}
-                    className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-primary/25 bg-primary px-6 py-3 text-xs font-bold uppercase tracking-[0.24em] text-primary-foreground shadow-[0_0_24px_rgba(34,197,94,0.22)] transition-transform hover:scale-[1.01] active:scale-95 sm:min-h-0 sm:w-auto sm:rounded-sm sm:text-sm sm:tracking-widest"
-                  >
-                    {greenbookContent.hero.ctaPrimary.label}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                  <Link
-                    to={greenbookContent.hero.ctaSecondary.href}
-                    className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-white/10 bg-secondary/10 px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary/30 hover:text-primary sm:min-h-0 sm:w-auto sm:rounded-sm sm:text-sm sm:tracking-widest"
-                  >
-                    {greenbookContent.hero.ctaSecondary.label}
-                  </Link>
-                </div>
-                <div className="max-w-xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                  {greenbookContent.share.footerNote}
-                </div>
+                <Link
+                  to={greenbookContent.hero.ctaPrimary.href}
+                  className="premium-button w-full sm:w-auto"
+                >
+                  {greenbookContent.hero.ctaPrimary.label}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  to={greenbookContent.hero.ctaSecondary.href}
+                  className="premium-button-muted w-full sm:w-auto"
+                >
+                  {greenbookContent.hero.ctaSecondary.label}
+                </Link>
               </motion.div>
-            </div>
 
-            <motion.div
-              variants={sectionReveal}
-              initial="hidden"
-              animate="visible"
-              className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/28 px-4 py-5 shadow-[0_0_40px_rgba(0,0,0,0.18)] backdrop-blur-[2px] sm:px-5 sm:py-6 lg:rounded-[1.75rem] lg:px-6 lg:py-7"
-            >
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(34,197,94,0.14),transparent_58%)]" />
-
-              <div className="relative z-10 flex flex-col gap-5">
-                <div className="flex items-center justify-between gap-4 px-1 sm:px-0">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.36em] text-primary/80 sm:text-xs">
-                    {greenbookContent.hero.eyebrow}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                  {isEnglish ? "72H / Green Book" : "72H / 绿皮书"}
-                </div>
-                </div>
-
-                <div className="relative overflow-hidden border-y border-white/10">
-                  <div className="pointer-events-none absolute right-[-0.06em] bottom-[-0.08em] select-none text-[clamp(7rem,24vw,19rem)] font-black leading-none tracking-[-0.1em] text-primary/10">
-                    72H
-                  </div>
-                  <div className="grid gap-0">
-                    {greenbookContent.quickFacts.map((fact, index) => (
-                      <div
-                        key={fact.label}
-                        className="grid gap-3 border-b border-white/10 px-1 py-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-5 sm:px-0 lg:py-5"
-                      >
-                        <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-start">
-                          <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-primary/75">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-                          <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-muted-foreground">
-                            {fact.label}
-                          </span>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <div className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
-                            {fact.value}
-                          </div>
-                          <p className="text-sm leading-relaxed text-white/72 sm:text-base">
-                            {fact.body}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="max-w-xl text-xs leading-6 text-muted-foreground sm:text-sm sm:leading-7">
+                {greenbookContent.share.footerNote}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="page-section-tight relative">
-        <div className="page-container page-container-wide max-w-7xl flex flex-col gap-8 lg:gap-10">
+      <section className="page-section-tight relative pt-8 sm:pt-12">
+        <div className="page-container page-container-wide max-w-7xl">
           <div
             ref={contentRef}
             className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:gap-12"
           >
-            <aside className="lg:sticky lg:top-24 lg:self-start">
-              <div className="hidden items-center justify-between gap-4 border-b border-white/10 pb-4 lg:flex">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.32em] text-primary/70">
-                  <span className="h-2 w-2 rounded-full bg-primary" />
-                  {isEnglish ? "Chapters" : "章节"}
-                </div>
-                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                  {isEnglish ? "Scroll" : "滚动"}
-                </div>
-              </div>
+            <ChapterRail
+              chapterItems={chapterItems}
+              activeChapter={activeChapter}
+              progress={progress}
+              isEnglish={isEnglish}
+            />
 
-              <div className="mb-4 hidden lg:block">
-                <div className="h-px w-full overflow-hidden rounded-full bg-white/10">
-                  <motion.div
-                    className="h-full w-full origin-left bg-primary"
-                    style={{ scaleX: progress }}
-                  />
-                </div>
-              </div>
+            <div className="flex flex-col gap-8 sm:gap-10 lg:gap-14">
+              <QuickFactsPanel facts={greenbookContent.quickFacts} isEnglish={isEnglish} />
 
-              <nav
-                aria-label={isEnglish ? "Green Book chapters" : "绿皮书章节"}
-                className="scrollbar-none -mx-5 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 px-5 sm:-mx-8 sm:px-8 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
-              >
-                {chapterItems.map((item, index) => (
-                    <a
-                      key={item.id}
-                      href={`#${item.id}`}
-                      className={cn(
-                      "shrink-0 snap-start rounded-full border px-4 py-3.5 text-xs font-bold uppercase tracking-widest transition-all lg:rounded-sm sm:min-h-11 sm:text-sm",
-                      activeChapter === item.id
-                        ? "border-primary/30 bg-primary/12 text-primary shadow-[0_0_20px_rgba(34,197,94,0.08)]"
-                        : "border-white/10 bg-secondary/10 text-muted-foreground hover:border-primary/20 hover:text-foreground"
-                    )}
-                  >
-                    <span className="mr-2 text-[10px] font-mono text-muted-foreground">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
-            </aside>
-
-            <div className="flex flex-col gap-10 sm:gap-12 lg:gap-14">
               <motion.section
                 id="holdings"
                 data-chapter="holdings"
@@ -313,18 +369,18 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28 flex flex-col gap-5 sm:gap-6"
+                className={cn(chapterScrollMargin, "flex flex-col gap-5 sm:gap-6")}
               >
                 <SectionHeader
                   eyebrow={isEnglish ? "01 / Holding" : "01 / 持有"}
                   title={isEnglish ? "What does holding `72H` give you?" : "持有 `72H` 能获得什么"}
                   body={isEnglish ? "Holding means access and participation, not governance." : "持有的意义是进入和参与，不是治理。"}
                 />
-                <div className="border-t border-white/10">
+                <div className="border-t border-line/70">
                   {greenbookContent.holdings.map((item, index) => (
                     <article
                       key={item.title}
-                      className="grid gap-4 border-b border-white/10 py-5 sm:py-6 lg:grid-cols-[160px_minmax(0,1fr)] lg:gap-8"
+                      className="grid gap-4 border-b border-line/70 py-5 sm:py-6 lg:grid-cols-[160px_minmax(0,1fr)] lg:gap-8"
                     >
                       <div className="flex items-center justify-between gap-4 lg:flex-col lg:items-start">
                         <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-primary/75">
@@ -334,7 +390,7 @@ export default function GreenBook() {
                           {item.title}
                         </h3>
                       </div>
-                      <p className="max-w-3xl text-sm font-light leading-relaxed text-muted-foreground sm:text-base">
+                      <p className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
                         {item.body}
                       </p>
                     </article>
@@ -350,22 +406,16 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28 flex flex-col gap-5 sm:gap-6"
+                className={chapterScrollMargin}
               >
-                <SectionHeader
-                  eyebrow={isEnglish ? "02 / Scenarios" : "02 / 场景"}
-                  title={isEnglish ? "Three use scenarios" : "三大使用场景"}
-                  body={isEnglish ? "`72H` is not an abstract story. It is built around real use, participation, and learning." : "`72H` 不是抽象叙事，它围绕真实使用、参与和学习展开。"}
-                />
-
-                <div className="grid grid-cols-1 border-y border-white/10 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-0 border-y border-line/70 lg:grid-cols-3">
                   {greenbookContent.useCases.map((item, index) => (
                     <article
                       key={item.title}
                       className={cn(
                         "flex flex-col gap-4 py-5 sm:py-6 lg:px-6",
-                        index < greenbookContent.useCases.length - 1 && "border-b border-white/10 lg:border-b-0",
-                        index > 0 && "lg:border-l lg:border-white/10",
+                        index < greenbookContent.useCases.length - 1 && "border-b border-line/70 lg:border-b-0",
+                        index > 0 && "lg:border-l lg:border-line/70",
                         index === 0 && "lg:pl-0",
                         index === greenbookContent.useCases.length - 1 && "lg:pr-0"
                       )}
@@ -381,10 +431,10 @@ export default function GreenBook() {
                       <h3 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
                         {item.title}
                       </h3>
-                      <p className="text-sm font-light leading-relaxed text-muted-foreground sm:text-base">
+                      <p className="text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
                         {item.body}
                       </p>
-                      <ul className="mt-auto flex flex-col gap-2 border-t border-white/10 pt-3">
+                      <ul className="mt-auto flex flex-col gap-2 border-t border-line/70 pt-3">
                         {item.bullets.map((bullet) => (
                           <li
                             key={bullet}
@@ -408,9 +458,9 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28"
+                className={chapterScrollMargin}
               >
-                <div className="grid gap-6 border-y border-white/10 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)] lg:gap-10">
+                <div className="grid gap-6 border-y border-line/70 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)] lg:gap-10">
                   <div className="flex flex-col gap-4 sm:gap-5">
                     <SectionHeader
                       eyebrow={isEnglish ? "03 / Business" : "03 / 商业"}
@@ -419,16 +469,16 @@ export default function GreenBook() {
                     />
                   </div>
 
-                  <div className="flex flex-col divide-y divide-white/10">
+                  <div className="flex flex-col divide-y divide-line/70">
                     {greenbookContent.businessModel.streams.map((stream, index) => (
                       <div
                         key={stream}
                         className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 py-4 sm:py-5"
                       >
-                        <span className="text-[10px] font-mono text-primary/70 pt-1">
+                        <span className="pt-1 font-mono text-sm text-primary/70">
                           {String(index + 1).padStart(2, "0")}
                         </span>
-                        <span className="text-sm leading-relaxed text-foreground/90 sm:text-base">
+                        <span className="text-sm leading-7 text-foreground/90 sm:text-base sm:leading-8">
                           {stream}
                         </span>
                       </div>
@@ -445,9 +495,9 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28"
+                className={chapterScrollMargin}
               >
-                <div className="grid gap-6 border-y border-white/10 py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
+                <div className="grid gap-6 border-y border-line/70 py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
                   <div className="flex flex-col gap-4 sm:gap-5">
                     <SectionHeader
                       eyebrow={isEnglish ? "04 / Supply" : "04 / 供给"}
@@ -455,7 +505,7 @@ export default function GreenBook() {
                       body={greenbookContent.supply.summary}
                     />
 
-                    <div className="border-t border-white/10 pt-4 sm:pt-5">
+                    <div className="border-t border-line/70 pt-4 sm:pt-5">
                       <div className="text-[10px] font-bold uppercase tracking-[0.32em] text-primary/70">
                         {greenbookContent.supply.totalLabel}
                       </div>
@@ -472,20 +522,20 @@ export default function GreenBook() {
                     <div className="pb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-primary/80 sm:pb-5">
                       {greenbookContent.supply.bucketsLabel}
                     </div>
-                    <div className="border-y border-white/10">
+                    <div className="border-y border-line/70">
                       {greenbookContent.supply.buckets.map((bucket, index) => (
                         <div
                           key={bucket.name}
                           className={cn(
                             "grid grid-cols-1 gap-2 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-4 sm:py-5",
-                            index < greenbookContent.supply.buckets.length - 1 && "border-b border-white/10"
+                            index < greenbookContent.supply.buckets.length - 1 && "border-b border-line/70"
                           )}
                         >
                           <div className="flex flex-col gap-1">
                             <div className="font-bold tracking-tight text-foreground">
                               {bucket.name}
                             </div>
-                            <div className="text-sm leading-relaxed text-muted-foreground">
+                            <div className="text-sm leading-7 text-muted-foreground">
                               {bucket.note}
                             </div>
                           </div>
@@ -507,25 +557,25 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28"
+                className={chapterScrollMargin}
               >
-                <div className="grid gap-6 border-y border-white/10 py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
+                <div className="grid gap-6 border-y border-line/70 py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
                   <SectionHeader
                     eyebrow={isEnglish ? "05 / Boundaries" : "05 / 边界"}
                     title={isEnglish ? "Boundaries" : "边界"}
-                    body={isEnglish ? "Public notes only explain the scope clearly." : "公开说明只负责把范围说清楚。"}
+                    body={isEnglish ? "Public notes clarify scope and expectations." : "公开说明用于明确范围与预期。"}
                   />
-                  <div className="grid grid-cols-1 gap-0 border-y border-white/10">
+                  <div className="grid grid-cols-1 gap-0 border-y border-line/70">
                     {greenbookContent.boundaries.map((item, index) => (
                       <div
                         key={item}
                         className={cn(
                           "flex items-start gap-3 py-4 sm:py-5",
-                          index < greenbookContent.boundaries.length - 1 && "border-b border-white/10"
+                          index < greenbookContent.boundaries.length - 1 && "border-b border-line/70"
                         )}
                       >
                         <span className="mt-[0.45rem] h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(34,197,94,0.35)]" />
-                        <span className="text-sm leading-relaxed text-foreground/90 sm:text-base">
+                        <span className="text-sm leading-7 text-foreground/90 sm:text-base sm:leading-8">
                           {item}
                         </span>
                       </div>
@@ -542,16 +592,16 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.24 }}
-                className="scroll-mt-28"
+                className={chapterScrollMargin}
               >
-                <div className="border-y border-white/10 py-6 sm:py-8">
+                <div className="border-y border-line/70 py-6 sm:py-8">
                   <div className="grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10">
                     <SectionHeader
                       eyebrow={isEnglish ? "06 / Goal" : "06 / 目标"}
                       title={isEnglish ? "Goal" : "目标"}
                       body={isEnglish ? "Keep use, participation, and business loops connected." : "让使用、参与和商业循环连在一起。"}
                     />
-                    <p className="max-w-4xl text-[clamp(1.15rem,2.5vw,1.9rem)] leading-[1.28] font-light tracking-tight text-foreground/92">
+                    <p className="max-w-4xl text-[clamp(1.15rem,2.5vw,1.9rem)] leading-[1.3] font-normal tracking-tight text-foreground/92">
                       {greenbookContent.goal}
                     </p>
                   </div>
@@ -566,9 +616,9 @@ export default function GreenBook() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.18 }}
-                className="scroll-mt-28 pb-10 sm:pb-16"
+                className={cn(chapterScrollMargin, "pb-10 sm:pb-16")}
               >
-                <div className="border-t border-white/10 pt-8 sm:pt-10">
+                <div className="border-t border-line/70 pt-8 sm:pt-10">
                   <div className="grid gap-5 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start">
                     <div className="flex flex-col gap-4 sm:gap-5">
                       <div className="page-kicker w-fit">
@@ -578,20 +628,20 @@ export default function GreenBook() {
                       <h2 className="text-[clamp(1.7rem,4vw,2.8rem)] font-black tracking-tight text-foreground text-balance">
                         {isEnglish ? "Share Green Book" : "分享绿皮书"}
                       </h2>
-                      <p className="page-lead max-w-2xl">
+                      <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
                         {isEnglish ? "Keep one clean card ready for public sharing." : "保留一张干净的卡片，用来公开分享。"}
                       </p>
 
-                      <p className="max-w-xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                      <p className="max-w-xl text-xs leading-6 text-muted-foreground sm:text-sm sm:leading-7">
                         {isEnglish
-                          ? "This section exists for distribution, not for adding extra explanation."
-                          : "这一块只负责传播，不再增加额外说明。"}
+                          ? "Generate a clean public card for sharing."
+                          : "生成一张干净的公开分享卡。"}
                       </p>
                     </div>
 
                     <div className="relative">
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,197,94,0.12),transparent_55%)]" />
-                      <div className="relative border-y border-white/10 py-4 sm:py-5">
+                      <div className="relative border-y border-line/70 py-4 sm:py-5">
                         <GreenBookSharePanel className="w-full" />
                       </div>
                     </div>

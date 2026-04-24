@@ -25,6 +25,66 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/ecosystem/" />
   </url>
   <url>
+    <loc>https://72hours.72h.lol/capital/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/capital/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/capital/me/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/me/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/me/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/me/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/capital/me/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/me/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/me/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/me/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/capital/multi-millionaire/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/multi-millionaire/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/multi-millionaire/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/multi-millionaire/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/capital/multi-millionaire/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/multi-millionaire/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/multi-millionaire/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/multi-millionaire/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/capital/72hours/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/72hours/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/72hours/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/72hours/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/capital/72hours/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/72hours/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/72hours/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/72hours/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/capital/wan/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/wan/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/wan/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/wan/" />
+  </url>
+  <url>
+    <loc>https://72hours.72h.lol/en/capital/wan/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/capital/wan/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/capital/wan/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://72hours.72h.lol/capital/wan/" />
+  </url>
+  <url>
     <loc>https://72hours.72h.lol/greenbook/</loc>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://72hours.72h.lol/greenbook/" />
     <xhtml:link rel="alternate" hreflang="en-US" href="https://72hours.72h.lol/en/greenbook/" />

@@ -10,29 +10,30 @@ function buildSiteConfig(locale: Locale): SiteConfig {
     siteName: glossary.brandName,
     siteUrl: "https://72hours.72h.lol",
     language: locale,
-    primaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
-    secondaryCtaLabel: isEnglish ? "Browse Ecosystem" : "浏览生态应用",
-    primaryJoinRoute: "/join",
+    primaryCtaLabel: isEnglish ? "Browse Ecosystem" : "浏览生态应用",
+    secondaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
+    primaryJoinRoute: "/ecosystem",
     navItems: [
       { label: glossary.pageLabels.home, href: "/" },
       { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
+      { label: glossary.pageLabels.capital, href: "/capital" },
       { label: glossary.pageLabels.greenBook, href: "/greenbook" },
       { label: glossary.pageLabels.join, href: "/join" },
-      { label: glossary.pageLabels.learn, href: "/learn" },
-      { label: glossary.pageLabels.use72H, href: "/hours" },
-      { label: glossary.pageLabels.about, href: "/about" },
     ],
     footerGroups: [
       {
+        id: "enter",
         title: isEnglish ? "Enter" : "进入",
         links: [
           { label: "Telegram", href: "https://t.me/the_72h" },
           { label: "X", href: "https://x.com/taichi2077" },
           { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
+          { label: glossary.pageLabels.capital, href: "/capital" },
           { label: glossary.pageLabels.join, href: "/join" },
         ],
       },
       {
+        id: "read",
         title: isEnglish ? "Read" : "理解",
         links: [
           { label: glossary.pageLabels.greenBook, href: "/greenbook" },
@@ -41,6 +42,7 @@ function buildSiteConfig(locale: Locale): SiteConfig {
         ],
       },
       {
+        id: "legal",
         title: isEnglish ? "Legal" : "规则",
         links: [
           { label: glossary.legalLabels.privacy, href: "/legal/privacy" },
@@ -50,17 +52,17 @@ function buildSiteConfig(locale: Locale): SiteConfig {
       },
     ],
     hero: {
-      title: isEnglish ? "Hold 72H. See the path." : "持有 72H，再看路径。",
+      title: isEnglish ? "72H on TON." : "72H 在 TON 上。",
       subtitle: isEnglish
-        ? "72H connects use, participation, and learning."
-        : "72hours 用 72H 串起使用、参与和学习。",
+        ? "Life is short. Wealth can solve it — restart in 72 hours."
+        : "人生苦短，暴富可解—72小时重启人生。",
       proofSignals: isEnglish
-        ? ["1. Hold 72H", "2. Three scenarios", "3. Fixed supply"]
-        : ["1. 持有 72H", "2. 三个场景", "3. 固定供给"],
+        ? ["TON Chain", "Fixed Supply", "Rich Apps", "New Model"]
+        : ["TON链", "固定发行", "丰富应用", "创新经济模型"],
     },
     globalDisclaimerExcerpt: isEnglish
-      ? "Use, participation, and paths only. Not investment advice."
-      : "本站只说明用途、参与和路径，不构成投资建议。",
+      ? "Official entries, public notes, and boundaries belong on this site."
+      : "官方入口、公开说明与边界信息都在本站。",
   };
 }
 
@@ -73,14 +75,14 @@ export function getSiteConfig(locale: Locale) {
 const homeHighlightsZh: readonly HomeHighlight[] = [
   {
     title: "1. 真实入口",
-    body: "状态、参与、下一步。",
+    body: "状态、参与、入口。",
     cta: "浏览生态应用",
     href: "/ecosystem",
     iconLabel: "Terminal",
   },
   {
-    title: "2. 动手路径",
-    body: "先看项目，再动手。",
+    title: "2. 学习路径",
+    body: "项目概览与参与。",
     cta: "了解学习路径",
     href: "/learn",
     iconLabel: "V",
@@ -103,8 +105,8 @@ const homeHighlightsEn: readonly HomeHighlight[] = [
     iconLabel: "Terminal",
   },
   {
-    title: "2. Hands-on path",
-    body: "See the project first, then build.",
+    title: "2. Learning path",
+    body: "Project overview and participation.",
     cta: "Learn the path",
     href: "/learn",
     iconLabel: "V",
