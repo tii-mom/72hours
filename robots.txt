@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://72hours.72h.lol/sitemap.xml

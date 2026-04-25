@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg-zh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#061108" />
+      <stop offset="55%" stop-color="#0d1f11" />
+      <stop offset="100%" stop-color="#030603" />
+    </linearGradient>
+    <radialGradient id="glow-zh-a" cx="80%" cy="20%" r="34%">
+      <stop offset="0%" stop-color="#38ff7c" stop-opacity="0.34" />
+      <stop offset="46%" stop-color="#38ff7c" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#38ff7c" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glow-zh-b" cx="14%" cy="84%" r="30%">
+      <stop offset="0%" stop-color="#38ff7c" stop-opacity="0.2" />
+      <stop offset="48%" stop-color="#38ff7c" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#38ff7c" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-zh)" />
+  <rect width="1200" height="6" fill="#22c55e" />
+  <rect width="1200" height="630" fill="url(#glow-zh-a)" />
+  <rect width="1200" height="630" fill="url(#glow-zh-b)" />
+  <g opacity="0.12" stroke="#dfffe0">
+    <path d="M0 120H1200" />
+    <path d="M0 240H1200" />
+    <path d="M0 360H1200" />
+    <path d="M0 480H1200" />
+    <path d="M140 0V630" />
+    <path d="M360 0V630" />
+    <path d="M580 0V630" />
+    <path d="M800 0V630" />
+    <path d="M1020 0V630" />
+  </g>
+  <g font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei',Arial,sans-serif">
+    <text x="92" y="124" fill="#f4f7f3" font-size="54" font-weight="700">72</text>
+    <text x="154" y="124" fill="#22c55e" font-size="54" font-weight="700">hours</text>
+    <text x="92" y="252" fill="#22c55e" font-size="24" font-weight="700" letter-spacing="4">官方入口 / 绿皮书 / 72H 用途</text>
+    <text x="92" y="352" fill="#f4f7f3" font-size="94" font-weight="700">持有 72H</text>
+    <text x="92" y="448" fill="#f4f7f3" font-size="94" font-weight="700">再看路径</text>
+    <text x="92" y="534" fill="#b9c2b8" font-size="34" font-weight="500">使用、参与和学习。公开说明，不构成投资建议。</text>
+    <text x="760" y="520" fill="#22c55e" fill-opacity="0.12" font-size="210" font-weight="700">72H</text>
+  </g>
+</svg>

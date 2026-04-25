@@ -1,0 +1,17 @@
+{
+  "name": "72hours",
+  "short_name": "72hours",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030603",
+  "theme_color": "#030603",
+  "description": "Official web entry for 72hours.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
