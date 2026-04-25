@@ -90,7 +90,7 @@ export {
   getCapitalReserveRedeemIntentApiPath,
   getCapitalVerificationApiPath,
   getCapitalVerificationQueryKey,
-  getCapitalYieldClaimIntentApiPath,
+  getCapitalRewardClaimIntentApiPath,
 } from "./capital-query";
 export type { CapitalApiClientOptions } from "./capital-http";
 export type { CapitalRuntimeConfig, CapitalRuntimeMode } from "./capital-runtime";

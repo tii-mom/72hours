@@ -184,8 +184,8 @@ export default function CapitalApp() {
                 eyebrow={isEnglish ? "Positioning" : "定位"}
                 title={isEnglish ? "What this capital surface emphasizes." : "这个 Capital Surface 的重点。"}
                 body={isEnglish
-                  ? "Each application keeps its own seat velocity, threshold discipline, and yield-source narrative while staying inside the same verification framework."
-                  : "每个应用都保留独立的席位释放节奏、门槛纪律与收益来源叙事，但验证框架保持一致。"}
+                  ? "Each application keeps its own seat velocity, threshold discipline, and AppRewardPool narrative while staying inside the same verification framework."
+                  : "每个应用都保留独立的席位释放节奏、门槛纪律与 AppRewardPool 奖励叙事，但验证框架保持一致。"}
               />
 
               <div className="mt-6 grid gap-3">
@@ -264,6 +264,8 @@ export default function CapitalApp() {
                 program={app.alphaProgram}
                 locale={locale}
                 primaryAction={{
+                  label: isEnglish ? "Alpha closed for v1" : "Alpha v1 暂不开放",
+                  disabled: true,
                   onClick: () =>
                     requestIntent("alpha.allocate", {
                       appSlug: app.slug,
@@ -280,8 +282,8 @@ export default function CapitalApp() {
               eyebrow={isEnglish ? "Action boundary" : "动作边界"}
               title={isEnglish ? "Seat requests are prepared for review before signing opens." : "席位请求会先生成核对记录，正式开放前暂不可签名。"}
               body={isEnglish
-                ? "Claim requests can create a wallet-aware action record for verification. TON contract signing and on-chain submission remain closed until the official release."
-                : "Claim 请求可生成带钱包上下文的动作核对记录。TON 合约签名与链上提交在正式开放前保持关闭。"}
+                ? "Seat requests can create a wallet-aware action record for verification. TON contract signing and on-chain submission remain closed until the official release."
+                : "席位请求可生成带钱包上下文的动作核对记录。TON 合约签名与链上提交在正式开放前保持关闭。"}
             />
 
             <CapitalIntentConsole

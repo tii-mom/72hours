@@ -15,7 +15,7 @@ import {
   getCapitalReserveAllocateIntentApiPath,
   getCapitalReserveRedeemIntentApiPath,
   getCapitalRuntimeConfig,
-  getCapitalYieldClaimIntentApiPath,
+  getCapitalRewardClaimIntentApiPath,
 } from "./capital-client";
 import type { Locale } from "./locale";
 
@@ -56,8 +56,8 @@ function resolveIntentPath(kind: CapitalIntentKind) {
       return getCapitalReserveRedeemIntentApiPath();
     case "alpha.allocate":
       return getCapitalAlphaAllocateIntentApiPath();
-    case "yield.claim":
-      return getCapitalYieldClaimIntentApiPath();
+    case "reward.claim":
+      return getCapitalRewardClaimIntentApiPath();
   }
 }
 
@@ -86,9 +86,6 @@ function createOptimisticSubmission(
     statusLabel: locale === "en-US" ? "Wallet submission received" : "已收到钱包提交",
     submittedAt,
     boc,
-    explorerUrl: response.networkMeta?.explorerUrl
-      ? `${response.networkMeta.explorerUrl}${response.intentId}`
-      : undefined,
   };
 }
 
@@ -172,14 +169,14 @@ export function getCapitalIntentWalletSendBlockReason(
 
   if (response.networkMeta?.mode === "mock") {
     return isEnglish
-      ? "Wallet sending is blocked because this request is not using production network confirmation."
-      : "当前请求尚未使用生产网络确认，钱包发送已被阻止。";
+      ? "Wallet sending is unavailable until this request is confirmed on the live network."
+      : "该请求完成正式网络确认前，暂不可通过钱包发送。";
   }
 
   if (response.transactionRequest?.scaffold?.productionReady === false) {
     return isEnglish
-      ? "Wallet sending is blocked because the transaction payload is not a production-ready TON cell."
-      : "当前交易载荷不是生产就绪的 TON cell，钱包发送已被阻止。";
+      ? "Wallet sending is unavailable until the transaction details are finalized for signing."
+      : "交易信息完成正式签名确认前，暂不可通过钱包发送。";
   }
 
   if (!response.transactionRequest?.messages?.length) {

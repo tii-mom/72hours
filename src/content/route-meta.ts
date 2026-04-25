@@ -98,8 +98,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       barePath,
       `${siteConfig.siteName} | ${appLabel} ${seatLabel} #${seatNumber}`,
       isEnglish
-        ? "Verified capital identity page. Public seat details only. No amount or yield data is disclosed."
-        : "资本身份验证页，仅公开席位信息，不展示金额或收益数据。",
+        ? "Verified capital identity page. Public seat details only. No amount or reward data is disclosed."
+        : "资本身份验证页，仅公开席位信息，不展示金额或奖励数据。",
       {
         robots: "noindex, nofollow",
       }

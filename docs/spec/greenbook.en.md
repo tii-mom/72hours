@@ -25,7 +25,7 @@ Holding `72H` is not about governance. It is about access and participation. Hol
 
 ### 2.2 Application Investment and Early Support
 
-In-house applications move through different stages. Users can support more mature applications through a steadier path, or join higher-risk seed-stage opportunities. Risk levels and disclosure standards differ by project, and no return is guaranteed.
+In-house applications move through different stages. Users can support more mature applications through a steadier path, or join higher-risk seed-stage opportunities. Risk levels and disclosure standards differ by project, and no reward or return is promised.
 
 ### 2.3 Learning and Building
 
@@ -57,7 +57,7 @@ The supply is fixed and does not expand through minting. Release rules for reser
 ## 5. Boundaries
 
 - `72H` does not carry governance rights
-- participation does not guarantee returns
+- participation does not promise rewards or returns
 - project mechanisms may change by stage
 - this document is not investment advice
 

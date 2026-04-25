@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "seo:generate": "tsx scripts/generate-static-seo.ts"
+    "seo:generate": "tsx scripts/generate-static-seo.ts",
+    "capital:smoke:staging": "node scripts/capital-staging-smoke.mjs",
+    "capital:gate:production": "node scripts/capital-production-gate.mjs",
+    "capital:collect-remediation-evidence": "node scripts/collect-capital-remediation-evidence.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

@@ -64,7 +64,19 @@ function normalizeCapitalApiBaseUrl(value?: string) {
     return trimmed;
   }
 
-  return trimmed.replace(/\/+$/, "");
+  const withoutTrailingSlash = trimmed.replace(/\/+$/, "");
+
+  try {
+    const url = new URL(withoutTrailingSlash);
+
+    if ((url.protocol === "http:" || url.protocol === "https:") && url.pathname === "/") {
+      return `${url.origin}${DEFAULT_CAPITAL_API_BASE_URL}`;
+    }
+  } catch {
+    // Relative API bases are handled by the existing normalization path.
+  }
+
+  return withoutTrailingSlash;
 }
 
 export function getCapitalRuntimeConfig(overrides: CapitalRuntimeOverrides = {}): CapitalRuntimeConfig {

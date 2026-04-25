@@ -113,8 +113,8 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
           buildMetric(isEnglish ? "Session" : "会话状态", isEnglish ? "Restoring" : "恢复中"),
         ],
         note: isEnglish
-          ? "Seat claims, vault allocation, yield claim, and redemption flows stay gated until wallet restoration completes."
-          : "在钱包恢复完成之前，Claim、配置、收益领取和赎回流程都会保持关闭。",
+          ? "Seat claims, vault allocation, reward claim, and redemption flows stay gated until wallet restoration completes."
+          : "在钱包恢复完成之前，Claim、配置、奖励领取和赎回流程都会保持关闭。",
         actions: [
           {
             label: isEnglish ? "Restore in progress" : "恢复中",
@@ -136,7 +136,7 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
 
       return {
         eyebrow: isEnglish ? "Wallet boundary" : "钱包边界",
-        title: isEnglish ? "TON wallet is connected to the Capital runtime." : "TON 钱包已连接到 Capital 运行时。",
+        title: isEnglish ? "TON wallet is connected to Capital." : "TON 钱包已连接到 Capital。",
         body: isEnglish
           ? "Connection is live for identity review and routing. Seat allocation, vault signing, and settlement are not open for signing on this website."
           : "连接已可用于身份核对与路由联动。席位配置、资金池签名与结算暂不在官网开放签名。",
@@ -224,20 +224,20 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
 
   return {
     eyebrow: isEnglish ? "Wallet boundary" : "钱包边界",
-    title: isEnglish ? "Wallet actions are disabled on this public review surface." : "当前公开核对页面不开放钱包动作。",
+    title: isEnglish ? "Wallet actions are unavailable on this public Capital page." : "当前公开 Capital 页面不开放钱包动作。",
     body: isEnglish
       ? "Capital currently shows seat rules, identity cards, and verification routes without live transaction prompts."
       : "当前 Capital 展示席位规则、身份卡片与验证页，不触发真实链上交易提示。",
     stateLabel: isEnglish ? "Review only" : "仅供核对",
     status: "preview",
     metrics: [
-      buildMetric(isEnglish ? "Service state" : "服务状态", isEnglish ? "Review data" : "核对数据"),
+      buildMetric(isEnglish ? "Service state" : "服务状态", isEnglish ? "Verification view" : "核对视图"),
       buildMetric(isEnglish ? "Wallet rail" : "钱包通道", isEnglish ? "Not connected" : "未连接"),
       buildMetric(isEnglish ? "Fee policy" : "Gas 规则", isEnglish ? "User-paid in live mode" : "上线后由用户自付"),
     ],
     note: isEnglish
-      ? "Use this surface to review wording, seat scarcity, and identity presentation. TonConnect signing and vault actions are not open yet."
-      : "当前页面用于核对文案、席位稀缺性和身份展示。TonConnect 签名与资金池动作尚未开放。",
+      ? "Use this page to inspect seat scarcity, identity status, and verification routes. TonConnect signing and vault actions are not open yet."
+      : "当前页面用于查看席位稀缺性、身份状态与验证路径。TonConnect 签名与资金池动作尚未开放。",
     actions: [
       {
         label: isEnglish ? "Open My Capital" : "打开我的 Capital",

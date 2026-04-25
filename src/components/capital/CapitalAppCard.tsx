@@ -78,7 +78,7 @@ export function CapitalAppCard({
           <ArrowRight size={16} className="ml-2" />
         </Link>
         <Link to={app.verifyHref} className="page-action-muted flex-1">
-          {isEnglish ? "Verify sample" : "验证样例"}
+          {isEnglish ? "Verify seat" : "验证席位"}
           <ArrowRight size={16} className="ml-2" />
         </Link>
       </div>

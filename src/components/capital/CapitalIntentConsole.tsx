@@ -190,22 +190,16 @@ export function CapitalIntentConsole({
                       <div className="mt-2">{state.response.transactionRequest.payloadEncoding}</div>
                     </div>
                   ) : null}
-                  {state.response.transactionRequest.scaffold ? (
+                  {state.response.transactionRequest.scaffold?.productionReady === false ? (
                     <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86 sm:col-span-2">
                       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {isEnglish ? "Not ready for signing" : "暂不可签名"}
+                        {isEnglish ? "Signing status" : "签名状态"}
                       </div>
                       <div className="mt-2">
-                        {state.response.transactionRequest.scaffold.version} /{" "}
-                        {state.response.transactionRequest.scaffold.encoding}
+                        {isEnglish
+                          ? "Wallet signing will remain unavailable until the transaction details are finalized."
+                          : "交易信息完成正式确认前，钱包签名暂不可用。"}
                       </div>
-                      {state.response.transactionRequest.scaffold.notes?.length ? (
-                        <div className="mt-2 space-y-1">
-                          {state.response.transactionRequest.scaffold.notes.map((note) => (
-                            <div key={note}>{note}</div>
-                          ))}
-                        </div>
-                      ) : null}
                     </div>
                   ) : null}
                 </div>
@@ -239,7 +233,7 @@ export function CapitalIntentConsole({
                   <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                     {isEnglish ? "Request record" : "请求记录"}
                   </div>
-                  <div className="mt-2">{state.response.storage.mode}</div>
+                  <div className="mt-2">{isEnglish ? "Recorded for status tracking" : "已记录用于状态追踪"}</div>
                   <div>
                     {isEnglish ? "Recent requests" : "最近请求"}: {state.response.storage.recentCount}
                   </div>

@@ -108,8 +108,8 @@ export function getCapitalAlphaAllocateIntentApiPath() {
   return "/alpha/allocate-intent";
 }
 
-export function getCapitalYieldClaimIntentApiPath() {
-  return "/yield/claim-intent";
+export function getCapitalRewardClaimIntentApiPath() {
+  return "/reward/claim-intent";
 }
 
 export function getCapitalIntentApiPath(intentId: string) {
