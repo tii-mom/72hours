@@ -23,7 +23,7 @@ const coreContracts = [
   ["FundVesting", "EQDO0AMsITst5rWGcabJ8OF7Ys079UMPGNOq9H8WtiJakID4"],
   ["DevelopmentFund", "EQAPkdB1YJDEsVixATzfDjf--yl0frlKRkLPYHHUv6nVFkEU"],
   ["PresaleVault", "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9"],
-  ["EcosystemTreasury", "EQARGC33uqypROhxiJMVOeKPYbYRgAEhXUkTxkrKDP3O"],
+  ["EcosystemTreasury", "EQARGC33uqypROhxiJMVOeKPYbYRgAEhXUkTxkrK7CrKDP3O"],
   ["TeamVesting", "EQD5PnUEuEUYBt1XktTPlvN7HE5n-AIBI4XiAyd4qUgHasrK"],
 ] as const;
 
