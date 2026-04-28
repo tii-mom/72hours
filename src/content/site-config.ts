@@ -8,17 +8,17 @@ function buildSiteConfig(locale: Locale): SiteConfig {
 
   return {
     siteName: glossary.brandName,
-    siteUrl: "https://72hours.72h.lol",
+    siteUrl: "https://72h.lol",
     language: locale,
-    primaryCtaLabel: isEnglish ? "Browse Ecosystem" : "浏览生态应用",
+    primaryCtaLabel: isEnglish ? "Participate" : "参与",
     secondaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
-    primaryJoinRoute: "/ecosystem",
+    primaryJoinRoute: "/join",
     navItems: [
-      { label: glossary.pageLabels.home, href: "/" },
+      { label: glossary.pageLabels.join, href: "/join" },
       { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
       { label: glossary.pageLabels.capital, href: "/capital" },
+      { label: glossary.pageLabels.contracts, href: "/contracts" },
       { label: glossary.pageLabels.greenBook, href: "/greenbook" },
-      { label: glossary.pageLabels.join, href: "/join" },
     ],
     footerGroups: [
       {
@@ -26,9 +26,10 @@ function buildSiteConfig(locale: Locale): SiteConfig {
         title: isEnglish ? "Enter" : "进入",
         links: [
           { label: "Telegram", href: "https://t.me/the_72h" },
-          { label: "X", href: "https://x.com/taichi2077" },
+          { label: "X", href: "https://x.com/72hour_s" },
           { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
           { label: glossary.pageLabels.capital, href: "/capital" },
+          { label: glossary.pageLabels.contracts, href: "/contracts" },
           { label: glossary.pageLabels.join, href: "/join" },
         ],
       },
@@ -81,9 +82,9 @@ const homeHighlightsZh: readonly HomeHighlight[] = [
     iconLabel: "Terminal",
   },
   {
-    title: "2. 学习路径",
-    body: "项目概览与参与。",
-    cta: "了解学习路径",
+    title: "2. 学习报名",
+    body: "线上报名、线下报名。",
+    cta: "查看学习报名",
     href: "/learn",
     iconLabel: "V",
   },
@@ -105,9 +106,9 @@ const homeHighlightsEn: readonly HomeHighlight[] = [
     iconLabel: "Terminal",
   },
   {
-    title: "2. Learning path",
-    body: "Project overview and participation.",
-    cta: "Learn the path",
+    title: "2. Learning application",
+    body: "Online and offline applications.",
+    cta: "View application",
     href: "/learn",
     iconLabel: "V",
   },

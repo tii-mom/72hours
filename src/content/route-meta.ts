@@ -15,6 +15,7 @@ const STATIC_BARE_PATHS = [
   "/capital",
   "/capital/me",
   ...CAPITAL_APP_PATHS,
+  "/contracts",
   "/greenbook",
   "/join",
   "/learn",
@@ -70,7 +71,7 @@ function buildResolvedMeta(
     alternateZhUrl: new URL(alternateZhPath, siteConfig.siteUrl).href,
     alternateEnUrl: new URL(alternateEnPath, siteConfig.siteUrl).href,
     xDefaultUrl: new URL(alternateZhPath, siteConfig.siteUrl).href,
-    ogImageUrl: new URL(locale === "en-US" ? "/og-cover-en.png" : "/og-cover-zh.png", siteConfig.siteUrl).href,
+    ogImageUrl: new URL("/og-cover.png", siteConfig.siteUrl).href,
     ogLocale: locale === "en-US" ? "en_US" : "zh_CN",
     siteName: siteConfig.siteName,
     robots: options.robots ?? "index, follow",
@@ -157,6 +158,12 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
         ? "Review WAN capital seats, reserve and alpha allocation terms, and verified identity pages."
         : "查看 WAN 的 Capital Seat、Reserve 与 Alpha 配置条款及验证页面。",
     },
+    "/contracts": {
+      title: `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
+      description: isEnglish
+        ? "Official 72H V2 mainnet Jetton master, fixed-supply verification, tokenomics contract addresses, and public source evidence."
+        : "72H V2 官方主网 Jetton Master、固定供应核验、代币经济学合约地址和公开源码证据。",
+    },
     "/greenbook": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.greenBook}`,
       description:
@@ -171,7 +178,9 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/learn": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.learn}`,
       description:
-        isEnglish ? "Learning path for the 72hours project." : "72hours 项目的学习路径。",
+        isEnglish
+          ? "Apply online or offline to learn 72H-style crypto app building."
+          : "线上或线下报名，学习 72H 类加密应用开发。",
     },
     "/hours": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.use72H}`,

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 import Layout from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -7,23 +7,23 @@ import { LocaleProvider, useLocale } from "./lib/locale";
 import { ThemeProvider, getThemeColor, useTheme } from "./lib/theme";
 import { resolveRouteMeta } from "./content/route-meta";
 import { stripLocalePrefix } from "./lib/routes";
-
-const CapitalRouteBoundary = React.lazy(() => import("./components/CapitalRouteBoundary"));
-const Home = React.lazy(() => import("./pages/Home"));
-const Ecosystem = React.lazy(() => import("./pages/Ecosystem"));
-const Capital = React.lazy(() => import("./pages/Capital"));
-const CapitalApp = React.lazy(() => import("./pages/CapitalApp"));
-const CapitalIdentity = React.lazy(() => import("./pages/CapitalIdentity"));
-const CapitalVerify = React.lazy(() => import("./pages/CapitalVerify"));
-const GreenBook = React.lazy(() => import("./pages/GreenBook"));
-const Learn = React.lazy(() => import("./pages/Learn"));
-const Hours = React.lazy(() => import("./pages/Hours"));
-const About = React.lazy(() => import("./pages/About"));
-const Join = React.lazy(() => import("./pages/Join"));
-const Faq = React.lazy(() => import("./pages/Faq"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const Legal = React.lazy(() => import("./pages/Legal"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
+import { CapitalTonConnectProvider, TonConnectRuntimeSync } from "./lib/tonconnect";
+import CapitalRouteBoundary from "./components/CapitalRouteBoundary";
+import Ecosystem from "./pages/Ecosystem";
+import Capital from "./pages/Capital";
+import CapitalApp from "./pages/CapitalApp";
+import CapitalIdentity from "./pages/CapitalIdentity";
+import CapitalVerify from "./pages/CapitalVerify";
+import GreenBook from "./pages/GreenBook";
+import Learn from "./pages/Learn";
+import Hours from "./pages/Hours";
+import About from "./pages/About";
+import Join from "./pages/Join";
+import Faq from "./pages/Faq";
+import Contact from "./pages/Contact";
+import Legal from "./pages/Legal";
+import Contracts from "./pages/Contracts";
+import NotFound from "./pages/NotFound";
 
 function setMeta(attribute: "name" | "property", key: string, content: string) {
   const selector = `meta[${attribute}="${key}"]`;
@@ -118,7 +118,10 @@ function AppProviders() {
   return (
     <LocaleProvider>
       <ThemeProvider>
-        <AppShell />
+        <CapitalTonConnectProvider>
+          <TonConnectRuntimeSync />
+          <AppShell />
+        </CapitalTonConnectProvider>
       </ThemeProvider>
     </LocaleProvider>
   );
@@ -131,7 +134,7 @@ function withCapitalBoundary(element: React.ReactNode) {
 function AppRoutes() {
   const sharedRoutes = (
     <>
-      <Route index element={<Home />} />
+      <Route index element={<Navigate to="join" replace />} />
       <Route path="ecosystem" element={<Ecosystem />} />
       <Route path="capital" element={withCapitalBoundary(<Capital />)} />
       <Route path="capital/me" element={withCapitalBoundary(<CapitalIdentity />)} />
@@ -144,6 +147,8 @@ function AppRoutes() {
       <Route path="about" element={<About />} />
       <Route path="faq" element={<Faq />} />
       <Route path="contact" element={<Contact />} />
+      <Route path="contracts" element={<Contracts />} />
+      <Route path="token" element={<Navigate to="contracts" replace />} />
       <Route path="legal/:slug" element={<Legal />} />
       <Route path="*" element={<NotFound />} />
     </>

@@ -1,4 +1,5 @@
-import { Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useIsConnectionRestored, useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
 import { useLocation, useOutlet } from "react-router-dom";
 import {
   ArrowRight,
@@ -8,6 +9,7 @@ import {
   Clock,
   ExternalLink,
   FileText,
+  FileJson,
   Globe2,
   Handshake,
   Info,
@@ -15,6 +17,7 @@ import {
   Menu,
   Send,
   Shield,
+  Wallet,
   X,
 } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -23,7 +26,6 @@ import { useLocale } from "../lib/locale";
 import { localizeHref } from "../lib/routes";
 import { LocalizedLink as Link } from "./LocalizedLink";
 import { ThemeToggle } from "./ThemeToggle";
-import { PageLoader } from "./PageLoader";
 
 const focusableSelector = [
   'a[href]',
@@ -33,6 +35,8 @@ const focusableSelector = [
   'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
 ].join(", ");
+
+const SITE_LOGO_SRC = "/brand/72hours-logo.png";
 
 function getFocusableElements(root: HTMLElement | null) {
   if (!root) return [] as HTMLElement[];
@@ -56,6 +60,52 @@ function LanguageBadge({ className = "", onClick }: { className?: string; onClic
     >
       <Languages size={14} strokeWidth={1.75} aria-hidden="true" />
       <span>{isEnglish ? "EN" : "中文"}</span>
+    </button>
+  );
+}
+
+function BrandLogo({ className = "", markClassName = "", showName = true }: { className?: string; markClassName?: string; showName?: boolean }) {
+  return (
+    <span className={cn("inline-flex items-center gap-3", className)}>
+      <img
+        src={SITE_LOGO_SRC}
+        alt=""
+        aria-hidden="true"
+        className={cn("h-9 w-9 shrink-0 rounded-sm object-contain", markClassName)}
+      />
+      {showName ? <span className="text-foreground">72hours</span> : null}
+    </span>
+  );
+}
+
+function MobileWalletButton() {
+  const { isEnglish } = useLocale();
+  const [tonConnectUI] = useTonConnectUI();
+  const address = useTonAddress(true);
+  const isConnectionRestored = useIsConnectionRestored();
+  const label = address ? `${address.slice(0, 4)}…${address.slice(-4)}` : "TON";
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (address) {
+          void tonConnectUI.disconnect();
+          return;
+        }
+
+        void tonConnectUI.openModal();
+      }}
+      disabled={!isConnectionRestored}
+      className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-sm border border-line/70 bg-surface/80 px-2 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:cursor-wait disabled:opacity-60"
+      aria-label={
+        address
+          ? isEnglish ? "Disconnect TON wallet" : "断开 TON 钱包"
+          : isEnglish ? "Connect TON wallet" : "连接 TON 钱包"
+      }
+    >
+      <Wallet size={14} strokeWidth={1.75} aria-hidden="true" />
+      <span className="truncate">{label}</span>
     </button>
   );
 }
@@ -140,6 +190,11 @@ function getFooterLinkMeta(href: string, isEnglish: boolean) {
         body: isEnglish ? "Capital seats and identity verification." : "资本席位与身份验证。",
         icon: <Shield size={17} strokeWidth={1.75} />,
       };
+    case "/contracts":
+      return {
+        body: isEnglish ? "Mainnet token and contract evidence." : "主网代币与合约证据。",
+        icon: <FileJson size={17} strokeWidth={1.75} />,
+      };
     case "/join":
       return {
         body: isEnglish ? "Community, contact, and public updates." : "社区、联系与公开动态。",
@@ -187,12 +242,37 @@ function isNavPathActive(currentPath: string, href: string) {
   return currentPath === href || (href !== "/" && currentPath.startsWith(`${href}/`));
 }
 
+function getNavIcon(href: string) {
+  switch (href) {
+    case "/join":
+      return <Handshake size={19} strokeWidth={1.75} />;
+    case "/ecosystem":
+      return <Globe2 size={19} strokeWidth={1.75} />;
+    case "/capital":
+      return <Shield size={19} strokeWidth={1.75} />;
+    case "/contracts":
+      return <FileJson size={19} strokeWidth={1.75} />;
+    case "/greenbook":
+      return <BookOpen size={19} strokeWidth={1.75} />;
+    default:
+      return <ArrowRight size={19} strokeWidth={1.75} />;
+  }
+}
+
 export default function Layout() {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const location = useLocation();
   const { locale, toggleLocale, isEnglish } = useLocale();
   const siteConfig = getSiteConfig(locale);
+  const mobileNavItems = siteConfig.navItems.filter((link) =>
+    ["/ecosystem", "/capital", "/contracts", "/greenbook", "/join"].includes(link.href),
+  );
+  const drawerNavItems = [
+    ...siteConfig.footerGroups.flatMap((group) => group.links),
+  ].filter((link) =>
+    ["/hours", "/about", "/legal/privacy", "/legal/terms", "/legal/disclaimer"].includes(link.href),
+  );
   const outlet = useOutlet();
   const headerRef = useRef<HTMLElement>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -301,7 +381,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background font-sora text-foreground">
+    <div className="relative flex min-h-screen flex-col bg-background pb-[calc(5.05rem+var(--safe-bottom))] font-sora text-foreground md:pb-0">
       <a
         href="#main-content"
         className="sr-only z-[60] rounded-sm border border-primary/30 bg-background px-4 py-3 text-xs font-bold uppercase tracking-widest text-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
@@ -314,15 +394,15 @@ export default function Layout() {
 
       <header
         ref={headerRef}
-        className="fixed left-0 right-0 top-0 z-50 border-b border-line/60 bg-background/78 pt-[calc(0.875rem+var(--safe-top))] backdrop-blur-xl transition-colors"
+        className="fixed left-0 right-0 top-0 z-50 border-b border-line/60 bg-background/78 pt-[calc(0.55rem+var(--safe-top))] backdrop-blur-xl transition-colors md:pt-[calc(0.875rem+var(--safe-top))]"
       >
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pb-3.5 sm:px-8 sm:pb-5 lg:px-16">
+        <div className="mx-auto hidden w-full max-w-7xl items-center justify-between px-5 pb-3.5 sm:px-8 sm:pb-5 md:flex lg:px-16">
           <Link
-            to="/"
-            className="group inline-flex min-h-11 items-center gap-1 px-0.5 text-lg font-bold tracking-widest text-foreground sm:min-h-0 sm:px-0 sm:text-xl md:text-2xl"
+            to={siteConfig.primaryJoinRoute}
+            className="group inline-flex min-h-11 items-center px-0.5 text-lg font-bold tracking-widest text-foreground sm:min-h-0 sm:px-0 sm:text-xl md:text-2xl"
+            aria-label="72hours"
           >
-            72
-            <span className="text-primary transition-colors group-hover:text-gold">hours</span>
+            <BrandLogo markClassName="h-10 w-10 transition-transform group-hover:scale-105" />
           </Link>
 
           <nav className="hidden items-center gap-5 md:flex lg:gap-8 xl:gap-10" aria-label={isEnglish ? "Primary navigation" : "主导航"}>
@@ -362,11 +442,27 @@ export default function Layout() {
             type="button"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-line/70 bg-surface/60 p-2 text-foreground transition-colors hover:text-primary active:scale-95 md:hidden"
             onClick={() => setIsOpen(true)}
-            aria-label={isEnglish ? "Open navigation menu" : "打开导航菜单"}
+            aria-label={isEnglish ? "Open site settings" : "打开网站设置"}
             aria-expanded={isOpen}
             aria-controls={drawerId}
           >
             <Menu size={26} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        <div className="mx-auto grid w-full max-w-md grid-cols-[1fr_1fr_minmax(6rem,1.2fr)_2.75rem] gap-2 px-4 pb-2 md:hidden">
+          <ThemeToggle className="min-w-0 px-2" />
+          <LanguageBadge className="min-w-0 px-2" onClick={toggleLocale} />
+          <MobileWalletButton />
+          <button
+            type="button"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-line/70 bg-surface/60 p-2 text-foreground transition-colors hover:text-primary active:scale-95"
+            onClick={() => setIsOpen(true)}
+            aria-label={isEnglish ? "Open site settings" : "打开网站设置"}
+            aria-expanded={isOpen}
+            aria-controls={drawerId}
+          >
+            <Menu size={22} strokeWidth={1.5} />
           </button>
         </div>
       </header>
@@ -392,10 +488,10 @@ export default function Layout() {
             <div className="relative z-10 flex items-center justify-between gap-3">
               <div>
                 <h2 id={drawerTitleId} className="text-2xl font-bold tracking-widest text-foreground">
-                  72<span className="text-primary">hours</span>
+                  <BrandLogo markClassName="h-10 w-10" />
                 </h2>
                 <p id={drawerDescriptionId} className="mt-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  {isEnglish ? "Official entries and live surfaces." : "官方入口与在线界面。"}
+                  {isEnglish ? "Theme, language, and notes." : "主题、语言与说明。"}
                 </p>
               </div>
 
@@ -415,8 +511,8 @@ export default function Layout() {
               <LanguageBadge className="w-full justify-center px-3 py-3" onClick={toggleLocale} />
             </div>
 
-            <nav className="relative z-10 mt-8 flex flex-col border-y border-line/70" aria-label={isEnglish ? "Mobile navigation" : "移动导航"}>
-              {siteConfig.navItems.map((link, index) => {
+            <nav className="relative z-10 mt-8 flex flex-col border-y border-line/70" aria-label={isEnglish ? "Secondary navigation" : "辅助导航"}>
+              {drawerNavItems.map((link, index) => {
                 const href = localizeHref(link.href, locale);
                 const isActive = isNavPathActive(location.pathname, href);
 
@@ -454,19 +550,57 @@ export default function Layout() {
       ) : null}
 
       <main id="main-content" ref={mainRef} tabIndex={-1} className="relative z-10 flex flex-1 flex-col">
-        <Suspense fallback={<PageLoader />}>
-          <div className="flex min-h-0 flex-1 flex-col">{outlet}</div>
-        </Suspense>
+        <div className="flex min-h-0 flex-1 flex-col">{outlet}</div>
       </main>
+
+      {!isOpen ? (
+        <nav
+          className="fixed inset-x-0 bottom-0 z-50 border-t border-line/75 bg-background/94 px-3 pb-[calc(0.45rem+var(--safe-bottom))] pt-1.5 backdrop-blur-xl md:hidden"
+          aria-label={isEnglish ? "Primary mobile navigation" : "移动主导航"}
+        >
+          <div className="mx-auto grid max-w-md grid-cols-4 gap-1 rounded-md border border-line/60 bg-surface/36 p-1 shadow-[0_-18px_54px_rgba(0,0,0,0.32)]">
+            {mobileNavItems.map((link) => {
+              const href = localizeHref(link.href, locale);
+              const isActive = isNavPathActive(location.pathname, href);
+
+              return (
+                <Link
+                  key={href}
+                  to={link.href}
+                  aria-label={link.label}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "group relative flex min-h-[3.15rem] items-center justify-center rounded-sm border px-1 transition-colors",
+                    isActive
+                      ? "border-primary/35 bg-primary/12 text-primary"
+                      : "border-transparent text-muted-foreground hover:border-line/70 hover:bg-background/54 hover:text-foreground",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-7 w-7 items-center justify-center transition-colors",
+                      isActive ? "text-primary" : "text-gold/70 group-hover:text-gold",
+                    )}
+                    aria-hidden="true"
+                  >
+                    {getNavIcon(link.href)}
+                  </span>
+                  {isActive ? <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary" aria-hidden="true" /> : null}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      ) : null}
 
       <footer
         ref={footerRef}
-        className="relative z-10 border-t border-line/70 bg-background/95 text-sm"
+        className="relative z-10 hidden border-t border-line/70 bg-background/95 text-sm md:block"
       >
         <div className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-[minmax(180px,0.22fr)_minmax(0,1fr)] lg:gap-8 lg:px-16">
           <div className="flex flex-col gap-4 px-1 sm:px-0">
             <div className="text-xl font-bold tracking-widest text-foreground sm:text-2xl">
-              72<span className="text-primary">hours</span>
+              <BrandLogo markClassName="h-10 w-10" />
             </div>
             <p className="max-w-sm text-[13px] font-light leading-6 text-muted-foreground sm:text-sm">
               {footerNote}
