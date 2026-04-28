@@ -35,7 +35,7 @@
   },
   "evidence": {
     "deployedAt": "2026-04-28",
-    "sourceRepositoryPath": "/Users/yudeyou/Desktop/72h-capital-contracts",
+    "sourceRepository": "https://github.com/tii-mom/72h-capital-contracts",
     "deploymentEvidence": "deployments/72h-v2-mainnet.deployed-2026-04-28.md",
     "publicInfo": "docs/72h-v2-mainnet-public-info.md"
   }
