@@ -1,5 +1,8 @@
 # OKX Wallet 72H Token Risk Appeal Pack
 
+> Historical/void note (2026-04-30): this appeal targets the legacy pre-V2 Jetton address only. It is preserved as historical evidence and must not be used as the current official 72H contract. Current V2 Jetton master: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
+
+
 Prepared: 2026-04-25
 
 ## Token

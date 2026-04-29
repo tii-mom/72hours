@@ -33,6 +33,22 @@ This document summarizes the implementation work completed after the `capital-au
 - Alpha allocate and Alpha reward claim fail closed in v1 production.
 - Website copy keeps Alpha closed and avoids fixed-return language.
 - `Institutional Reserve/Alpha Seat` labels were replaced with `Large Reserve/Alpha Seat`.
+- Private portfolio reads now require an explicit wallet query in API and Indexer paths. Unknown wallets return no portfolio instead of falling back to preview data.
+- D1 intent constraints now match the shared `reward.claim` / `reward` naming so the fallback database target no longer rejects current reward intents.
+- TON Reserve polling no longer projects a seat from default watched-address seat numbers. Reserve seat projection requires explicit `seatNumber` metadata from the chain event or forward payload, preventing ambiguous multi-user seat writes.
+- Mainnet TonConnect deployment package was regenerated with AppRewardPool addresses, code hashes, init params, production gate env draft, and explicit post-deploy getter evidence requirements. See `/Users/yudeyou/Desktop/72hours/docs/spec/capital-production-artifacts/mainnet-contract-deployment-package-2026-04-26.md`.
+
+## Source Control Boundary
+
+The website repo at `/Users/yudeyou/Desktop/72hours` is currently the only git worktree in the Capital desktop set. The adjacent service directories are plain folders:
+
+- `/Users/yudeyou/Desktop/72h-capital-api`
+- `/Users/yudeyou/Desktop/72h-capital-indexer`
+- `/Users/yudeyou/Desktop/72h-capital-contracts`
+- `/Users/yudeyou/Desktop/72h-capital-shared`
+- `/Users/yudeyou/Desktop/72h-capital-admin`
+
+Until those directories are moved into a real monorepo or initialized as their own repositories, API/Indexer/Contracts changes remain filesystem changes outside git history. Treat this as a release blocker for production promotion: the external re-audit package must be produced from a source-controlled tree that includes every service and contract component.
 
 ## Known Design Constraints For Re-Audit
 
@@ -43,11 +59,11 @@ This document summarizes the implementation work completed after the `capital-au
 
 ## Verification Already Run Locally
 
-The previous local verification passed after remediation:
+The latest local verification passed after remediation and is recorded under `/Users/yudeyou/Desktop/72hours/docs/spec/capital-production-artifacts/evidence/remediation-2026-04-26T05-01-01-905Z/`:
 
 - `/Users/yudeyou/Desktop/72h-capital-contracts`: `npm run tact:build`, `npm run typecheck`, `npm run test`, `npm run build`.
 - `/Users/yudeyou/Desktop/72h-capital-shared`: `npm run build`, `npm run typecheck`.
-- `/Users/yudeyou/Desktop/72h-capital-api`: `npm run check`.
+- `/Users/yudeyou/Desktop/72h-capital-api`: `npm run check`, `npm run test:capital`.
 - `/Users/yudeyou/Desktop/72h-capital-indexer`: `npm run check`, `npm run test:poller`.
 - `/Users/yudeyou/Desktop/72h-capital-admin`: `npm run build`.
 - `/Users/yudeyou/Desktop/72hours`: `npm run lint`, `npm run build`.
@@ -66,6 +82,9 @@ Run `npm run capital:collect-remediation-evidence` from `/Users/yudeyou/Desktop/
 - App-scoped Registry lookup prevents cross-app seat collisions.
 - API cannot produce sendable production payloads when signing is disabled, app is paused, Alpha is closed, or legacy yield route is used.
 - Indexer projections remain read-only views and reconcile with contract-owned Jetton wallets and getters.
+- API and Indexer private portfolio routes never return preview or another wallet's portfolio when `wallet` is missing or unknown.
+- D1 schema, Postgres schema, shared types, API routes, and website client paths all use the same reward intent vocabulary.
+- TON Reserve poller cannot assign all decoded deposits to a configured default seat when chain metadata is absent.
 
 ## Required Evidence Still Missing
 
@@ -74,6 +93,7 @@ Run `npm run capital:collect-remediation-evidence` from `/Users/yudeyou/Desktop/
 - Full testnet Reserve deposit -> maturity simulation -> redemption payout artifact.
 - Full testnet RewardPool funding -> Reserve reward claim payout artifact.
 - Official testnet/mainnet Jetton wallet getter evidence for each Vault and Pool.
+- Mainnet deployment transaction hashes for the regenerated AdminAuthority, Registry, ReserveVaults, AppRewardPools, AlphaVaults, and Registry binding batches.
 - Production Cloudflare/API/Indexer/Admin URLs and health checks.
 - Production Telegram alert test.
 - Final rollback owner and monitoring owner sign-off.

@@ -71,7 +71,7 @@ Integration boundaries to inspect for unsafe assumptions:
 
 ## Key Security Assumptions
 
-- Mainnet must use the official `72H` Jetton master: `EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8`.
+- Mainnet must use the official `72H` Jetton master: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
 - `TestJetton72H` is testnet-only and must never appear in mainnet manifests, API env, website config, or production TonConnect payloads.
 - Users pay TON gas from their own wallets.
 - Reserve principal is custodied by the relevant app `ReserveVault`; no off-chain liquidity queue may substitute for same-contract redemption.

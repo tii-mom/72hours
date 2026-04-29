@@ -1,6 +1,6 @@
 # 72H Capital Production Launch Plan
 
-Last updated: 2026-04-24
+Last updated: 2026-04-26
 
 Status: production engineering guardrails prepared; production launch remains blocked until owner-supplied external gates are complete.
 
@@ -15,8 +15,9 @@ Status: production engineering guardrails prepared; production launch remains bl
 - Emergency pause: controlled by the administrator wallet.
 - Reserve principal custody: user principal stays in each app ReserveVault and is redeemed from that same contract after maturity.
 - Opening order: Reserve principal-custody flow first, Alpha later.
-- Mainnet 72H Jetton Master Address: `EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8`.
+- Mainnet 72H Jetton Master Address: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
 - Jetton verification: TON Center `getTokenData` reports `contract_type=jetton_master`, `decimals=9`, `mintable=false`, and total supply `100,000,000,000 72H`.
+- Current generated contract package: `/Users/yudeyou/Desktop/72hours/docs/spec/capital-production-artifacts/mainnet-contract-deployment-package-2026-04-26.md`.
 
 ## Production Secrets
 
@@ -42,26 +43,32 @@ These cannot be completed by code:
 
 ## Production Gate Inputs
 
-Run the executable gate from the website repo before enabling mainnet signing:
+Run the executable gate from the website repo before frontend production launch and again before enabling mainnet signing:
 
 ```bash
 npm run capital:gate:production -- --skip-network
 npm run capital:gate:production
 ```
 
-`--skip-network` validates local inputs and artifact paths without calling production services. The full command also checks API and Indexer `/health` responses report `environment=production`.
+`--skip-network` validates local inputs without calling production services. The full command also checks API and Indexer `/health` responses report production readiness.
 
 Required production gate variables:
 
+- Frontend/API launch mode: `CAPITAL_MAINNET_SIGNING_ENABLED=false`. This is the default while mainnet user signing remains closed.
 - URLs: `CAPITAL_PRODUCTION_API_BASE_URL`, `CAPITAL_PRODUCTION_INDEXER_BASE_URL`, `CAPITAL_TONCONNECT_MANIFEST_URL`, `CAPITAL_MAINNET_RPC_URL`.
 - Explorer: `CAPITAL_MAINNET_EXPLORER_TX_URL_PATTERN` with a `{tx}` placeholder.
 - TonConnect bridge/frame origins: `CAPITAL_TONCONNECT_BRIDGE_ORIGINS`.
 - CSP source lists: `CAPITAL_CSP_CONNECT_SRC`, `CAPITAL_CSP_FRAME_SRC`, `CAPITAL_CSP_IMG_SRC`, `CAPITAL_CSP_MANIFEST_SRC`.
-- Contracts: `TON_MAINNET_72H_JETTON_MASTER_ADDRESS`, `TON_MAINNET_ADMIN_ADDRESS`, and per-app `TON_MAINNET_RESERVE_VAULT_ADDRESS_*`, `TON_MAINNET_APP_REWARD_POOL_ADDRESS_*`, `TON_MAINNET_ALPHA_VAULT_ADDRESS_*`.
-- Artifacts: `CAPITAL_AUDIT_REPORT_PATH`, `CAPITAL_LEGAL_APPROVAL_PATH`, `CAPITAL_TESTNET_REHEARSAL_ARTIFACT_PATH`, `CAPITAL_RESERVE_VAULT_REDEMPTION_VERIFICATION_PATH`, `CAPITAL_APP_REWARD_POOL_POLICY_PATH`.
-- Database/alerts/owners: `H72H_CAPITAL_DB_MODE=postgres`, `DATABASE_URL`, `H72H_TELEGRAM_BOT_TOKEN`, `H72H_TELEGRAM_ALERT_CHAT_ID`, `CAPITAL_MONITORING_OWNER`, `CAPITAL_ROLLBACK_APPROVAL_OWNER`.
+- Public mainnet token: `TON_MAINNET_72H_JETTON_MASTER_ADDRESS`.
+- Alerts/owners: `H72H_TELEGRAM_BOT_TOKEN`, `H72H_TELEGRAM_ALERT_CHAT_ID`, `CAPITAL_MONITORING_OWNER`, `CAPITAL_ROLLBACK_APPROVAL_OWNER`.
 
-The gate intentionally does not require Reserve initial liquidity. It verifies address, artifact, database, alerting, owner, CSP, manifest, RPC, explorer, and service-readiness inputs for the v1 simplified model.
+Additional variables required before enabling mainnet signing with `CAPITAL_MAINNET_SIGNING_ENABLED=true`:
+
+- Contracts: `TON_MAINNET_ADMIN_ADDRESS`, and per-app `TON_MAINNET_RESERVE_VAULT_ADDRESS_*`, `TON_MAINNET_APP_REWARD_POOL_ADDRESS_*`, `TON_MAINNET_ALPHA_VAULT_ADDRESS_*`.
+- Artifacts: `CAPITAL_AUDIT_REPORT_PATH`, `CAPITAL_LEGAL_APPROVAL_PATH`, `CAPITAL_TESTNET_REHEARSAL_ARTIFACT_PATH`, `CAPITAL_RESERVE_VAULT_REDEMPTION_VERIFICATION_PATH`, `CAPITAL_APP_REWARD_POOL_POLICY_PATH`.
+- Database: `H72H_CAPITAL_DB_MODE=postgres`, `DATABASE_URL`.
+
+The frontend gate intentionally keeps mainnet user signing closed by default. It verifies production API, Indexer, alerting, owner, CSP, manifest, RPC, explorer, and public mainnet token inputs for website launch. The stricter signing gate additionally verifies address, artifact, and database inputs for the v1 simplified model. Neither mode requires Reserve initial liquidity.
 
 Operational gate checks that must be confirmed alongside the executable gate:
 
@@ -83,15 +90,23 @@ Operational gate checks that must be confirmed alongside the executable gate:
 5. Set Indexer production secrets, but keep polling disabled.
 6. Deploy `72h-capital-indexer-production`.
 7. Deploy website with `VITE_CAPITAL_DATA_MODE=api`.
-8. Deploy audited mainnet contracts.
-9. Verify ReserveVault principal-custody and same-contract redemption getters.
-10. Enable Indexer polling in dry-run first.
-12. Enable Indexer Postgres writes.
-13. Enable Reserve intent signing only after one internal mainnet rehearsal.
-14. Open Reserve gray launch.
-15. Monitor 7-14 days.
-16. Expand Reserve.
-17. Open Alpha only after Reserve is stable.
+8. Generate the mainnet TonConnect contract package from `/Users/yudeyou/Desktop/72h-capital-contracts` and compare it with the signed audit target:
+   `npm run plan:mainnet:tonconnect`.
+9. Deploy audited mainnet contracts from the expected admin wallet.
+10. Attach deployment transaction hashes for AdminAuthority, Registry, all ReserveVaults, all AppRewardPools, and all AlphaVaults.
+11. Call the official 72H Jetton master getter for every ReserveVault and AppRewardPool address.
+12. Set each Vault/Pool official Jetton wallet where required, then attach setter transaction hashes and getter snapshots.
+13. Verify Registry app registration and app-scoped ReserveVault bindings.
+14. Verify ReserveVault principal-custody and same-contract redemption getters.
+15. Keep Reward claim closed until all AppRewardPools have address, official wallet, funding policy, funding proof, claim payout rehearsal, and Indexer/API projection evidence.
+16. Enable Indexer polling in dry-run first from the selected block/lt.
+17. Enable Indexer Postgres writes after duplicate-event and rollback behavior is verified.
+18. Enable Reserve intent signing only after one internal mainnet rehearsal and owner approval.
+19. Open Reserve gray launch.
+20. Monitor 7-14 days.
+21. Expand Reserve.
+22. Open Reward claim only after the RewardPool-specific gate passes.
+23. Open Alpha only after Reserve and Reward operations are stable and separately approved.
 
 ## Rollback Policy
 

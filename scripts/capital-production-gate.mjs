@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
-const approvedJettonMaster = "EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8";
+// Current official 72H V2 Jetton master. Legacy pre-V2 EQDvE0... is historical/void for active production gates.
+const approvedJettonMaster = "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg";
 const appKeys = ["72HOURS", "WAN", "MULTI_MILLIONAIRE"];
 const urlFields = [
   "CAPITAL_PRODUCTION_API_BASE_URL",
@@ -17,13 +18,10 @@ const artifactFields = [
   "CAPITAL_RESERVE_VAULT_REDEMPTION_VERIFICATION_PATH",
   "CAPITAL_APP_REWARD_POOL_POLICY_PATH",
 ];
-const requiredEnv = [
+const frontendRequiredEnv = [
   ...urlFields,
   "CAPITAL_MAINNET_EXPLORER_TX_URL_PATTERN",
   "TON_MAINNET_72H_JETTON_MASTER_ADDRESS",
-  "TON_MAINNET_ADMIN_ADDRESS",
-  "H72H_CAPITAL_DB_MODE",
-  "DATABASE_URL",
   "H72H_TELEGRAM_BOT_TOKEN",
   "H72H_TELEGRAM_ALERT_CHAT_ID",
   "CAPITAL_MONITORING_OWNER",
@@ -33,6 +31,11 @@ const requiredEnv = [
   "CAPITAL_CSP_FRAME_SRC",
   "CAPITAL_CSP_IMG_SRC",
   "CAPITAL_CSP_MANIFEST_SRC",
+];
+const signingRequiredEnv = [
+  "TON_MAINNET_ADMIN_ADDRESS",
+  "H72H_CAPITAL_DB_MODE",
+  "DATABASE_URL",
   ...artifactFields,
   ...appKeys.flatMap((app) => [
     `TON_MAINNET_RESERVE_VAULT_ADDRESS_${app}`,
@@ -45,6 +48,71 @@ const requiredEnv = [
 
 function value(name) {
   return process.env[name]?.trim();
+}
+
+function boolValue(name, fallback = false) {
+  const raw = value(name)?.toLowerCase();
+  if (raw === "true" || raw === "1" || raw === "yes") return true;
+  if (raw === "false" || raw === "0" || raw === "no") return false;
+  return fallback;
+}
+
+function parseEnvLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
+    return undefined;
+  }
+
+  const separatorIndex = trimmed.indexOf("=");
+  const key = trimmed.slice(0, separatorIndex).trim();
+  let rawValue = trimmed.slice(separatorIndex + 1).trim();
+
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
+    return undefined;
+  }
+
+  if (
+    (rawValue.startsWith('"') && rawValue.endsWith('"')) ||
+    (rawValue.startsWith("'") && rawValue.endsWith("'"))
+  ) {
+    rawValue = rawValue.slice(1, -1);
+  } else {
+    rawValue = rawValue.replace(/\s+#.*$/, "").trim();
+  }
+
+  if (!rawValue) {
+    return undefined;
+  }
+
+  return [key, rawValue];
+}
+
+function loadEnvFile(path) {
+  if (!existsSync(path)) {
+    return false;
+  }
+
+  const contents = readFileSync(path, "utf8");
+  for (const line of contents.split(/\r?\n/)) {
+    const entry = parseEnvLine(line);
+    if (!entry) continue;
+    const [key, rawValue] = entry;
+    if (process.env[key] === undefined) {
+      process.env[key] = rawValue;
+    }
+  }
+
+  return true;
+}
+
+function loadProductionGateEnv() {
+  const envFiles = process.argv
+    .filter((arg) => arg.startsWith("--env-file="))
+    .map((arg) => arg.slice("--env-file=".length));
+
+  for (const path of [".env.production.example", ".env.production.local", ".env.local", ...envFiles]) {
+    loadEnvFile(path);
+  }
 }
 
 function addError(errors, code, field, message) {
@@ -122,14 +190,24 @@ async function checkJsonEndpoint(label, url, expectedEnvironment) {
   if (!response.ok) {
     return `${label} returned HTTP ${response.status}.`;
   }
-  if (body?.environment !== expectedEnvironment) {
+  const environment =
+    body?.environment ??
+    (body?.settings?.network === "mainnet" && body?.settings?.postgresConfigured === true
+      ? "production"
+      : undefined);
+  if (environment !== expectedEnvironment) {
     return `${label} is not reporting environment=${expectedEnvironment}.`;
   }
   return undefined;
 }
 
 async function main() {
+  loadProductionGateEnv();
   const skipNetwork = process.argv.includes("--skip-network");
+  const signingInputsRequired = boolValue("CAPITAL_MAINNET_SIGNING_ENABLED", false);
+  const requiredEnv = signingInputsRequired
+    ? [...frontendRequiredEnv, ...signingRequiredEnv]
+    : frontendRequiredEnv;
   const errors = [];
   for (const name of requiredEnv) {
     if (!value(name)) addError(errors, "missing-env", name, `${name} is required.`);
@@ -140,11 +218,13 @@ async function main() {
   const manifestUrl = requireUrl(errors, "CAPITAL_TONCONNECT_MANIFEST_URL");
   const rpcUrl = requireUrl(errors, "CAPITAL_MAINNET_RPC_URL");
 
-  for (const field of artifactFields) {
-    requireArtifact(errors, field);
+  if (signingInputsRequired) {
+    for (const field of artifactFields) {
+      requireArtifact(errors, field);
+    }
   }
 
-  if (/capital-audit-report-2026-04-25\.md$/.test(value("CAPITAL_AUDIT_REPORT_PATH") ?? "")) {
+  if (signingInputsRequired && /capital-audit-report-2026-04-25\.md$/.test(value("CAPITAL_AUDIT_REPORT_PATH") ?? "")) {
     addError(
       errors,
       "no-go-audit-report",
@@ -308,7 +388,14 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(JSON.stringify({ ok: true, networkChecksSkipped: skipNetwork, message: "Capital production gate passed." }, null, 2));
+  console.log(JSON.stringify({
+    ok: true,
+    networkChecksSkipped: skipNetwork,
+    mainnetSigningInputsRequired: signingInputsRequired,
+    message: signingInputsRequired
+      ? "Capital production gate passed."
+      : "Capital production frontend gate passed with mainnet signing inputs disabled.",
+  }, null, 2));
 }
 
 main();

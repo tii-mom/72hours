@@ -1,5 +1,8 @@
 # 72H Capital v1 Contract Audit Report
 
+> Historical/void note (2026-04-30): this No-Go audit report predates the V2 Jetton replacement and references the legacy pre-V2 Jetton only as historical audit evidence. It must not be treated as current production approval. Current V2 Jetton master: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
+
+
 Status: no-go for production mainnet signing.
 Date: 2026-04-25.
 Auditor: Codex local contract/security review. This is not an independently signed external audit certificate.

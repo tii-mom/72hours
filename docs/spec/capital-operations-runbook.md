@@ -1,6 +1,6 @@
 # 72H Capital Operations Runbook
 
-Last updated: 2026-04-24
+Last updated: 2026-04-26
 
 This runbook covers the Capital-specific launch and operations path. It does not cover non-Capital website pages or full-site visual work.
 
@@ -122,6 +122,91 @@ The release owner must also confirm:
 - Alpha remains closed until Reserve has run stably through the agreed monitoring window.
 
 No-go means keep the website in preview mode or deploy API mode with wallet signing disabled.
+
+## Mainnet Contract Deployment Package
+
+Generate the package only from the audited contract source tree:
+
+```bash
+cd /Users/yudeyou/Desktop/72h-capital-contracts
+npm run plan:mainnet:tonconnect
+```
+
+Expected outputs:
+
+- `/Users/yudeyou/Desktop/72h-capital-contracts/deployments/mainnet.tonconnect.json`
+- `/Users/yudeyou/Desktop/72h-capital-contracts/deployments/mainnet-deploy.html`
+- `/Users/yudeyou/Desktop/72hours/docs/spec/capital-production-artifacts/mainnet-contract-deployment-package-2026-04-26.md`
+
+Before signing:
+
+- Confirm the connected wallet equals the approved mainnet admin wallet.
+- Confirm the generated 72H Jetton master is `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
+- Confirm the generated AppRewardPool addresses are present for `72hours`, `wan`, and `multi-millionaire`.
+- Confirm `H72H_ENABLE_MAINNET_TACT_MESSAGES=false` remains set in API production.
+- Confirm the deployment package code hashes match the remediated audit target.
+
+After signing:
+
+- Record tx hashes for every deploy and Registry binding batch.
+- Call the official 72H Jetton master wallet getter for every ReserveVault and AppRewardPool.
+- Set and verify official Vault/Pool Jetton wallet addresses where required.
+- Update production API, Indexer, website gate env, and deployment artifact paths with the verified addresses.
+- Re-run `npm run capital:gate:production -- --skip-network`, then the full network gate.
+
+## Indexer Mainnet Write Strategy
+
+Start with reads and dry-run only. Do not write chain projections to production Postgres until the watched address set and cursor start are approved.
+
+Required decision record:
+
+- Watched addresses: all ReserveVaults, all AppRewardPools, and any Jetton wallets required for payout projection.
+- Start cursor: explicit block/lt after contract deploy and official wallet setter transactions.
+- Duplicate policy: event ids must remain deterministic, and duplicate ingestion must return duplicate counts without mutating projections.
+- Rollback policy: if TON API reorg or provider inconsistency is suspected, pause writes, keep reads online, snapshot DB, and replay from the last approved cursor into a branch before touching production.
+- Dry-run exit: one poll cycle decodes Reserve deposit, Reserve redeem payout, RewardPool funding, and RewardPool payout evidence without writing unexpected app/seat assignments.
+
+Enablement order:
+
+1. Deploy Indexer with polling disabled.
+2. Set watched addresses and start cursor.
+3. Run one authenticated dry-run poll.
+4. Compare decoded events with explorer/getter evidence.
+5. Enable Postgres writes.
+6. Confirm API reads the same projection.
+7. Configure lag and decode-failure alerts.
+
+## API Mainnet Signing Gate
+
+Mainnet signing stays closed by default:
+
+```bash
+H72H_ENABLE_MAINNET_TACT_MESSAGES=false
+```
+
+Reserve gray launch may enable it only after:
+
+- Production gate passes without `--skip-network`.
+- The target app is not paused.
+- The app status gate allows Reserve.
+- The requesting wallet is inside the approved gray-launch allowlist.
+- ReserveVault address and official Vault Jetton wallet are verified for the app.
+- Alpha allocation and Alpha reward claim remain closed.
+- Reward claim remains closed until the RewardPool-specific gate passes.
+
+If any condition fails, the API must return `messages: []` and disabled UI state.
+
+## Website Production API Smoke
+
+Run these checks before opening Reserve:
+
+- Website env uses `VITE_CAPITAL_DATA_MODE=api`.
+- `VITE_CAPITAL_API_BASE_URL` points to the production API host, not staging.
+- `/capital`, `/capital/72hours`, `/capital/wan`, `/capital/multi-millionaire`, and `/capital/me` render from API mode.
+- `/capital/me` without a connected wallet does not show private portfolio data.
+- Unknown wallets return an empty/not-found portfolio state, not preview data.
+- Transaction CTAs are hidden or disabled while the API returns `messages: []`.
+- Mobile viewport smoke passes for Capital overview, app detail, identity, and verification pages.
 
 ## Testnet Wallet-Send Enablement
 

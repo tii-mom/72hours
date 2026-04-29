@@ -85,7 +85,7 @@ Smoke gate:
 - Production Cloudflare deployment token or interactive Wrangler login.
 - Production database decision and production `DATABASE_URL`.
 - Production Telegram bot token, alert chat id, and owner delivery test.
-- Official mainnet 72H Jetton master contract address: `EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8`.
+- Official mainnet 72H Jetton master contract address: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
 - ReserveVault mainnet addresses, redemption getter verification, and AppRewardPool funding policy.
 - Final legal/risk copy approval.
 
@@ -96,7 +96,7 @@ Smoke gate:
 - Governance: single admin wallet, 1 required signature.
 - Admin wallet: `UQCxJ05yeawVWlsN5SfJ-obajgh2lFffR-O7ebH_s_wqQfRq`.
 - Reserve principal custody: user principal remains in each app ReserveVault and is redeemed from that same contract after maturity.
-- Mainnet Jetton master: `EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8`.
+- Mainnet Jetton master: `EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`.
 - Jetton verification: `contract_type=jetton_master`, `decimals=9`, `mintable=false`, total supply `100,000,000,000 72H`.
 - Launch mode: Reserve gray launch first; Alpha remains closed until Reserve stabilizes.
 

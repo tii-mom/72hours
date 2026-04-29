@@ -139,7 +139,7 @@ Growth backlog: [`capital-growth-backlog.md`](./capital-growth-backlog.md)
 当前主网边界：
 
 - 主网管理员地址：`UQCxJ05yeawVWlsN5SfJ-obajgh2lFffR-O7ebH_s_wqQfRq`
-- 主网 `72H` Jetton master：`EQDvE0ffdwvOhILjRJKFd2bIU9t5H9bG3-SKRidqavZjRsw8`
+- 主网 `72H` Jetton master：`EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg`
 - 链上校验：TON Center `getTokenData` 返回 `contract_type=jetton_master`、`decimals=9`、`mintable=false`、总供应 `100,000,000,000 72H`
 - 主网 Capital 合约尚未启用。
 - 主网开放前必须完成审计、单管理员签名权限确认、ReserveVault 本金托管、生产数据库、索引器、监控和法律文案审校。
