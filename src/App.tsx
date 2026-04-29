@@ -1,29 +1,32 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import Layout from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollProgress } from "./components/Effects";
+import { PageLoader } from "./components/PageLoader";
 import { LocaleProvider, useLocale } from "./lib/locale";
 import { ThemeProvider, getThemeColor, useTheme } from "./lib/theme";
 import { resolveRouteMeta } from "./content/route-meta";
 import { stripLocalePrefix } from "./lib/routes";
-import { CapitalTonConnectProvider, TonConnectRuntimeSync } from "./lib/tonconnect";
 import CapitalRouteBoundary from "./components/CapitalRouteBoundary";
 import Ecosystem from "./pages/Ecosystem";
-import Capital from "./pages/Capital";
-import CapitalApp from "./pages/CapitalApp";
-import CapitalIdentity from "./pages/CapitalIdentity";
 import CapitalVerify from "./pages/CapitalVerify";
 import GreenBook from "./pages/GreenBook";
 import Learn from "./pages/Learn";
 import Hours from "./pages/Hours";
 import About from "./pages/About";
-import Join from "./pages/Join";
 import Faq from "./pages/Faq";
 import Contact from "./pages/Contact";
 import Legal from "./pages/Legal";
 import Contracts from "./pages/Contracts";
 import NotFound from "./pages/NotFound";
+
+const Capital = React.lazy(() => import("./pages/Capital"));
+const CapitalApp = React.lazy(() => import("./pages/CapitalApp"));
+const CapitalIdentity = React.lazy(() => import("./pages/CapitalIdentity"));
+const BotPresale = React.lazy(() => import("./pages/BotPresale"));
+const Join = React.lazy(() => import("./pages/Join"));
+const TonConnectRouteBoundary = React.lazy(() => import("./components/TonConnectRouteBoundary"));
 
 function setMeta(attribute: "name" | "property", key: string, content: string) {
   const selector = `meta[${attribute}="${key}"]`;
@@ -118,10 +121,7 @@ function AppProviders() {
   return (
     <LocaleProvider>
       <ThemeProvider>
-        <CapitalTonConnectProvider>
-          <TonConnectRuntimeSync />
-          <AppShell />
-        </CapitalTonConnectProvider>
+        <AppShell />
       </ThemeProvider>
     </LocaleProvider>
   );
@@ -131,17 +131,26 @@ function withCapitalBoundary(element: React.ReactNode) {
   return <CapitalRouteBoundary>{element}</CapitalRouteBoundary>;
 }
 
+function withLazyRoute(element: React.ReactNode) {
+  return <Suspense fallback={<PageLoader />}>{element}</Suspense>;
+}
+
+function withWalletRoute(element: React.ReactNode) {
+  return withLazyRoute(<TonConnectRouteBoundary>{element}</TonConnectRouteBoundary>);
+}
+
 function AppRoutes() {
   const sharedRoutes = (
     <>
       <Route index element={<Navigate to="join" replace />} />
       <Route path="ecosystem" element={<Ecosystem />} />
-      <Route path="capital" element={withCapitalBoundary(<Capital />)} />
-      <Route path="capital/me" element={withCapitalBoundary(<CapitalIdentity />)} />
-      <Route path="capital/:slug" element={withCapitalBoundary(<CapitalApp />)} />
+      <Route path="capital" element={withCapitalBoundary(withWalletRoute(<Capital />))} />
+      <Route path="capital/me" element={withCapitalBoundary(withWalletRoute(<CapitalIdentity />))} />
+      <Route path="capital/:slug" element={withCapitalBoundary(withWalletRoute(<CapitalApp />))} />
       <Route path="capital/:slug/:type/:seatNumber" element={withCapitalBoundary(<CapitalVerify />)} />
+      <Route path="bot/presale" element={withWalletRoute(<BotPresale />)} />
       <Route path="greenbook" element={<GreenBook />} />
-      <Route path="join" element={<Join />} />
+      <Route path="join" element={withWalletRoute(<Join />)} />
       <Route path="learn" element={<Learn />} />
       <Route path="hours" element={<Hours />} />
       <Route path="about" element={<About />} />
