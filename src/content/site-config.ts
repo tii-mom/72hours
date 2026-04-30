@@ -1,6 +1,7 @@
 import type { HomeHighlight, SiteConfig } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
 import { getGlossary } from "./glossary";
+import { officialLinks } from "./official-links";
 
 function buildSiteConfig(locale: Locale): SiteConfig {
   const glossary = getGlossary(locale);
@@ -23,8 +24,8 @@ function buildSiteConfig(locale: Locale): SiteConfig {
         id: "enter",
         title: isEnglish ? "Enter" : "进入",
         links: [
-          { label: "Telegram", href: "https://t.me/the_72h" },
-          { label: "X", href: "https://x.com/72hour_s" },
+          { label: "Telegram", href: officialLinks.telegramCommunity },
+          { label: "X", href: officialLinks.x },
           { label: isEnglish ? "Enter" : "进入", href: "/join" },
           { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
           { label: glossary.pageLabels.greenBook, href: "/greenbook" },
@@ -77,7 +78,7 @@ const homeHighlightsZh: readonly HomeHighlight[] = [
     body: "状态、参与、入口。",
     cta: "浏览生态应用",
     href: "/ecosystem",
-    iconLabel: "Terminal",
+    iconLabel: "Official",
   },
   {
     title: "2. 学习报名",
@@ -101,7 +102,7 @@ const homeHighlightsEn: readonly HomeHighlight[] = [
     body: "Status, participation, next step.",
     cta: "Browse ecosystem",
     href: "/ecosystem",
-    iconLabel: "Terminal",
+    iconLabel: "Official",
   },
   {
     title: "2. Learning application",

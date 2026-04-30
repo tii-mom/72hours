@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react";
+import { officialLinkNote, officialLinks } from "../content/official-links";
 import { useLocale } from "../lib/locale";
 
 type PresaleRuntime = {
@@ -147,7 +148,7 @@ const SALE_OPENS_AT = "2026-05-05T09:00:00.000Z";
 const LOTTERY_POOL_LABEL = "10,000,000";
 const RESERVATION_REWARD_LABEL = "72";
 const PARTICIPATION_REWARD_RANGE_LABEL = "10-200";
-const WARMUP_MODE_LABEL = "Early Access";
+const WARMUP_MODE_LABEL = "Whitelist Reservation";
 
 const FALLBACK_PRESALE: PresaleRuntime = {
   configured: true,
@@ -163,7 +164,7 @@ const FALLBACK_PRESALE: PresaleRuntime = {
   tradingStatus: "disabled",
   chainGetterStatus: "disabled",
   chainVerifierStatus: "disabled",
-  chainGetterMessage: "Presale status endpoint is unavailable in this environment.",
+  chainGetterMessage: "Sale status is syncing.",
   walletCap72H: "7,200,000",
   totalCap72H: "4,500,000,000",
   stageRules: [
@@ -409,12 +410,12 @@ function displayUserSegment(segment: string | undefined, isEnglish: boolean) {
     priority_whale: "Priority follow-up",
     priority_core: "Priority follow-up",
     telegram_premium: "Telegram Premium user",
-    warmup_waitlist: "Warmup list",
+    warmup_waitlist: "Whitelist Reservation",
   } : {
     priority_whale: "优先跟进",
     priority_core: "优先跟进",
     telegram_premium: "Telegram Premium 用户",
-    warmup_waitlist: "预约名单",
+    warmup_waitlist: "白名单预约",
   };
   return segment ? (labels[segment] || segment) : undefined;
 }
@@ -458,22 +459,25 @@ export default function BotPresale() {
         });
 
         if (!response.ok) {
-          throw new Error(`Presale status request failed (${response.status}).`);
+          throw new Error("presale_status_unavailable");
         }
 
         const payload = (await response.json()) as { ok?: boolean; presale?: PresaleRuntime };
         if (!payload.ok || !payload.presale) {
-          throw new Error("Presale status response is invalid.");
+          throw new Error("presale_status_invalid");
         }
 
         if (!cancelled) {
           setState({ status: "ready", presale: payload.presale });
         }
       } catch (error) {
+        console.warn("Presale status sync failed", error);
         if (!cancelled) {
           setState({
             status: "error",
-            message: error instanceof Error ? error.message : "status_endpoint_unavailable",
+            message: isEnglish
+              ? "Sale status is syncing. Whitelist registration remains available."
+              : "开售状态正在同步，白名单预约仍可继续。",
             presale: FALLBACK_PRESALE,
           });
         }
@@ -544,7 +548,7 @@ export default function BotPresale() {
   const walletStatusText = !restored
     ? isEnglish ? "Restoring session" : "正在恢复会话"
     : address ? shortAddress(address) : isEnglish ? "Connect a TON wallet" : "连接 TON 钱包";
-  const purchaseStatus = isEnglish ? "Early Access reservation · purchase not open" : "白名单预约开放 · 购买未开放";
+  const purchaseStatus = isEnglish ? "Whitelist Reservation open · purchase not open" : "白名单预约开放 · 购买未开放";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -586,7 +590,7 @@ export default function BotPresale() {
       });
       const payload = (await response.json()) as { ok?: boolean; error?: string; duplicate?: boolean; reservation?: ReservationRecord };
       if (!response.ok || !payload.ok || !payload.reservation) {
-        throw new Error(payload.error || `reservation_failed_${response.status}`);
+        throw new Error("reservation_unavailable");
       }
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
@@ -594,7 +598,8 @@ export default function BotPresale() {
         : isEnglish ? "Reservation confirmed. Whitelist status, opening reminder, 72H reward, and lottery eligibility are recorded." : "预约成功。白名单登记、开售提醒、72H 奖励与抽奖资格已记录。"
       );
     } catch (error) {
-      setReservationFeedback(error instanceof Error ? error.message : isEnglish ? "Reservation failed." : "预约失败。");
+      console.warn("Reservation submission failed", error);
+      setReservationFeedback(isEnglish ? "Reservation could not be recorded right now. Please try again in the official Mini App." : "预约暂时无法记录，请稍后在官方 Mini App 内重试。");
     } finally {
       setReservationPending(false);
     }
@@ -606,11 +611,11 @@ export default function BotPresale() {
 
     const shareText = reservation.inviteLink
       ? isEnglish
-        ? `I reserved 72H Early Access. Join with my invite link: ${reservation.inviteLink}`
-        : `我已预约 72H Early Access 白名单。用我的邀请链接加入：${reservation.inviteLink}`
+        ? `I reserved a 72H Whitelist Reservation. Join with my official invite link: ${reservation.inviteLink}`
+        : `我已完成 72H 白名单预约。用我的官方邀请链接加入：${reservation.inviteLink}`
       : isEnglish
-        ? "I reserved 72H Early Access. Search the official 72H Bot to join."
-        : "我已预约 72H Early Access 白名单，搜索官方 72H Bot 加入。";
+        ? "I reserved a 72H Whitelist Reservation. Search the official 72H Bot to join."
+        : "我已完成 72H 白名单预约，搜索官方 72H Bot 加入。";
 
     try {
       setShareTaskPending(true);
@@ -626,7 +631,7 @@ export default function BotPresale() {
       });
       const payload = (await response.json()) as { ok?: boolean; error?: string; duplicate?: boolean; reservation?: ReservationRecord };
       if (!response.ok || !payload.ok || !payload.reservation) {
-        throw new Error(payload.error || `share_task_failed_${response.status}`);
+        throw new Error("share_task_unavailable");
       }
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
@@ -634,7 +639,8 @@ export default function BotPresale() {
         : isEnglish ? "Share task recorded: +2 lottery codes. Invite text copied." : "社群分享任务已记录：+2 个抽奖码。邀请文案已复制。"
       );
     } catch (error) {
-      setReservationFeedback(error instanceof Error ? error.message : isEnglish ? "Share task failed." : "分享任务记录失败。");
+      console.warn("Share task recording failed", error);
+      setReservationFeedback(isEnglish ? "Share task could not be recorded right now. Invite text was prepared; please try again later." : "社群分享任务暂时无法记录；邀请文案已准备好，请稍后重试。");
     } finally {
       setShareTaskPending(false);
     }
@@ -646,7 +652,8 @@ export default function BotPresale() {
       setWalletActionError(undefined);
       await tonConnectUI.openModal();
     } catch (error) {
-      setWalletActionError(error instanceof Error ? error.message : isEnglish ? "Wallet connection failed." : "钱包连接失败。");
+      console.warn("Wallet connection failed", error);
+      setWalletActionError(isEnglish ? "Wallet connection did not complete. Please try again in your TON wallet." : "钱包连接未完成，请在 TON 钱包内确认后重试。");
     } finally {
       setWalletPending(false);
     }
@@ -658,7 +665,8 @@ export default function BotPresale() {
       setWalletActionError(undefined);
       await tonConnectUI.disconnect();
     } catch (error) {
-      setWalletActionError(error instanceof Error ? error.message : isEnglish ? "Wallet disconnect failed." : "钱包断开失败。");
+      console.warn("Wallet disconnect failed", error);
+      setWalletActionError(isEnglish ? "Wallet disconnect did not complete. Please try again." : "钱包断开未完成，请稍后重试。");
     } finally {
       setWalletPending(false);
     }
@@ -708,12 +716,12 @@ export default function BotPresale() {
             <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
               <div>
                 <h1 className="text-4xl font-black leading-[1.02] tracking-normal text-foreground sm:text-5xl">
-                  {isEnglish ? "72H Whitelist Reservation" : "72H 白名单登记"}
+                  {isEnglish ? "72H Whitelist Reservation" : "72H 白名单预约"}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Whitelist registration and opening reminders are handled inside the official Bot / Mini App. This page does not request payment, signatures, private transfers, or promise purchase quota; register first and watch the countdown."
-                    : "预售信息只在官方 Telegram Bot / Mini App 内展示。本页不会要求付款、签名或私下转账，也不承诺购买额度；现在只开放白名单登记、开售提醒与倒计时。"}
+                    ? "Reserve your whitelist spot, keep opening reminders on, and collect lottery codes inside the official Bot / Mini App. No purchase, payment, signature, private transfer, or purchase quota is handled here."
+                    : "在官方 Telegram Bot / Mini App 内完成白名单预约、开售提醒与抽奖码记录。本页不处理购买、付款、签名、私下转账或购买额度。"}
                 </p>
               </div>
 
@@ -909,8 +917,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current stage: Early Access reservation. Submit once for +1 lottery code; valid invited reservations add +1 each; the group share task adds +2 once. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, paid later by wallet transfer. No funds are accepted here.`
-                      : `当前阶段：Early Access 白名单预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群分享任务每人限一次 +2。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，后续通过钱包转账发放；本页不收取资金。`}
+                      ? `Current stage: Whitelist Reservation. Submit once for +1 lottery code; valid invited reservations add +1 each; the group share task adds +2 once. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, paid later by wallet transfer. No funds are accepted here.`
+                      : `当前阶段：白名单预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群分享任务每人限一次 +2。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，后续通过钱包转账发放；本页不收取资金。`}
                   </div>
                   <button
                     type="submit"
@@ -1034,8 +1042,11 @@ export default function BotPresale() {
                     ? "Before opening, only reservations, whitelist status, reminders, community task status, and user segments are recorded. Lottery rewards come from the official prize wallet; users do not need to pay gas to claim."
                     : "开放前只记录预约、白名单状态、开售提醒、社群任务状态和用户分层。抽奖奖励由官方奖池钱包转账发放，用户无需支付 gas 领取。"}
                 </p>
+                <p className="mt-3 text-xs font-semibold leading-5 text-gold">
+                  {isEnglish ? officialLinkNote.en : officialLinkNote.zh}
+                </p>
                 <a
-                  href="https://t.me/the72hbot?start=human"
+                  href={officialLinks.telegramBotHuman}
                   target="_blank"
                   rel="noreferrer"
                   className="page-action-muted mt-4 w-full"
@@ -1048,8 +1059,8 @@ export default function BotPresale() {
               {state.status === "error" ? (
                 <div className="rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/86">
                   {isEnglish
-                    ? "Live status is temporarily unavailable. Official on-chain evidence remains visible."
-                    : "链上状态暂时不可用，官方链上证据地址仍可核验。"}
+                    ? "Sale status is syncing. Whitelist registration remains available."
+                    : "开售状态正在同步，白名单预约仍可继续。"}
                 </div>
               ) : null}
             </aside>

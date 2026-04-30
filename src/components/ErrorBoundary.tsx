@@ -1,5 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from "react";
-import { Terminal, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Home } from "lucide-react";
 import { getLocaleFromPath, localizePath } from "../lib/routes";
 
 interface Props {
@@ -31,6 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
       const locale = getLocaleFromPath(pathname);
       const isEnglish = locale === "en-US";
       const homePath = localizePath("/", locale);
+      const isDevelopment = import.meta.env.DEV;
 
       return (
         <div className="page-shell items-center justify-center px-5 sm:px-8 lg:px-16 py-20 sm:py-24 bg-background text-foreground relative overflow-hidden">
@@ -43,25 +44,27 @@ export class ErrorBoundary extends Component<Props, State> {
                  <AlertTriangle size={24} className="hidden sm:block" />
               </div>
               <h1 className="text-lg sm:text-2xl font-bold tracking-tight uppercase">
-                {isEnglish ? "Rendering interrupted" : "系统异常"}
+                {isEnglish ? "This page could not be displayed" : "页面暂时无法显示"}
               </h1>
             </div>
             
             <p className="text-sm sm:text-base text-red-300 leading-relaxed font-light">
               {isEnglish
-                ? "Client rendering was interrupted. Return home or refresh and try again."
-                : "客户端渲染发生中断。先回到首页重新进入，或者刷新后再试一次。"}
+                ? "Please refresh this page, return home, or contact the official Telegram channel shown on 72h.lol."
+                : "请刷新页面、返回首页，或通过 72h.lol 展示的官方 Telegram 联系我们。"}
             </p>
             
-            <div className="bg-black/50 p-4 rounded-sm border border-red-500/20 max-h-48 overflow-y-auto font-mono text-xs text-red-300">
-              <span className="text-red-500 font-bold">FATAL_ERROR:</span> {this.state.error?.message || "Unknown rendering exception."}
-            </div>
+            {isDevelopment ? (
+              <div className="bg-black/50 p-4 rounded-sm border border-red-500/20 max-h-48 overflow-y-auto font-mono text-xs text-red-300">
+                {this.state.error?.message || "Rendering error"}
+              </div>
+            ) : null}
 
             <button
               onClick={() => window.location.assign(homePath)}
               className="w-full focus:outline-none focus:ring-2 focus:ring-red-500 px-5 sm:px-6 py-3 sm:py-4 bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white font-bold tracking-widest uppercase text-xs sm:text-sm rounded-sm transition-colors transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              <Terminal size={18} />
+              <Home size={18} />
               {isEnglish ? "Back home" : "返回首页"}
             </button>
           </div>
