@@ -23,3 +23,7 @@ Do not bulk-load `docs/spec/capital-production-artifacts/evidence/**` or full Ca
 - This repo is the public `72hours` website: Vite, React, Tailwind CSS.
 - Capital public pages live in this repo, but Capital API, contracts, admin, indexer, and shared types live in sibling repos.
 - Keep generated evidence logs out of active Codex context. Summarize results in a short README or context note instead.
+
+## Engineering Discipline
+
+Before coding, read `CLAUDE.md` and follow its Karpathy-style rules: think first, keep changes simple, edit surgically, and verify against the requested goal.
