@@ -347,6 +347,78 @@ function RuleStep({
   );
 }
 
+function displayDrawStatus(status: string | undefined, isEnglish: boolean) {
+  const labels: Record<string, string> = isEnglish ? {
+    eligible_pending_draw: "Not drawn yet",
+    pending_draw: "Not drawn yet",
+    in_progress: "Drawing in progress",
+    finalized: "Draw completed",
+    ineligible: "Not eligible",
+    review: "Under review",
+  } : {
+    eligible_pending_draw: "未开奖",
+    pending_draw: "未开奖",
+    in_progress: "开奖中",
+    finalized: "已开奖",
+    ineligible: "资格未通过",
+    review: "资格复核中",
+  };
+  return status ? (labels[status] || status) : isEnglish ? "Not drawn yet" : "未开奖";
+}
+
+function displayPayoutStatus(status: string | undefined, isEnglish: boolean) {
+  const labels: Record<string, string> = isEnglish ? {
+    pending_manual_transfer: "Waiting for official wallet transfer",
+    pending: "Waiting for official wallet transfer",
+    processing: "Transfer in progress",
+    transferred: "Transferred",
+    paid: "Transferred",
+    failed: "Needs follow-up",
+    not_required: "No transfer needed",
+    not_awarded: "Waiting for draw",
+    rejected: "Not eligible",
+  } : {
+    pending_manual_transfer: "待官方钱包发放",
+    pending: "待官方钱包发放",
+    processing: "发放处理中",
+    transferred: "已发放",
+    paid: "已发放",
+    failed: "待复核处理",
+    not_required: "无需发放",
+    not_awarded: "等待开奖",
+    rejected: "资格未通过",
+  };
+  return status ? (labels[status] || status) : isEnglish ? "Waiting for draw" : "等待开奖";
+}
+
+function displayWhitelistStatus(status: string | undefined, isEnglish: boolean) {
+  const labels: Record<string, string> = isEnglish ? {
+    registered_pending_review: "Registered, pending review",
+    approved: "Approved",
+    rejected: "Not eligible",
+  } : {
+    registered_pending_review: "已登记，待复核",
+    approved: "已通过",
+    rejected: "资格未通过",
+  };
+  return status ? (labels[status] || status) : undefined;
+}
+
+function displayUserSegment(segment: string | undefined, isEnglish: boolean) {
+  const labels: Record<string, string> = isEnglish ? {
+    priority_whale: "Priority follow-up",
+    priority_core: "Priority follow-up",
+    telegram_premium: "Telegram Premium user",
+    warmup_waitlist: "Warmup list",
+  } : {
+    priority_whale: "优先跟进",
+    priority_core: "优先跟进",
+    telegram_premium: "Telegram Premium 用户",
+    warmup_waitlist: "预约名单",
+  };
+  return segment ? (labels[segment] || segment) : undefined;
+}
+
 export default function BotPresale() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
@@ -625,8 +697,8 @@ export default function BotPresale() {
               <StatusBadge tone={presale.enabled ? "primary" : "gold"}>{purchaseStatus}</StatusBadge>
               <StatusBadge tone={presale.chainGetterStatus === "configured" ? "primary" : "neutral"}>
                 {presale.chainGetterStatus === "configured"
-                  ? isEnglish ? "Chain read ready" : "链上状态已读取"
-                  : isEnglish ? "Chain read unavailable" : "链上状态不可用"}
+                  ? isEnglish ? "Public evidence ready" : "公开证据已同步"
+                  : isEnglish ? "Public evidence pending" : "公开证据待同步"}
               </StatusBadge>
               <StatusBadge tone={address ? "primary" : "neutral"}>
                 {address ? (isEnglish ? "Wallet connected" : "钱包已连接") : isEnglish ? "Wallet not connected" : "钱包未连接"}
@@ -640,8 +712,8 @@ export default function BotPresale() {
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Whitelist registration and opening reminders are handled inside the official Bot / Mini App. This page does not request payment, signatures, private transfers, or promise on-chain quota; register first and watch the countdown."
-                    : "预售信息只在官方 Telegram Bot / Mini App 内展示。本页不会要求付款、签名或私下转账，也不承诺链上额度；现在只开放白名单登记、开售提醒与倒计时。"}
+                    ? "Whitelist registration and opening reminders are handled inside the official Bot / Mini App. This page does not request payment, signatures, private transfers, or promise purchase quota; register first and watch the countdown."
+                    : "预售信息只在官方 Telegram Bot / Mini App 内展示。本页不会要求付款、签名或私下转账，也不承诺购买额度；现在只开放白名单登记、开售提醒与倒计时。"}
                 </p>
               </div>
 
@@ -702,8 +774,8 @@ export default function BotPresale() {
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {isEnglish
-                      ? "This is a reservation record only. It creates off-chain eligibility evidence for later manual payout review; it does not open purchase, payment, signature, claim, or a new smart contract."
-                      : "当前只是预约记录。它会生成链下资格证据，供后续人工发奖核对；不会开放购买、付款、签名、领取，也不会新增合约。"}
+                      ? "This is a reservation record only. It records eligibility for later prize review; it does not open purchase, payment, signature, or instant reward claiming."
+                      : "当前只是预约记录。它会记录后续发奖核对所需的资格信息；不会开放购买、付款、签名或即时领取。"}
                   </p>
                 </div>
                 <Gift className="h-5 w-5 shrink-0 text-gold" />
@@ -725,10 +797,10 @@ export default function BotPresale() {
                 />
                 <RuleStep
                   index="03"
-                  title={isEnglish ? "Transparent draw and payout" : "透明开奖与发奖"}
+                  title={isEnglish ? "Transparent draw and prize transfer" : "透明开奖与发奖"}
                   body={isEnglish
-                    ? `Each lottery code is one ticket. The team uses a public seed made from TON block hash + activity id + draw time for deterministic shuffling. Prize tiers: first, second, third, and participation (${PARTICIPATION_REWARD_RANGE_LABEL} 72H random range). One user can win at most one major prize; participation rewards may cover more users. Payouts are later sent from an official/private prize wallet. No self-claim page and no contract claim action here.`
-                    : `每个抽奖码就是一张票。团队用 TON 区块哈希 + 活动 ID + 开奖时间组成公开随机种子，确定性洗牌开奖。奖项分为一等奖、二等奖、三等奖、参与奖；参与奖为 ${PARTICIPATION_REWARD_RANGE_LABEL} 72H 随机区间。同一用户最多中一次大奖，参与奖可覆盖更多用户。奖励后续由官方/私人奖池钱包转账发放，本页没有自助领取入口，也没有合约领取动作。`}
+                    ? `Each lottery code is one ticket. The draw uses public parameters: TON block hash + activity ID + draw time, so the result can be reviewed after publication. Prize tiers: first, second, third, and participation (${PARTICIPATION_REWARD_RANGE_LABEL} 72H random range). One user can win at most one major prize; participation rewards may cover more users. Rewards are later sent from the official prize wallet. No gas payment or instant claim is needed here.`
+                    : `每个抽奖码就是一张票。开奖使用公开参数：TON 区块哈希 + 活动 ID + 开奖时间，结果公布后可复核。奖项分为一等奖、二等奖、三等奖、参与奖；参与奖为 ${PARTICIPATION_REWARD_RANGE_LABEL} 72H 随机区间。同一用户最多中一次大奖，参与奖可覆盖更多用户。奖励后续由官方奖池钱包转账发放，本页无需支付 gas，也没有即时领取入口。`}
                 />
               </div>
             </div>
@@ -741,8 +813,8 @@ export default function BotPresale() {
 
             <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
               {isEnglish
-                ? "Before the official opening, this page only records whitelist reservations and reminders. No payment, signature, private transfer, or on-chain quota promise is required."
-                : "正式开放前，本页只用于白名单预约和开售提醒。无需付款、无需签名、无需私下转账，也不承诺链上额度。"}
+                ? "Before the official opening, this page only records whitelist reservations and reminders. No payment, signature, private transfer, or purchase quota promise is required."
+                : "正式开放前，本页只用于白名单预约和开售提醒。无需付款、无需签名、无需私下转账，也不承诺购买额度。"}
             </div>
           </div>
 
@@ -768,9 +840,9 @@ export default function BotPresale() {
                     <div>
                       {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
                       {reservation.walletAddress ? ` · ${shortAddress(reservation.walletAddress)}` : ""}
-                      {reservation.whitelistStatus ? ` · ${reservation.whitelistStatus}` : ""}
-                      {reservation.userSegment ? ` · ${reservation.userSegment}` : ""}
-                      {reservation.rewardStatus ? ` · ${isEnglish ? "reward" : "发奖"}: ${reservation.rewardStatus}` : ""}
+                      {reservation.whitelistStatus ? ` · ${displayWhitelistStatus(reservation.whitelistStatus, isEnglish)}` : ""}
+                      {reservation.userSegment ? ` · ${displayUserSegment(reservation.userSegment, isEnglish)}` : ""}
+                      {reservation.rewardStatus ? ` · ${isEnglish ? "Reward status" : "发奖状态"}: ${displayPayoutStatus(reservation.rewardStatus, isEnglish)}` : ""}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-3">
                       <MetricCard
@@ -799,10 +871,10 @@ export default function BotPresale() {
                     </div>
                     {reservation.drawStatus ? (
                       <div className="rounded-sm border border-line/60 bg-background/35 px-3 py-2 text-xs leading-5 text-muted-foreground">
-                        {isEnglish ? "Draw" : "开奖"}: {reservation.drawStatus}
+                        {isEnglish ? "Draw" : "开奖"}: {displayDrawStatus(reservation.drawStatus, isEnglish)}
                         {reservation.winningTier && reservation.winningTier !== "none" ? ` · ${reservation.winningTierLabel || reservation.winningTier} · ${reservation.rewardAmount72H || "0"} 72H` : ""}
-                        {reservation.payoutStatus ? ` · ${isEnglish ? "payout" : "发放"}: ${reservation.payoutStatus}` : ""}
-                        {reservation.payoutTx ? ` · tx: ${reservation.payoutTx}` : ""}
+                        {reservation.payoutStatus ? ` · ${isEnglish ? "Reward status" : "发奖状态"}: ${displayPayoutStatus(reservation.payoutStatus, isEnglish)}` : ""}
+                        {reservation.payoutTx ? ` · ${isEnglish ? "Transfer record" : "转账记录"}: ${reservation.payoutTx}` : ""}
                       </div>
                     ) : null}
                     {reservation.inviteLink ? (
@@ -948,8 +1020,8 @@ export default function BotPresale() {
                   </h2>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-sm border border-line/70">
-                  <ContractLink label="PresaleVault" value={presale.presaleVaultAddress} />
-                  <ContractLink label="72H Jetton" value={presale.jettonMasterAddress} />
+                  <ContractLink label={isEnglish ? "Official sale address" : "官方销售地址"} value={presale.presaleVaultAddress} />
+                  <ContractLink label={isEnglish ? "72H token address" : "72H 代币地址"} value={presale.jettonMasterAddress} />
                 </div>
               </div>
 
@@ -959,8 +1031,8 @@ export default function BotPresale() {
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Before opening, only off-chain reservations, whitelist status, reminders, community task status, and user segments are recorded. Lottery rewards come from official/private wallet transfers; no new contract is added."
-                    : "开放前只记录链下预约、白名单状态、开售提醒、社群任务状态和用户分层。抽奖奖励由官方/私人钱包转账发放，不新增合约。"}
+                    ? "Before opening, only reservations, whitelist status, reminders, community task status, and user segments are recorded. Lottery rewards come from the official prize wallet; users do not need to pay gas to claim."
+                    : "开放前只记录预约、白名单状态、开售提醒、社群任务状态和用户分层。抽奖奖励由官方奖池钱包转账发放，用户无需支付 gas 领取。"}
                 </p>
                 <a
                   href="https://t.me/the72hbot?start=human"
