@@ -326,11 +326,14 @@ function ClaimUnlockPanel({
         <div className="border-b border-line/70 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.28em] text-primary/80 sm:px-5">
           {claimUnlock.scheduleTitle}
         </div>
+        <p className="border-b border-line/70 px-4 py-3 text-xs leading-6 text-foreground/85 sm:px-5 sm:text-sm">
+          {claimUnlock.scheduleNotice}
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[680px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line/70 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Price" : "价格"}</th>
+                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Mechanism threshold" : "机制阈值"}</th>
                 <th className="px-4 py-3 font-bold">{isEnglish ? "Unlocked" : "解锁"}</th>
                 <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Rule" : "规则"}</th>
               </tr>
