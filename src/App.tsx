@@ -11,7 +11,6 @@ import { stripLocalePrefix } from "./lib/routes";
 import CapitalRouteBoundary from "./components/CapitalRouteBoundary";
 import Ecosystem from "./pages/Ecosystem";
 import CapitalVerify from "./pages/CapitalVerify";
-import GreenBook from "./pages/GreenBook";
 import Learn from "./pages/Learn";
 import Hours from "./pages/Hours";
 import About from "./pages/About";
@@ -25,6 +24,7 @@ const Capital = React.lazy(() => import("./pages/Capital"));
 const CapitalApp = React.lazy(() => import("./pages/CapitalApp"));
 const CapitalIdentity = React.lazy(() => import("./pages/CapitalIdentity"));
 const BotPresale = React.lazy(() => import("./pages/BotPresale"));
+const GreenBook = React.lazy(() => import("./pages/GreenBook"));
 const Join = React.lazy(() => import("./pages/Join"));
 const TonConnectRouteBoundary = React.lazy(() => import("./components/TonConnectRouteBoundary"));
 
@@ -149,7 +149,7 @@ function AppRoutes() {
       <Route path="capital/:slug" element={withCapitalBoundary(withWalletRoute(<CapitalApp />))} />
       <Route path="capital/:slug/:type/:seatNumber" element={withCapitalBoundary(<CapitalVerify />)} />
       <Route path="bot/presale" element={withWalletRoute(<BotPresale />)} />
-      <Route path="greenbook" element={<GreenBook />} />
+      <Route path="greenbook" element={withLazyRoute(<GreenBook />)} />
       <Route path="join" element={withWalletRoute(<Join />)} />
       <Route path="learn" element={<Learn />} />
       <Route path="hours" element={<Hours />} />
