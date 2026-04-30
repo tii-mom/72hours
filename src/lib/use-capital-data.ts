@@ -103,8 +103,8 @@ export function useCapitalAppPage(locale: Locale, slug: CapitalAppSlug) {
   return state;
 }
 
-export function useCapitalPortfolio(locale: Locale) {
-  const cacheKey = `capital:portfolio:${locale}`;
+export function useCapitalPortfolio(locale: Locale, walletAddress: string) {
+  const cacheKey = `capital:portfolio:${locale}:${walletAddress}`;
   const [state, setState] = useState<CapitalResourceState<CapitalPortfolioData>>(() => {
     const cached = readCachedResource<CapitalPortfolioData>(cacheKey);
 
@@ -117,7 +117,7 @@ export function useCapitalPortfolio(locale: Locale) {
 
     setState(cached ? { status: "ready", data: cached } : { status: "loading" });
 
-    fetchCapitalPortfolio({ locale })
+    fetchCapitalPortfolio({ locale, walletAddress })
       .then((data) => {
         if (cancelled) return;
         writeCachedResource(cacheKey, data);
@@ -131,7 +131,7 @@ export function useCapitalPortfolio(locale: Locale) {
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, locale]);
+  }, [cacheKey, locale, walletAddress]);
 
   return state;
 }

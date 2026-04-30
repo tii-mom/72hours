@@ -7,7 +7,7 @@ import type {
   CapitalIntentResponse,
   CapitalIntentTrackingPayload,
   CapitalSeatType,
-} from "72h-capital-shared";
+} from "./capital-contract-types";
 import {
   getCapitalAlphaAllocateIntentApiPath,
   getCapitalIntentApiPath,

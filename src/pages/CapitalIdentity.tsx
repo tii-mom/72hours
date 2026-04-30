@@ -1,4 +1,5 @@
 import { ArrowRight, Wallet } from "lucide-react";
+import { useTonAddress } from "@tonconnect/ui-react";
 import { InfoCallout } from "../components/InfoCallout";
 import { InfoPageHero } from "../components/InfoPageHero";
 import { LocalizedLink as Link } from "../components/LocalizedLink";
@@ -85,10 +86,66 @@ const credentialToneClasses = {
   muted: "border-line/70 bg-surface/70",
 } as const;
 
+function CapitalIdentityConnectPrompt({ isEnglish, locale }: { isEnglish: boolean; locale: "zh-CN" | "en-US" }) {
+  return (
+    <div className="page-shell pt-20 sm:pt-24">
+      <InfoPageHero
+        kicker="72H Capital"
+        icon={<Wallet size={30} />}
+        title={isEnglish ? "Connect a wallet to open My Capital." : "连接钱包后打开我的 Capital。"}
+        lead={
+          isEnglish
+            ? "My Capital is wallet-scoped. The page does not request portfolio data until a TON wallet is connected."
+            : "我的 Capital 按钱包身份展示。连接 TON 钱包前，本页不会请求组合数据。"
+        }
+        noteLabel={isEnglish ? "Wallet required" : "需要钱包"}
+        noteTitle={isEnglish ? "Portfolio requests stay closed before connection." : "连接前不会发起组合请求。"}
+        noteBody={
+          isEnglish
+            ? "Use the wallet panel below to connect TonConnect, then this route will load the private portfolio view for that address."
+            : "请通过下方钱包面板连接 TonConnect，随后本路由会按该地址加载私有组合视图。"
+        }
+        chips={[
+          <span
+            key="tonconnect"
+            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+          >
+            TonConnect
+          </span>,
+          <span
+            key="no-api"
+            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+          >
+            {isEnglish ? "No API request before wallet" : "连接前不请求 API"}
+          </span>,
+        ]}
+      />
+
+      <section className="page-section-tight">
+        <div className="page-container page-container-narrow">
+          <CapitalWalletPanel locale={locale} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function CapitalIdentity() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
-  const portfolioState = useCapitalPortfolio(locale);
+  const walletAddress = useTonAddress(true);
+
+  if (!walletAddress) {
+    return <CapitalIdentityConnectPrompt isEnglish={isEnglish} locale={locale} />;
+  }
+
+  return <CapitalIdentityPortfolio walletAddress={walletAddress} />;
+}
+
+function CapitalIdentityPortfolio({ walletAddress }: { walletAddress: string }) {
+  const { locale } = useLocale();
+  const isEnglish = locale === "en-US";
+  const portfolioState = useCapitalPortfolio(locale, walletAddress);
   const {
     intentState,
     executionState,
