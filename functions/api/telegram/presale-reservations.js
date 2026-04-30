@@ -6,6 +6,8 @@ const RESERVATION_OPEN_AT = "2026-05-05T09:00:00.000Z";
 const RESERVATION_REWARD_72H = "72";
 const LOTTERY_POOL_72H = "10000000";
 const CONTRACT_EVIDENCE_STATUS = "deployed_inactive_not_purchase";
+const LOTTERY_PAYOUT_MODE = "official_wallet_transfer_no_new_contract";
+const LOTTERY_FUNDING_STATUS = "awaiting_private_wallet_funding_tx";
 const RATE_LIMIT_TTL_SECONDS = 60;
 
 function json(data, status = 200) {
@@ -107,6 +109,7 @@ function publicReservation(record) {
     lotteryPool72H: record.lotteryPool72H,
     saleOpensAt: record.saleOpensAt,
     contractEvidence: record.contractEvidence,
+    lotteryEvidence: record.lotteryEvidence,
   };
 }
 
@@ -188,6 +191,16 @@ export async function onRequestPost({ request, env }) {
       jettonMasterAddress: cleanString(payload?.jettonMasterAddress, 96) || DEFAULT_72H_JETTON_MASTER,
       saleOpensAt: RESERVATION_OPEN_AT,
       note: "Off-chain reservation evidence only; not a purchase, payment, signature, or on-chain quota.",
+    },
+    lotteryEvidence: {
+      pool72H: LOTTERY_POOL_72H,
+      fundingStatus: LOTTERY_FUNDING_STATUS,
+      fundingSource: "private_wallet",
+      payoutMode: LOTTERY_PAYOUT_MODE,
+      noNewContract: true,
+      fundingTxHash: cleanString(payload?.lotteryFundingTxHash, 128),
+      prizeWalletAddress: cleanWallet(payload?.prizeWalletAddress),
+      note: "Lottery rewards are paid by official 72H wallet transfers after winners are finalized; this is not a self-claim smart contract.",
     },
     actorType: auth.actorType,
     authDate: auth.authDate,

@@ -88,6 +88,13 @@ type ReservationRecord = {
   reservationReward72H: string;
   lotteryPool72H: string;
   saleOpensAt: string;
+  lotteryEvidence?: {
+    pool72H: string;
+    fundingStatus: string;
+    fundingSource: string;
+    payoutMode: string;
+    noNewContract: boolean;
+  };
 };
 
 declare global {
@@ -643,8 +650,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Reward: ${RESERVATION_REWARD_LABEL} 72H for eligible reservations. Lottery pool: ${LOTTERY_POOL_LABEL} 72H. No funds are accepted here.`
-                      : `预约奖励：符合条件记录可获得 ${RESERVATION_REWARD_LABEL} 72H。抽奖奖池：${LOTTERY_POOL_LABEL} 72H。本页不收取资金。`}
+                      ? `Reward: ${RESERVATION_REWARD_LABEL} 72H for eligible reservations. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No new claim contract and no funds are accepted here.`
+                      : `预约奖励：符合条件记录可获得 ${RESERVATION_REWARD_LABEL} 72H。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约，本页不收取资金。`}
                   </div>
                   <button
                     type="submit"
