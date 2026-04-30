@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { runLotteryDraw } from "../functions/_shared/lottery-draw.js";
 import { onRequestPost } from "../functions/api/telegram/presale-reservations.js";
 import { onRequestGet as onSalesAdminGet } from "../functions/api/telegram/sales-admin.js";
 import { onRequest as onIntentRequest } from "../functions/api/telegram/presale-intents.js";
@@ -250,6 +251,55 @@ test("presale reservation rejects unauthenticated or malformed requests", async 
     env,
   });
   assert.equal(malformed.status, 400);
+});
+
+test("lottery draw is deterministic, dedupes users, blocks repeated major wins, and keeps participation rewards in range", () => {
+  const reservations = [
+    { id: "r1", telegramUserId: "1", username: "alpha", walletAddress: "EQ1", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 6 },
+    { id: "r1-dup", telegramUserId: "1", username: "alpha_dup", walletAddress: "EQ1DUP", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 99 },
+    { id: "r2", telegramUserId: "2", username: "beta", walletAddress: "EQ2", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 4 },
+    { id: "r3", telegramUserId: "3", username: "gamma", walletAddress: "EQ3", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 3 },
+    { id: "r4", telegramUserId: "4", username: "delta", walletAddress: "EQ4", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 2 },
+    { id: "r5", telegramUserId: "5", username: "epsilon", walletAddress: "EQ5", lotteryEligible: true, status: "warmup_registered", lotteryCodeCount: 1 },
+    { id: "r6", telegramUserId: "6", username: "zeta", walletAddress: "EQ6", lotteryEligible: false, status: "cancelled", lotteryCodeCount: 10 },
+  ];
+
+  const drawInput = {
+    reservations,
+    tonBlockHash: "ton-block-hash-public-001",
+    activityId: "early-access-draw-1",
+    drawTime: "2026-05-05T09:00:00.000Z",
+    bigPrizeTiers: [
+      { tier: "first", label: "一等奖", count: 1, rewardAmount72H: 72000 },
+      { tier: "second", label: "二等奖", count: 1, rewardAmount72H: 7200 },
+      { tier: "third", label: "三等奖", count: 1, rewardAmount72H: 720 },
+    ],
+  };
+  const first = runLotteryDraw(drawInput);
+  const second = runLotteryDraw(drawInput);
+
+  assert.deepEqual(first.winners, second.winners);
+  assert.equal(first.draw.seed, "ton-block-hash-public-001|early-access-draw-1|2026-05-05T09:00:00.000Z");
+  assert.equal(first.draw.eligibleUserCount, 5);
+  assert.equal(first.draw.ticketCount, 16);
+  assert.equal(first.reservations.length, 6);
+
+  const majorWinners = first.winners.filter((winner: any) => ["first", "second", "third"].includes(winner.winningTier));
+  assert.equal(new Set(majorWinners.map((winner: any) => winner.telegramUserId)).size, majorWinners.length);
+  assert.equal(majorWinners.length, 3);
+  assert.equal(first.winners.some((winner: any) => winner.telegramUserId === "6"), false);
+
+  const participationRewards = first.winners.filter((winner: any) => winner.winningTier === "participation");
+  assert.equal(participationRewards.length, 2);
+  for (const winner of participationRewards) {
+    const amount = Number((winner as any).rewardAmount72H);
+    assert.equal(amount >= 10 && amount <= 200, true);
+  }
+
+  for (const row of first.reservations.filter((record: any) => record.winningTier !== "none")) {
+    assert.equal((row as any).payoutStatus, "pending_manual_transfer");
+    assert.equal((row as any).payoutTx, undefined);
+  }
 });
 
 test("purchase intent and receipt routes remain disabled", async () => {

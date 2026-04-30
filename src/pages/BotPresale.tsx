@@ -111,6 +111,12 @@ type ReservationRecord = {
   }[];
   lotteryEligible: boolean;
   lotteryStatus?: string;
+  drawStatus?: string;
+  winningTier?: string;
+  winningTierLabel?: string;
+  rewardAmount72H?: string;
+  payoutStatus?: string;
+  payoutTx?: string;
   reservationReward72H: string;
   rewardStatus?: string;
   rewardTxHash?: string;
@@ -140,6 +146,7 @@ declare global {
 const SALE_OPENS_AT = "2026-05-05T09:00:00.000Z";
 const LOTTERY_POOL_LABEL = "10,000,000";
 const RESERVATION_REWARD_LABEL = "72";
+const PARTICIPATION_REWARD_RANGE_LABEL = "10-200";
 const WARMUP_MODE_LABEL = "Early Access";
 
 const FALLBACK_PRESALE: PresaleRuntime = {
@@ -718,10 +725,10 @@ export default function BotPresale() {
                 />
                 <RuleStep
                   index="03"
-                  title={isEnglish ? "How rewards are paid" : "奖励如何发放"}
+                  title={isEnglish ? "Transparent draw and payout" : "透明开奖与发奖"}
                   body={isEnglish
-                    ? `The ${LOTTERY_POOL_LABEL} 72H lottery pool and reservation rewards are paid later from an official/private prize wallet. There is no self-claim page and no contract claim action here.`
-                    : `${LOTTERY_POOL_LABEL} 72H 抽奖奖池与预约奖励后续由官方/私人奖池钱包转账发放。本页没有自助领取入口，也没有合约领取动作。`}
+                    ? `Each lottery code is one ticket. The team uses a public seed made from TON block hash + activity id + draw time for deterministic shuffling. Prize tiers: first, second, third, and participation (${PARTICIPATION_REWARD_RANGE_LABEL} 72H random range). One user can win at most one major prize; participation rewards may cover more users. Payouts are later sent from an official/private prize wallet. No self-claim page and no contract claim action here.`
+                    : `每个抽奖码就是一张票。团队用 TON 区块哈希 + 活动 ID + 开奖时间组成公开随机种子，确定性洗牌开奖。奖项分为一等奖、二等奖、三等奖、参与奖；参与奖为 ${PARTICIPATION_REWARD_RANGE_LABEL} 72H 随机区间。同一用户最多中一次大奖，参与奖可覆盖更多用户。奖励后续由官方/私人奖池钱包转账发放，本页没有自助领取入口，也没有合约领取动作。`}
                 />
               </div>
             </div>
@@ -790,6 +797,14 @@ export default function BotPresale() {
                             : isEnglish ? "Record group share +2" : "记录群分享 +2"}
                       </button>
                     </div>
+                    {reservation.drawStatus ? (
+                      <div className="rounded-sm border border-line/60 bg-background/35 px-3 py-2 text-xs leading-5 text-muted-foreground">
+                        {isEnglish ? "Draw" : "开奖"}: {reservation.drawStatus}
+                        {reservation.winningTier && reservation.winningTier !== "none" ? ` · ${reservation.winningTierLabel || reservation.winningTier} · ${reservation.rewardAmount72H || "0"} 72H` : ""}
+                        {reservation.payoutStatus ? ` · ${isEnglish ? "payout" : "发放"}: ${reservation.payoutStatus}` : ""}
+                        {reservation.payoutTx ? ` · tx: ${reservation.payoutTx}` : ""}
+                      </div>
+                    ) : null}
                     {reservation.inviteLink ? (
                       <div className="break-all rounded-sm border border-line/60 bg-background/35 px-3 py-2 text-xs text-muted-foreground">
                         {isEnglish ? "Invite link" : "邀请链接"}: {reservation.inviteLink}
