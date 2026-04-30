@@ -139,7 +139,7 @@ const SALE_OPENS_AT = "2026-05-05T09:00:00.000Z";
 const LOTTERY_POOL_LABEL = "10,000,000";
 const RESERVATION_REWARD_LABEL = "72";
 const PARTICIPATION_REWARD_RANGE_LABEL = "10-200";
-const WARMUP_MODE_LABEL = "Whitelist Reservation";
+const WARMUP_MODE_LABEL = "Early Reservation";
 
 const FALLBACK_PRESALE: PresaleRuntime = {
   configured: true,
@@ -155,7 +155,7 @@ const FALLBACK_PRESALE: PresaleRuntime = {
   tradingStatus: "disabled",
   chainGetterStatus: "disabled",
   chainVerifierStatus: "disabled",
-  chainGetterMessage: "Sale status is syncing.",
+  chainGetterMessage: "Contract evidence is syncing.",
   walletCap72H: "7,200,000",
   totalCap72H: "4,500,000,000",
   stageRules: [
@@ -176,7 +176,7 @@ function explorerAddressUrl(address: string) {
 }
 
 function formatCountdown(ms: number, isEnglish: boolean) {
-  if (ms <= 0) return isEnglish ? "opening window reached" : "已到开放窗口";
+  if (ms <= 0) return isEnglish ? "update window reached" : "已到计划节点";
   const totalSeconds = Math.floor(ms / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -264,7 +264,7 @@ function StagePriceRow({
       <div className="text-right">
         <div className="text-base font-black text-foreground">1 TON = {stage.tokensPerTon} 72H</div>
         <div className="mt-1 text-xs text-muted-foreground">
-          {isEnglish ? "cap" : "额度"} {stage.cap72H} 72H
+          {isEnglish ? "not live · not a quote · cap evidence" : "未开放 · 非报价 · 上限证据"} {stage.cap72H} 72H
         </div>
       </div>
     </div>
@@ -386,11 +386,11 @@ function displayPayoutStatus(status: string | undefined, isEnglish: boolean) {
 function displayWhitelistStatus(status: string | undefined, isEnglish: boolean) {
   const labels: Record<string, string> = isEnglish ? {
     registered_pending_review: "Registered, pending review",
-    approved: "Approved",
+    approved: "Reviewed",
     rejected: "Not eligible",
   } : {
     registered_pending_review: "已登记，待复核",
-    approved: "已通过",
+    approved: "已复核",
     rejected: "资格未通过",
   };
   return status ? (labels[status] || status) : undefined;
@@ -401,12 +401,12 @@ function displayUserSegment(segment: string | undefined, isEnglish: boolean) {
     priority_whale: "Priority follow-up",
     priority_core: "Priority follow-up",
     telegram_premium: "Telegram Premium user",
-    warmup_waitlist: "Whitelist Reservation",
+    warmup_waitlist: "Early reservation list",
   } : {
     priority_whale: "优先跟进",
     priority_core: "优先跟进",
     telegram_premium: "Telegram Premium 用户",
-    warmup_waitlist: "白名单预约",
+    warmup_waitlist: "早期预约名单",
   };
   return segment ? (labels[segment] || segment) : undefined;
 }
@@ -458,8 +458,8 @@ export default function BotPresale() {
           setState({
             status: "error",
             message: isEnglish
-              ? "Sale status is syncing. Whitelist registration remains available."
-              : "开售状态正在同步，白名单预约仍可继续。",
+              ? "Contract evidence is syncing. Early reservation remains available."
+              : "合约证据正在同步，早期预约仍可继续。",
             presale: FALLBACK_PRESALE,
           });
         }
@@ -515,7 +515,7 @@ export default function BotPresale() {
 
   const presale = state.status === "ready" || state.status === "error" ? state.presale : FALLBACK_PRESALE;
   const liveStage = presale.chainSnapshot?.publicStage;
-  const purchaseStatus = isEnglish ? "Early reservation only · no purchase / wallet action" : "早期预约阶段 · 不购买 / 不连钱包";
+  const purchaseStatus = isEnglish ? "Early reservation only · no purchase / wallet / claim" : "早期预约阶段 · 不购买 / 不连钱包 / 不领取";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -560,8 +560,8 @@ export default function BotPresale() {
       }
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
-        ? isEnglish ? "You are already on the whitelist reservation list." : "你已经在预约白名单中。"
-        : isEnglish ? "Reservation confirmed. You received 1 raffle code. You can invite friends or submit the community sharing task for more codes." : "预约成功。你已获得 1 个抽奖码。可继续邀请好友或提交社群分享任务获得更多抽奖码。"
+        ? isEnglish ? "You are already on the early reservation list." : "你已经在早期预约名单中。"
+        : isEnglish ? "Reservation recorded. You received 1 raffle code. Valid invites add +1; community sharing can add +2 only after review." : "预约已记录。你已获得 1 个抽奖码；有效邀请 +1，社群分享任务待复核通过后才可能 +2。"
       );
     } catch (error) {
       console.warn("Reservation submission failed", error);
@@ -601,8 +601,8 @@ export default function BotPresale() {
       }
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
-        ? isEnglish ? "Share task was already recorded once. Invite text copied again." : "社群分享任务已记录过一次；邀请文案已再次复制。"
-        : isEnglish ? "Share task recorded: +2 lottery codes. Invite text copied." : "社群分享任务已记录：+2 个抽奖码。邀请文案已复制。"
+        ? isEnglish ? "Share task is already pending review. Invite text copied again." : "社群分享任务已在待复核中；邀请文案已再次复制。"
+        : isEnglish ? "Share task submitted for review. +2 remains pending until approved. Invite text copied." : "社群分享任务已提交复核；+2 待审核通过后才生效。邀请文案已复制。"
       );
     } catch (error) {
       console.warn("Share task recording failed", error);
@@ -615,8 +615,8 @@ export default function BotPresale() {
   const recordBuyerSignal = (type: BuyerSignal) => {
     const messages: Record<BuyerSignal, string> = {
       buy_interest: isEnglish
-        ? "Opening reminder recorded. Purchases are not open yet."
-        : "开售提醒已记录。购买暂未开放。",
+        ? "Official update reminder recorded. Purchase, payment, wallet action, and claims are not open."
+        : "官方更新提醒已记录。购买、付款、钱包操作和领取均未开放。",
       contract_check: isEnglish
         ? "Security check signal recorded."
         : "安全核验需求已记录。",
@@ -654,14 +654,14 @@ export default function BotPresale() {
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
                     ? "This phase is for reservations and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. No purchase, payment, wallet connection, signing, claiming, private transfer, or purchase quota is handled here."
-                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，完成社群分享任务 +2。本页不会要求购买、付款、连接钱包、签名、领取资产、私下转账或承诺购买额度。"}
+                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，社群分享任务复核通过后才可能 +2。本页不会要求购买、付款、连接钱包、签名、领取资产、私下转账或承诺购买额度。"}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <MetricCard
-                label={isEnglish ? "Official opening reminder" : "开售提醒时间"}
+                label={isEnglish ? "Official update window" : "预约阶段计划节点"}
                 value={countdownText}
                 detail={`${saleOpenLabel} · GMT+8`}
               />
@@ -681,12 +681,12 @@ export default function BotPresale() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-black tracking-normal text-foreground">
-                    {isEnglish ? "Reward and lottery rules" : "奖励与抽奖规则"}
+                    {isEnglish ? "Reservation and draw rules" : "预约与开奖规则"}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {isEnglish
-                      ? "This is a reservation record only. It records eligibility for later prize review; it does not open purchase, payment, signature, or instant reward claiming."
-                      : "当前只是预约记录。它会记录后续发奖核对所需的资格信息；不会开放购买、付款、签名或即时领取。"}
+                      ? "This is a reservation record only. It records information for later prize review; it does not confirm eligibility, purchase quota, payment, signature, or instant reward claiming."
+                      : "当前只是预约记录。它会记录后续发奖复核所需的信息；不确认资格、购买额度、付款、签名或即时领取。"}
                   </p>
                 </div>
                 <Gift className="h-5 w-5 shrink-0 text-gold" />
@@ -701,10 +701,10 @@ export default function BotPresale() {
                 />
                 <RuleStep
                   index="02"
-                  title={isEnglish ? "How to get more codes" : "如何获得更多抽奖码"}
+                  title={isEnglish ? "How codes become reviewable" : "抽奖码如何进入复核"}
                   body={isEnglish
-                    ? "Reservation success gives +1 code. Each valid new user invited through your code gives +1. Completing the group/community share task gives +2 once per user."
-                    : "预约成功 +1 个抽奖码；通过你的邀请码成功邀请 1 个新用户 +1；完成群/社群分享任务一次性 +2。"}
+                    ? "Reservation success gives +1 code. Each valid new user invited through your code gives +1. A group/community sharing task can add +2 once per user only after review."
+                    : "预约成功 +1 个抽奖码；通过你的邀请码成功邀请 1 个有效新用户 +1；群/社群分享任务需复核通过后才可能一次性 +2。"}
                 />
                 <RuleStep
                   index="03"
@@ -730,12 +730,12 @@ export default function BotPresale() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-black tracking-normal text-foreground">
-                      {isEnglish ? "Register whitelist preference" : "登记白名单意向"}
+                      {isEnglish ? "Join early reservation list" : "加入早期预约名单"}
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "Submit once to reserve and receive 1 raffle code. Do not connect a wallet or pay anything for this phase."
-                        : "提交一次即可完成预约并获得 1 个抽奖码。本阶段不需要连接钱包，也不收取任何费用。"}
+                        ? "Submit once to join the early reservation list and receive 1 raffle code. Your interest range is not quota, eligibility, price, or a purchase commitment."
+                        : "提交一次即可加入早期预约名单并获得 1 个抽奖码。关注区间不代表额度、资格、价格或购买承诺。"}
                     </p>
                   </div>
                   <Gift className="h-5 w-5 text-gold" />
@@ -744,7 +744,7 @@ export default function BotPresale() {
                 {reservation ? (
                   <div className="mt-5 grid gap-3 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
                     <div>
-                      {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
+                      {isEnglish ? "Interest range" : "关注区间"}: {reservation.desiredAllocation72H} 72H
                       {reservation.whitelistStatus ? ` · ${displayWhitelistStatus(reservation.whitelistStatus, isEnglish)}` : ""}
                       {reservation.userSegment ? ` · ${displayUserSegment(reservation.userSegment, isEnglish)}` : ""}
                       {reservation.rewardStatus ? ` · ${isEnglish ? "Reward status" : "发奖状态"}: ${displayPayoutStatus(reservation.rewardStatus, isEnglish)}` : ""}
@@ -753,7 +753,7 @@ export default function BotPresale() {
                       <MetricCard
                         label={isEnglish ? "Your lottery codes" : "当前抽奖码"}
                         value={String(reservation.lotteryCodeCount ?? (reservation.lotteryEligible ? 1 : 0))}
-                        detail={isEnglish ? "+1 reserve · +1 per valid invite · +2 one-time group share" : "预约 +1；每邀请 1 个有效新用户 +1；群分享任务一次 +2"}
+                        detail={isEnglish ? "+1 reserve · +1 per valid invite · +2 share pending review" : "预约 +1；有效邀请 +1；分享 +2 待复核"}
                       />
                       <MetricCard
                         label={isEnglish ? "Valid invites" : "有效邀请"}
@@ -771,7 +771,7 @@ export default function BotPresale() {
                           ? isEnglish ? "Recording" : "记录中"
                           : reservation.communityTasks?.sharedInvite
                             ? isEnglish ? "Copy invite again" : "再次复制邀请"
-                            : isEnglish ? "Record group share +2" : "记录群分享 +2"}
+                            : isEnglish ? "Submit share for +2 review" : "提交分享 +2 复核"}
                       </button>
                     </div>
                     {reservation.drawStatus ? (
@@ -792,12 +792,12 @@ export default function BotPresale() {
 
                 <form className="mt-5 grid gap-4" onSubmit={submitReservation}>
                   <label className="grid gap-2 text-sm font-bold text-foreground">
-                    {isEnglish ? "Desired reservation amount (72H)" : "希望登记数量（72H）"}
+                    {isEnglish ? "Interest range (72H)" : "关注区间（72H）"}
                     <input
                       value={desiredAllocation72H}
                       onChange={(event) => setDesiredAllocation72H(event.target.value)}
                       inputMode="decimal"
-                      placeholder="7200000"
+                      placeholder={isEnglish ? "Example only, not quota" : "仅示例，不代表额度"}
                       disabled={Boolean(reservation) || reservationPending}
                       className="min-h-12 rounded-sm border border-line/70 bg-background/60 px-4 text-base font-semibold outline-none transition-colors focus:border-primary/50 disabled:opacity-60"
                     />
@@ -814,8 +814,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current phase: early reservation only. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task adds +2 once after review. No funds, wallet connection, signatures, or claims are accepted here.`
-                      : `当前阶段：仅早期预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核后一次性 +2。本页不收取资金、不连接钱包、不签名、不领取。`}
+                      ? `Current phase: early reservation only. The interest range is not quota, eligibility, price, or a purchase commitment. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task can add +2 only after review. No funds, wallet connection, signatures, or claims are accepted here.`
+                      : `当前阶段：仅早期预约。关注区间不代表额度、资格、价格或购买承诺。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核通过后才可能 +2。本页不收取资金、不连接钱包、不签名、不领取。`}
                   </div>
                   <button
                     type="submit"
@@ -826,7 +826,7 @@ export default function BotPresale() {
                       ? isEnglish ? "Reservation recorded" : "预约已记录"
                       : reservationPending
                         ? isEnglish ? "Submitting" : "提交中"
-                        : isEnglish ? "Reserve whitelist" : "预约白名单"}
+                        : isEnglish ? "Join reservation list" : "加入预约名单"}
                   </button>
                 </form>
 
@@ -845,8 +845,8 @@ export default function BotPresale() {
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "These choices help the team follow up on your reservation and reminders."
-                        : "这些选择会用于预约与提醒跟进，不会生成交易。"}
+                        ? "These choices help the team follow up on your reservation and official update reminders."
+                        : "这些选择会用于预约与官方更新提醒跟进，不会生成交易。"}
                     </p>
                   </div>
                   <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -855,7 +855,7 @@ export default function BotPresale() {
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <QuickAction
                     icon={<Gift className="h-4 w-4" />}
-                    label={isEnglish ? "Remind me when opening starts" : "开售时提醒我"}
+                    label={isEnglish ? "Remind me about official updates" : "官方更新时提醒我"}
                     onClick={() => recordBuyerSignal("buy_interest")}
                   />
                   <QuickAction
@@ -879,12 +879,12 @@ export default function BotPresale() {
 
               <div className="rounded-md border border-line/70 bg-surface/72 p-5 sm:p-6">
                 <h2 className="text-xl font-black tracking-normal text-foreground">
-                  {isEnglish ? "Planned stage rules" : "计划阶段规则"}
+                  {isEnglish ? "Contract rule evidence (not live)" : "合约规则证据（未开放）"}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {isEnglish
-                    ? "Not currently purchasable. These are planned rules for official review only."
-                    : "当前不可购买、不承诺链上额度。以下仅为开售前规则核对。"}
+                    ? "Not live, not a quote, not a purchase commitment. Shown only as contract-rule evidence for review."
+                    : "未开放、不是报价、不是购买承诺。以下仅作为合约规则证据供核对。"}
                 </p>
                 <div className="mt-5 overflow-hidden rounded-sm border border-line/70">
                   {presale.stageRules.map((item) => (
@@ -898,12 +898,12 @@ export default function BotPresale() {
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <MetricCard
-                    label={isEnglish ? "Planned total cap" : "计划总上限"}
+                    label={isEnglish ? "Rule cap evidence" : "规则上限证据"}
                     value={presale.totalCap72H}
                     detail="72H"
                   />
                   <MetricCard
-                    label={isEnglish ? "Wallet cap" : "单钱包上限"}
+                    label={isEnglish ? "Wallet cap evidence" : "单钱包上限证据"}
                     value={presale.walletCap72H}
                     detail="72H"
                   />
@@ -920,7 +920,7 @@ export default function BotPresale() {
                   </h2>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-sm border border-line/70">
-                  <ContractLink label={isEnglish ? "Official sale address" : "官方销售地址"} value={presale.presaleVaultAddress} />
+                  <ContractLink label={isEnglish ? "PresaleVault evidence · closed" : "PresaleVault 链上证据（关闭状态）"} value={presale.presaleVaultAddress} />
                   <ContractLink label={isEnglish ? "72H token address" : "72H 代币地址"} value={presale.jettonMasterAddress} />
                 </div>
               </div>
@@ -951,8 +951,8 @@ export default function BotPresale() {
               {state.status === "error" ? (
                 <div className="rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/86">
                   {isEnglish
-                    ? "Sale status is syncing. Whitelist registration remains available."
-                    : "开售状态正在同步，白名单预约仍可继续。"}
+                    ? "Contract evidence is syncing. Early reservation remains available."
+                    : "合约证据正在同步，早期预约仍可继续。"}
                 </div>
               ) : null}
             </aside>

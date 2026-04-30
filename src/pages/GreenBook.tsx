@@ -322,10 +322,11 @@ function ClaimUnlockPanel({
         </article>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-line/70 bg-read-panel/70">
-        <div className="border-b border-line/70 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.28em] text-primary/80 sm:px-5">
-          {claimUnlock.scheduleTitle}
-        </div>
+      <details className="group overflow-hidden rounded-md border border-line/70 bg-read-panel/70">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-line/70 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.28em] text-primary/80 sm:px-5 [&::-webkit-details-marker]:hidden">
+          <span>{claimUnlock.scheduleTitle}</span>
+          <span className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
         <p className="border-b border-line/70 px-4 py-3 text-xs leading-6 text-foreground/85 sm:px-5 sm:text-sm">
           {claimUnlock.scheduleNotice}
         </p>
@@ -333,9 +334,9 @@ function ClaimUnlockPanel({
           <table className="w-full min-w-[680px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line/70 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Mechanism threshold" : "机制阈值"}</th>
-                <th className="px-4 py-3 font-bold">{isEnglish ? "Unlocked" : "解锁"}</th>
-                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Rule" : "规则"}</th>
+                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Mechanism threshold example" : "机制阈值示例"}</th>
+                <th className="px-4 py-3 font-bold">{isEnglish ? "Potential staged availability" : "可能分阶段比例"}</th>
+                <th className="px-4 py-3 font-bold sm:px-5">{isEnglish ? "Rule note" : "规则说明"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/70">
@@ -349,7 +350,7 @@ function ClaimUnlockPanel({
             </tbody>
           </table>
         </div>
-      </div>
+      </details>
 
       <p className="border-y border-line/70 py-4 text-sm leading-7 text-foreground/88 sm:text-base sm:leading-8">
         {claimUnlock.note}
