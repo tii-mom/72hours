@@ -1120,8 +1120,8 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       noteLabel: locale === "en-US" ? "First release" : "首批开放",
       noteTitle: locale === "en-US" ? "243 limited seats across 3 applications." : "3 个应用，共 243 个限量席位。",
       noteBody: locale === "en-US"
-        ? "Current public data is for review only. Real Capital seat configuration is not open; any future opening must be announced officially."
-        : "当前公开数据仅供核对。真实 Capital 席位暂不可配置；未来如开放，以官方公告为准。",
+        ? "Current public data is for review only. Real Capital seat actions are not open; any future opening must be announced officially."
+        : "当前公开数据仅供核对。真实 Capital 席位动作未开放；未来如开放，以官方公告为准。",
       chips: [
         "multi-millionaire",
         "72hours",
@@ -1265,8 +1265,8 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
         ? "Review public and private Capital identity records in one place."
         : "在同一页查看 Capital 身份记录。",
       body: locale === "en-US"
-        ? "The portfolio view is read-only now. Purchasing, claiming, and real seat configuration remain closed."
-        : "组合页当前只读。购买、领取与真实席位配置均未开放。",
+        ? "The portfolio view is read-only now. Purchasing, claiming, and real seat actions remain closed."
+        : "组合页当前只读。购买、领取与真实席位动作均未开放。",
       actions: [
         {
           label: locale === "en-US" ? "Open My Capital" : "打开我的 Capital",

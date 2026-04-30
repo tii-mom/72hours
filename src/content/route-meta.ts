@@ -173,8 +173,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital/multi-millionaire": {
       title: `${siteConfig.siteName} | multi-millionaire Capital`,
       description: isEnglish
-        ? "See the capital seat structure, alpha threshold, and verification pages for multi-millionaire."
-        : "查看 multi-millionaire 的 Capital Seat 结构、Alpha 门槛与身份展示。",
+        ? "Read the multi-millionaire waitlist and Capital rule boundary. Real lock-up, seat actions, and reward claiming are not open."
+        : "查看 multi-millionaire 候补与 Capital 规则边界；真实锁仓、席位配置和奖励领取均未开放。",
     },
     "/capital/72hours": {
       title: `${siteConfig.siteName} | 72hours Capital`,
@@ -209,8 +209,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       title: `${siteConfig.siteName} | ${glossary.pageLabels.learn}`,
       description:
         isEnglish
-          ? "Apply online or offline to learn 72H-style crypto app building."
-          : "线上或线下报名，学习 72H 类加密应用开发。",
+          ? "Read the optional learning note for understanding 72H use, product context, and community collaboration."
+          : "查看补充学习说明，用于理解 72H 用途、产品语境与社区协作。",
     },
     "/hours": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.use72H}`,

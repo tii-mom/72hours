@@ -2,29 +2,29 @@ import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
 const joinContentZh = {
-  title: "持币进入学习报名、应用与 Capital。",
-  subtitle: "从官方应用地图、社区和绿皮书开始。学习、协作和席位入口会先做参与核对。",
-  whyTitle: "参与入口",
-  whyBody: "72H 不只是展示资产，而是进入学习、应用和 Capital 身份的统一凭证。",
+  title: "进入 72hours。",
+  subtitle: "从公开应用地图、社区和绿皮书开始。本页是导航入口，不开放购买、领取或真实席位动作。",
+  whyTitle: "公开入口",
+  whyBody: "72H 官网先帮助用户找到应用、社区、绿皮书与边界说明。",
   joinedTitle: "进入后可见",
-  joinedBody: "学习报名、席位规则、应用入口与人工核对会集中在同一个参与工作台。",
-  contactTitle: "人工核对",
-  contactBody: "Telegram 用于提交意向、余额异常核对和最终名额确认。",
+  joinedBody: "当前可见的是应用地图、社区入口、公开说明和未开放动作的边界。",
+  contactTitle: "官方渠道",
+  contactBody: "Telegram、X 与联系页用于公开更新和人工说明。",
   verifyTitle: "核对方式",
-  verifyBody: "钱包余额、72H 链上事实、风险边界与公开页面共同构成参与前的核对信息。",
+  verifyBody: "以本站、绿皮书、链上证据和已标记官方渠道为准。",
 };
 
 const joinContentEn = {
-  title: "Use 72H to enter learning applications, apps, and Capital.",
-  subtitle: "Start from the app map, community, or Green Book. Learning, collaboration, and seat paths may ask for an eligibility check.",
-  whyTitle: "Participation entry",
-  whyBody: "72H is not only a displayed asset; it is the shared credential for learning, apps, and Capital identity.",
+  title: "Enter 72hours.",
+  subtitle: "Start from the public app map, community, and Green Book. This page is navigation only; purchase, claim, and real seat actions are not open.",
+  whyTitle: "Public entry",
+  whyBody: "The 72H site helps users find apps, community, Green Book, and boundary notes first.",
   joinedTitle: "What opens next",
-  joinedBody: "Learning applications, seat rules, app entries, and human confirmation stay in one entry page.",
-  contactTitle: "Human confirmation",
-  contactBody: "Telegram handles requests, balance checks, and final confirmation.",
+  joinedBody: "The current layer shows the app map, community entry, public notes, and closed-action boundaries.",
+  contactTitle: "Official channels",
+  contactBody: "Telegram, X, and the contact page handle public updates and human notes.",
   verifyTitle: "How to verify",
-  verifyBody: "Wallet balance, 72H on-chain facts, risk boundaries, and public pages form the pre-entry check.",
+  verifyBody: "Use this site, Green Book, on-chain evidence, and marked official channels as the reference layer.",
 };
 
 export const joinContent = joinContentZh;

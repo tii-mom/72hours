@@ -10,7 +10,20 @@ function statusFromStage(stage: TelegramBotProjectPayload["developmentStage"]): 
   return "coming_soon";
 }
 
-function projectFromPayload(payload: TelegramBotProjectPayload): Project {
+function normalizedPayload(payload: TelegramBotProjectPayload): TelegramBotProjectPayload {
+  if (payload.slug !== "multi-millionaire") return payload;
+
+  return {
+    ...payload,
+    oneLineValue: "multi-millionaire waitlist / rule reference; real lock-up and reward claims are not open.",
+    developmentStage: "building",
+    isInvestable: false,
+  };
+}
+
+function projectFromPayload(rawPayload: TelegramBotProjectPayload): Project {
+  const payload = normalizedPayload(rawPayload);
+
   return {
     slug: payload.slug,
     name: payload.name,
@@ -41,13 +54,14 @@ function projectFromPayload(payload: TelegramBotProjectPayload): Project {
 export function mergeAppDiscoveryProjects(baseProjects: Project[], botPayloads: TelegramBotProjectPayload[]) {
   const bySlug = new Map(baseProjects.map((project) => [project.slug, project]));
 
-  for (const payload of botPayloads) {
+  for (const rawPayload of botPayloads) {
+    const payload = normalizedPayload(rawPayload);
     const existing = bySlug.get(payload.slug);
 
     bySlug.set(payload.slug, {
       ...(existing ?? projectFromPayload(payload)),
       name: payload.name,
-      oneLineValue: payload.oneLineValue,
+      oneLineValue: payload.slug === "multi-millionaire" && existing ? existing.oneLineValue : payload.oneLineValue,
       externalLink: payload.externalLink,
       priority: payload.priority,
       visibility: payload.visibility,

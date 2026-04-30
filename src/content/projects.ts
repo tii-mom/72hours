@@ -216,13 +216,13 @@ const projectsZh: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "面向 multi-millionaire 的资本席位配置与身份展示入口。",
-    summary: "第一批开放应用之一，主要承接 multi-millionaire 的 Reserve / Alpha 资本席位入口。",
-    detailIntro: "适合查看门槛、剩余席位与验证身份界面的用户。",
+    oneLineValue: "multi-millionaire 候补说明与身份规则参考，真实锁仓和奖励领取暂未开放。",
+    summary: "当前仅保留候补与规则说明，不开放真实链上锁仓、席位配置或奖励领取。",
+    detailIntro: "适合先阅读规则、风险边界和未来开放条件。",
     category: "main_entry",
     status: "community_pilot",
     audienceFit: ["curious_explorer", "community_participant", "deeper_learner"],
-    participationMode: ["try_now", "follow_updates", "deeper_participation"],
+    participationMode: ["follow_updates", "join_community"],
     externalLink: {
       label: "进入",
       url: "/capital/multi-millionaire",
@@ -231,19 +231,19 @@ const projectsZh: Project[] = [
     },
     hoursRelation: {
       level: "supported",
-      summary: "把资本席位、身份与配置集中到正式入口。",
+      summary: "仅作为规则参考和候补入口，不开放配置。",
     },
     learnRelation: {
-      level: "advanced",
-      summary: "先理解门槛、周期与风险说明，再决定是否进入。",
+      level: "prep",
+      summary: "先理解规则、边界与未开放状态。",
     },
     proofAssets: [],
     featured: false,
     priority: 7,
     iconKey: "shield",
     signals: [
-      { tone: "core", label: "资本席位" },
-      { tone: "guide", label: "资本入口" },
+      { tone: "guide", label: "候补" },
+      { tone: "guide", label: "未开放" },
     ],
   },
   {
@@ -543,13 +543,13 @@ const projectsEn: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "Capital-facing entry for multi-millionaire seat configuration and verified identity.",
-    summary: "One of the first launch applications, holding the Reserve / Alpha capital seat entry for multi-millionaire.",
-    detailIntro: "Thresholds, remaining seats, and verified identity are shown together.",
+    oneLineValue: "Waitlist and identity-rule reference for multi-millionaire; real lock-up and reward claims are not open.",
+    summary: "Currently a waitlist and rule note only; real on-chain lock-up, seat actions, and reward claiming are not open.",
+    detailIntro: "Use this to read rules, risk boundaries, and future opening conditions first.",
     category: "main_entry",
     status: "community_pilot",
     audienceFit: ["curious_explorer", "community_participant", "deeper_learner"],
-    participationMode: ["try_now", "follow_updates", "deeper_participation"],
+    participationMode: ["follow_updates", "join_community"],
     externalLink: {
       label: "Enter",
       url: "/capital/multi-millionaire",
@@ -558,19 +558,19 @@ const projectsEn: Project[] = [
     },
     hoursRelation: {
       level: "supported",
-      summary: "Brings capital seats, identity, and configuration into one official entry.",
+      summary: "Rule reference and waitlist only; configuration remains closed.",
     },
     learnRelation: {
-      level: "advanced",
-      summary: "Review thresholds, cycle, and risk notes before entering.",
+      level: "prep",
+      summary: "Review rules, boundaries, and closed status first.",
     },
     proofAssets: [],
     featured: false,
     priority: 7,
     iconKey: "shield",
     signals: [
-      { tone: "core", label: "Capital seat" },
-      { tone: "guide", label: "Capital entry" },
+      { tone: "guide", label: "Waitlist" },
+      { tone: "guide", label: "Not open" },
     ],
   },
   {
@@ -709,8 +709,8 @@ const projectDiscoveryMeta: Record<
   "multi-millionaire": {
     chains: ["TON"],
     appCategories: ["capital"],
-    developmentStage: "investable",
-    isInvestable: true,
+    developmentStage: "building",
+    isInvestable: false,
   },
   "coop-raid-room": {
     chains: ["TON"],
