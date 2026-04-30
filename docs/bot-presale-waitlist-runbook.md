@@ -80,7 +80,7 @@ npm run telegram:lottery:draw -- --input sales-admin.json --activity-id early-ac
 - `GET /api/telegram/presale-status`: public mode/runtime status; purchase stays disabled unless explicitly allowed in env.
 - `GET /api/telegram/presale-reservations`: authenticated Mini App/user reservation lookup.
 - `POST /api/telegram/presale-reservations`: authenticated off-chain warmup/waitlist reservation.
-- `GET /api/telegram/sales-admin`: admin-secret read-only reservation list.
+- `GET /api/telegram/sales-admin`: read-only reservation list. Preferred auth is `H72H_SALES_ADMIN_READONLY_SECRET` with request header `x-72h-sales-admin-readonly-secret`; legacy Telegram webhook secret headers remain accepted only for compatibility.
 - `POST /api/telegram/sales-admin`: disabled (`presale_admin_writes_disabled`).
 - `POST /api/telegram/presale-intents` and `/presale-receipts`: still disabled.
 
@@ -91,8 +91,25 @@ Run:
 ```bash
 npm run test:telegram-presale
 npm run lint
+npm run check:i18n
 npm run build
 ```
+
+Cloudflare Pages preview setup for read-only admin smoke:
+
+```bash
+# Do not paste the secret into docs, logs, or chat.
+npx wrangler pages secret put H72H_SALES_ADMIN_READONLY_SECRET --project-name 72hours
+# Redeploy a new preview after setting/updating the preview secret.
+```
+
+Smoke read access with the secret only from a local shell environment:
+
+```bash
+H72H_SALES_ADMIN_READONLY_SECRET=<local-secret-value> npm run telegram:sales-admin:readonly -- --base-url <preview-url> --limit 1
+```
+
+If the preview still returns `401 admin_secret_required`, the Pages preview deployment has no matching `H72H_SALES_ADMIN_READONLY_SECRET`; set it in Cloudflare Pages preview secrets and deploy a fresh preview. The route remains read-only; POST must keep returning `503 presale_admin_writes_disabled`.
 
 
 ## P0 Telegram growth copy surfaces

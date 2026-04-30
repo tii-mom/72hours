@@ -97,8 +97,9 @@ function matchesFilter(record, args) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const secret = env("H72H_TELEGRAM_WEBHOOK_SECRET") || env("H72H_TELEGRAM_BOT_SECRET");
-  if (!secret) fail("H72H_TELEGRAM_WEBHOOK_SECRET is required for read-only sales-admin access.");
+  const readonlySecret = env("H72H_SALES_ADMIN_READONLY_SECRET");
+  const secret = readonlySecret || env("H72H_TELEGRAM_WEBHOOK_SECRET") || env("H72H_TELEGRAM_BOT_SECRET");
+  if (!secret) fail("H72H_SALES_ADMIN_READONLY_SECRET is required for preferred read-only sales-admin access; webhook secret remains a compatibility fallback.");
 
   const baseUrl = new URL(args.baseUrl);
   if (baseUrl.protocol !== "https:") fail("--base-url must be an https URL.");
@@ -110,7 +111,7 @@ async function main() {
   const response = await fetch(url, {
     method: "GET",
     headers: {
-      "x-telegram-bot-api-secret-token": secret,
+      [readonlySecret ? "x-72h-sales-admin-readonly-secret" : "x-telegram-bot-api-secret-token"]: secret,
       "user-agent": "72h-telegram-sales-admin-readonly/1.0",
     },
   });

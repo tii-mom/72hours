@@ -220,9 +220,10 @@ test("presale lottery codes hold walletless referrals pending and support one-ti
   assert.equal(beta.riskFlags.includes("share_self_attested"), true);
 });
 
-test("sales admin lists waitlist reservations without enabling admin writes", async () => {
+test("sales admin lists waitlist reservations with a dedicated read-only secret without enabling admin writes", async () => {
   const env = {
     H72H_TELEGRAM_WEBHOOK_SECRET: "test-secret",
+    H72H_SALES_ADMIN_READONLY_SECRET: "readonly-secret",
     H72H_PRESALE_MODE: "sale_live",
     H72H_BOT_SALES_KV: new FakeKv(),
   };
@@ -236,9 +237,17 @@ test("sales admin lists waitlist reservations without enabling admin writes", as
   assert.equal(createdPayload.presaleMode.mode, "waitlist");
   assert.equal(createdPayload.presaleMode.purchaseEnabled, false);
 
+  const unauthenticated = await onSalesAdminGet({
+    request: new Request("https://72h.example/api/telegram/sales-admin", {
+      headers: { "x-72h-sales-admin-readonly-secret": "wrong-secret" },
+    }),
+    env,
+  });
+  assert.equal(unauthenticated.status, 401);
+
   const listed = await onSalesAdminGet({
     request: new Request("https://72h.example/api/telegram/sales-admin", {
-      headers: { "x-telegram-bot-api-secret-token": "test-secret" },
+      headers: { "x-72h-sales-admin-readonly-secret": "readonly-secret" },
     }),
     env,
   });

@@ -136,10 +136,10 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     return buildResolvedMeta(
       locale,
       barePath,
-      `${siteConfig.siteName} | 72H Whitelist Reservation Bot`,
+      `${siteConfig.siteName} | 72H Early Reservation Bot`,
       isEnglish
-        ? "Telegram Mini App for 72H Whitelist Reservation, opening reminders, lottery eligibility, and human follow-up."
-        : "72H Whitelist Reservation Telegram Mini App 入口，用于白名单预约、开售提醒、抽奖资格与人工跟进。",
+        ? "Telegram Mini App for 72H early reservation, official update reminders, raffle-code review, and human follow-up."
+        : "72H 早期预约 Telegram Mini App 入口，用于预约登记、官方更新提醒、抽奖码复核与人工跟进。",
       {
         robots: "noindex, nofollow",
       }

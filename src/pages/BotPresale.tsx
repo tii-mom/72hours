@@ -21,7 +21,7 @@ type PresaleRuntime = {
   tonRpcConfigured: boolean;
   tonApiKeyConfigured: boolean;
   storageConfigured: boolean;
-  purchaseFlowStatus: "read_only" | "intent_only";
+  actionFlowStatus: "read_only" | "intent_only";
   configStatus: "configured" | "unavailable";
   tradingStatus: "configured" | "disabled";
   chainGetterStatus: "configured" | "disabled" | "unavailable";
@@ -150,7 +150,7 @@ const FALLBACK_PRESALE: PresaleRuntime = {
   tonRpcConfigured: false,
   tonApiKeyConfigured: false,
   storageConfigured: false,
-  purchaseFlowStatus: "read_only",
+  actionFlowStatus: "read_only",
   configStatus: "configured",
   tradingStatus: "disabled",
   chainGetterStatus: "disabled",
@@ -515,7 +515,7 @@ export default function BotPresale() {
 
   const presale = state.status === "ready" || state.status === "error" ? state.presale : FALLBACK_PRESALE;
   const liveStage = presale.chainSnapshot?.publicStage;
-  const purchaseStatus = isEnglish ? "Early reservation only · no purchase / wallet / claim" : "早期预约阶段 · 不购买 / 不连钱包 / 不领取";
+  const reservationStatus = isEnglish ? "Early reservation only · info record / wallet actions closed" : "早期预约阶段 · 仅登记信息 / 钱包动作关闭";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -577,11 +577,11 @@ export default function BotPresale() {
 
     const shareText = reservation.inviteLink
       ? isEnglish
-        ? `I just completed my 72H early reservation. No payment, no wallet connection, no signing — this phase is only for reservation and raffle codes. Reserve through my link to get your raffle code: ${reservation.inviteLink}`
-        : `我刚完成了 72H 早期预约。现在不需要付款、不需要连接钱包、不需要签名，只是预约并获得抽奖码。通过我的链接预约，你也可以获得抽奖码：${reservation.inviteLink}`
+        ? `I just completed my 72H early reservation. Wallet actions stay closed — this phase is only for reservation and raffle codes. Reserve through my link to get your raffle code: ${reservation.inviteLink}`
+        : `我刚完成了 72H 早期预约。当前钱包动作关闭，只是预约并获得抽奖码。通过我的链接预约，你也可以获得抽奖码：${reservation.inviteLink}`
       : isEnglish
-        ? "I just completed my 72H early reservation. No payment, no wallet connection, no signing — search the official 72H Bot to join."
-        : "我刚完成了 72H 早期预约。现在不需要付款、不需要连接钱包、不需要签名；搜索官方 72H Bot 加入。";
+        ? "I just completed my 72H early reservation. Wallet actions stay closed — search the official 72H Bot to join."
+        : "我刚完成了 72H 早期预约。当前钱包动作关闭；搜索官方 72H Bot 加入。";
 
     try {
       setShareTaskPending(true);
@@ -615,8 +615,8 @@ export default function BotPresale() {
   const recordBuyerSignal = (type: BuyerSignal) => {
     const messages: Record<BuyerSignal, string> = {
       buy_interest: isEnglish
-        ? "Official update reminder recorded. Purchase, payment, wallet action, and claims are not open."
-        : "官方更新提醒已记录。购买、付款、钱包操作和领取均未开放。",
+        ? "Official update reminder recorded. Funds movement and asset-receipt steps are not open."
+        : "官方更新提醒已记录。资金动作与资产接收步骤尚未开放。",
       contract_check: isEnglish
         ? "Security check signal recorded."
         : "安全核验需求已记录。",
@@ -638,7 +638,7 @@ export default function BotPresale() {
         <div className="page-container mx-auto grid max-w-5xl gap-5">
           <div className="rounded-md border border-line/70 bg-surface/72 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.18)] sm:p-6">
             <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge tone={presale.enabled ? "primary" : "gold"}>{purchaseStatus}</StatusBadge>
+              <StatusBadge tone={presale.enabled ? "primary" : "gold"}>{reservationStatus}</StatusBadge>
               <StatusBadge tone={presale.chainGetterStatus === "configured" ? "primary" : "neutral"}>
                 {presale.chainGetterStatus === "configured"
                   ? isEnglish ? "Public evidence ready" : "公开证据已同步"
@@ -653,8 +653,8 @@ export default function BotPresale() {
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "This phase is for reservations and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. No purchase, payment, wallet connection, signing, claiming, private transfer, or purchase quota is handled here."
-                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，社群分享任务复核通过后才可能 +2。本页不会要求购买、付款、连接钱包、签名、领取资产、私下转账或承诺购买额度。"}
+                    ? "This phase is for reservations and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. Funds movement, wallet actions, private transfers, and quota commitments are not handled here."
+                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，社群分享任务复核通过后才可能 +2。本页不处理资金动作、钱包动作、私下转账或额度承诺。"}
                 </p>
               </div>
             </div>
@@ -685,8 +685,8 @@ export default function BotPresale() {
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {isEnglish
-                      ? "This is a reservation record only. It records information for later prize review; it does not confirm eligibility, purchase quota, payment, signature, or instant reward claiming."
-                      : "当前只是预约记录。它会记录后续发奖复核所需的信息；不确认资格、购买额度、付款、签名或即时领取。"}
+                      ? "This is a reservation record only. It records information for later prize review; it does not confirm eligibility, quota, funds movement, wallet authorization, or instant reward receipt."
+                      : "当前只是预约记录。它会记录后续发奖复核所需的信息；不确认资格、额度、资金动作、钱包授权或即时奖励接收。"}
                   </p>
                 </div>
                 <Gift className="h-5 w-5 shrink-0 text-gold" />
@@ -710,8 +710,8 @@ export default function BotPresale() {
                   index="03"
                   title={isEnglish ? "Transparent draw and prize transfer" : "透明开奖与发奖"}
                   body={isEnglish
-                    ? `Each lottery code is one ticket. The draw uses public parameters: TON block hash + activity ID + draw time, so the result can be reviewed after publication. Prize tiers: first, second, third, and participation (${PARTICIPATION_REWARD_RANGE_LABEL} 72H random range). One user can win at most one major prize; participation rewards may cover more users. Rewards are later sent from the official prize wallet. No gas payment or instant claim is needed here.`
-                    : `每个抽奖码就是一张票。开奖使用公开参数：TON 区块哈希 + 活动 ID + 开奖时间，结果公布后可复核。奖项分为一等奖、二等奖、三等奖、参与奖；参与奖为 ${PARTICIPATION_REWARD_RANGE_LABEL} 72H 随机区间。同一用户最多中一次大奖，参与奖可覆盖更多用户。奖励后续由官方奖池钱包转账发放，本页无需支付 gas，也没有即时领取入口。`}
+                    ? `Each lottery code is one ticket. The draw uses public parameters: TON block hash + activity ID + draw time, so the result can be reviewed after publication. Prize tiers: first, second, third, and participation (${PARTICIPATION_REWARD_RANGE_LABEL} 72H random range). One user can win at most one major prize; participation rewards may cover more users. Rewards are later sent from the official prize wallet. No gas or instant asset-receipt step is needed here.`
+                    : `每个抽奖码就是一张票。开奖使用公开参数：TON 区块哈希 + 活动 ID + 开奖时间，结果公布后可复核。奖项分为一等奖、二等奖、三等奖、参与奖；参与奖为 ${PARTICIPATION_REWARD_RANGE_LABEL} 72H 随机区间。同一用户最多中一次大奖，参与奖可覆盖更多用户。奖励后续由官方奖池钱包转账发放，本页无需 gas，也没有即时资产接收入口。`}
                 />
               </div>
             </div>
@@ -719,8 +719,8 @@ export default function BotPresale() {
 
             <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
               {isEnglish
-                ? "Safety reminder: the Bot will not ask you to buy, pay, connect a wallet, sign a transaction, enter a seed phrase/private key, or claim assets at this stage."
-                : "安全提醒：当前阶段 Bot 不会要求你购买、付款、连接钱包、签名交易、输入助记词/私钥或领取资产。"}
+                ? "Safety reminder: the Bot will not ask for funds movement, wallet authorization, seed phrases/private keys, or asset-receipt steps at this stage."
+                : "安全提醒：当前阶段 Bot 不会要求资金动作、钱包授权、输入助记词/私钥或资产接收步骤。"}
             </div>
           </div>
 
@@ -734,8 +734,8 @@ export default function BotPresale() {
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "Submit once to join the early reservation list and receive 1 raffle code. Your interest range is not quota, eligibility, price, or a purchase commitment."
-                        : "提交一次即可加入早期预约名单并获得 1 个抽奖码。关注区间不代表额度、资格、价格或购买承诺。"}
+                        ? "Submit once to join the early reservation list and receive 1 raffle code. Your interest range is not quota, eligibility, price, or a funding commitment."
+                        : "提交一次即可加入早期预约名单并获得 1 个抽奖码。关注区间不代表额度、资格、价格或资金承诺。"}
                     </p>
                   </div>
                   <Gift className="h-5 w-5 text-gold" />
@@ -814,8 +814,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current phase: early reservation only. The interest range is not quota, eligibility, price, or a purchase commitment. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task can add +2 only after review. No funds, wallet connection, signatures, or claims are accepted here.`
-                      : `当前阶段：仅早期预约。关注区间不代表额度、资格、价格或购买承诺。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核通过后才可能 +2。本页不收取资金、不连接钱包、不签名、不领取。`}
+                      ? `Current phase: early reservation only. The interest range is not quota, eligibility, price, or a funding commitment. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task can add +2 only after review. Funds movement, wallet actions, and asset-receipt steps are not accepted here.`
+                      : `当前阶段：仅早期预约。关注区间不代表额度、资格、价格或资金承诺。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核通过后才可能 +2。本页不处理资金动作、钱包动作或资产接收步骤。`}
                   </div>
                   <button
                     type="submit"
@@ -883,8 +883,8 @@ export default function BotPresale() {
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {isEnglish
-                    ? "Not live, not a quote, not a purchase commitment. Shown only as contract-rule evidence for review."
-                    : "未开放、不是报价、不是购买承诺。以下仅作为合约规则证据供核对。"}
+                    ? "Not live, not a quote, not a funding commitment. Shown only as contract-rule evidence for review."
+                    : "未开放、不是报价、不是资金承诺。以下仅作为合约规则证据供核对。"}
                 </p>
                 <div className="mt-5 overflow-hidden rounded-sm border border-line/70">
                   {presale.stageRules.map((item) => (
@@ -931,8 +931,8 @@ export default function BotPresale() {
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "At this stage, 72H Bot will never ask for payment, wallet connection, transaction signing, seed phrases/private keys, or asset claiming. Follow official Bot and group announcements only."
-                    : "当前阶段，72H Bot 不会要求付款、连接钱包、签名交易、输入助记词/私钥或领取资产。请只以官方 Bot 与官方群公告为准。"}
+                    ? "At this stage, 72H Bot will never ask for funds movement, wallet authorization, seed phrases/private keys, or asset-receipt steps. Follow official Bot and group announcements only."
+                    : "当前阶段，72H Bot 不会要求资金动作、钱包授权、输入助记词/私钥或资产接收步骤。请只以官方 Bot 与官方群公告为准。"}
                 </p>
                 <p className="mt-3 text-xs font-semibold leading-5 text-gold">
                   {isEnglish ? officialLinkNote.en : officialLinkNote.zh}

@@ -94,6 +94,7 @@ Cloudflare secrets:
 
 - `H72H_TELEGRAM_BOT_TOKEN`
 - `H72H_TELEGRAM_WEBHOOK_SECRET`
+- `H72H_SALES_ADMIN_READONLY_SECRET` (preferred secret for `GET /api/telegram/sales-admin`; configure separately for Pages preview and production)
 - `H72H_TELEGRAM_ADMIN_IDS`
 - `H72H_TELEGRAM_ALERT_CHAT_ID`
 - `H72H_BOT_INTENT_SIGNING_SECRET` (reserved; must not imply purchase intents are enabled)

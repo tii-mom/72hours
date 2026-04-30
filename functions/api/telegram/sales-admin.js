@@ -1,6 +1,6 @@
 import { getPresaleMode } from "../../_shared/presale-mode.js";
 import { getSalesStorageStatus, listSalesRecords } from "../../_shared/sales-storage.js";
-import { verifyTelegramWebhookSecret } from "../../_shared/telegram-security.js";
+import { verifySalesAdminReadOnlySecret } from "../../_shared/telegram-security.js";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -69,7 +69,7 @@ function publicAdminReservation(record) {
 }
 
 export async function onRequestGet({ request, env }) {
-  if (!verifyTelegramWebhookSecret(request, env)) {
+  if (!verifySalesAdminReadOnlySecret(request, env)) {
     return json({ ok: false, error: "admin_secret_required" }, 401);
   }
 

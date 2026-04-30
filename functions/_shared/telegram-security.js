@@ -1,6 +1,7 @@
 const TELEGRAM_WEBHOOK_SECRET_HEADER = "x-telegram-bot-api-secret-token";
 const LEGACY_BOT_SECRET_HEADER = "x-telegram-bot-secret";
 const TELEGRAM_INIT_DATA_HEADER = "x-telegram-init-data";
+const SALES_ADMIN_READONLY_SECRET_HEADER = "x-72h-sales-admin-readonly-secret";
 const TELEGRAM_INIT_DATA_AUTH_PREFIX = "tma ";
 
 function readSecret(value) {
@@ -67,6 +68,24 @@ export function verifyTelegramWebhookSecret(request, env) {
   }
 
   return timingSafeEqual(received, expected);
+}
+
+export function getSalesAdminReadOnlySecret(env) {
+  return readSecret(env.H72H_SALES_ADMIN_READONLY_SECRET);
+}
+
+export function verifySalesAdminReadOnlySecret(request, env) {
+  const received =
+    readSecret(request.headers.get(SALES_ADMIN_READONLY_SECRET_HEADER)) ||
+    readSecret(request.headers.get(TELEGRAM_WEBHOOK_SECRET_HEADER)) ||
+    readSecret(request.headers.get(LEGACY_BOT_SECRET_HEADER));
+
+  const readOnlySecret = getSalesAdminReadOnlySecret(env);
+  if (readOnlySecret && received && timingSafeEqual(received, readOnlySecret)) {
+    return true;
+  }
+
+  return verifyTelegramWebhookSecret(request, env);
 }
 
 export function readTelegramMiniAppInitData(request) {
