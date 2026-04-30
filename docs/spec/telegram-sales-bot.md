@@ -1,8 +1,8 @@
 # 72H Telegram Sales Bot
 
-Status: Phase 1-5 production skeleton with read-only PresaleVault getter support, deterministic `BuyPresale` payload generation, and strict receipt body decoding. Purchase signing is still gated by feature flag, Telegram initData, KV persistence, wallet connection, and live chain getter confirmation.
+Status: production warmup / waitlist only. Real purchase, payment, signing, manual transfer instructions, purchase intents, and receipt confirmation are closed on the public site; `POST /api/telegram/presale-intents` and `POST /api/telegram/presale-receipts` intentionally fail closed with HTTP 503 (`presale_route_disabled`).
 
-This bot is a Telegram sales assistant for the 72H V2 TON presale. It is not a free-text transaction generator. The deterministic transaction path must stay outside natural language handling.
+This bot is currently a Telegram Mini App waitlist and sales-signal assistant for 72H early access. It is not a payment surface, not a free-text transaction generator, and not a live presale router. Any deterministic transaction path must stay outside natural language handling and must not be re-enabled without the production gate in `docs/presale-functions-disabled-2026-04-30.md`.
 
 ## Architecture
 
@@ -11,14 +11,15 @@ This bot is a Telegram sales assistant for the 72H V2 TON presale. It is not a f
 - `functions/_shared/telegram-api.js` wraps Telegram Bot API calls.
 - `functions/_shared/presale-runtime.js` resolves public presale configuration from env.
 - `functions/_shared/presale-chain.js` reads public PresaleVault getters and buyer purchase totals when `H72H_TON_RPC_URL` is configured.
-- `functions/_shared/presale-ton.js` builds and decodes deterministic TON `BuyPresale` payloads with `@ton/core`.
+- `functions/_shared/presale-ton.js` contains deterministic TON `BuyPresale` payload helpers, but payload-serving routes are disabled in production warmup.
 - `functions/_shared/sales-signals.js` extracts deterministic sales signals from chat text and Mini App actions: intent, amount band, objections, urgency, source hints, follow-up priority, and operator suggestions.
 - `GET /api/telegram/presale-status` exposes public config and a read-only chain snapshot when getter reads are available.
 - `POST /api/telegram/presale-events` stores Mini App tacit-knowledge events after Telegram initData validation.
-- `POST /api/telegram/presale-intents` creates deterministic purchase review intents after Telegram initData validation.
-- `POST /api/telegram/presale-receipts` stores receipt submissions and runs strict verifier checks.
-- `GET/POST /api/telegram/sales-admin` exposes recent events/intents/receipts and operator annotations to configured Telegram admins.
-- `functions/_shared/telegram-alerts.js` sends optional operator alerts for human support, new intents, and submitted receipts.
+- `POST /api/telegram/presale-intents` is disabled in production warmup and returns HTTP 503 (`presale_route_disabled`).
+- `POST /api/telegram/presale-receipts` is disabled in production warmup and returns HTTP 503 (`presale_route_disabled`).
+- `POST /api/telegram/presale-reservations` is the only user write path for the waitlist; it requires Telegram initData or the configured bot secret and must remain non-transactional.
+- `GET/POST /api/telegram/sales-admin` is disabled with the same production safety guard until admin auth/storage is reviewed.
+- `functions/_shared/telegram-alerts.js` sends optional operator alerts for human support and non-transactional warmup signals when configured.
 - `src/pages/BotPresale.tsx` is the Telegram Mini App shell and wallet surface.
 - `scripts/telegram-set-webhook.mjs` configures Telegram `setWebhook` with `secret_token`.
 
@@ -27,7 +28,7 @@ The bot logs structured sales signals to Cloudflare logs, writes them to `H72H_B
 ## Commands
 
 - `/start`: introduces the bot and shows buttons for Buy 72H, Presale Status, How it works, and Human support.
-- `/buy`: shows the current guarded purchase entry. If `H72H_PRESALE_ENABLED=false`, real purchase remains disabled.
+- `/buy`: shows the guarded warmup/waitlist entry. Real purchase remains disabled; it must not present payment, signing, manual-transfer, or receipt-confirmation instructions.
 - `/status`: shows env/config status, PresaleVault, Jetton Master, feature flag state, getter availability, and live chain snapshot when available.
 - `/help`: explains the safe transaction boundary.
 - `/human`: records a human-support event and alerts `H72H_TELEGRAM_ALERT_CHAT_ID` when configured.
@@ -95,7 +96,7 @@ Cloudflare secrets:
 - `H72H_TELEGRAM_WEBHOOK_SECRET`
 - `H72H_TELEGRAM_ADMIN_IDS`
 - `H72H_TELEGRAM_ALERT_CHAT_ID`
-- `H72H_BOT_INTENT_SIGNING_SECRET`
+- `H72H_BOT_INTENT_SIGNING_SECRET` (reserved; must not imply purchase intents are enabled)
 - `H72H_TON_API_KEY`
 
 Plain deployment env:
@@ -110,7 +111,7 @@ Plain deployment env:
 
 Cloudflare binding:
 
-- `H72H_BOT_SALES_KV`: stores `event:*`, `intent:*`, `receipt:*`, and `annotation:*` records. Current `wrangler.toml` binds this to the existing `BOT_STATE` namespace; use a dedicated namespace later if operational isolation is preferred.
+- `H72H_BOT_SALES_KV`: stores non-transactional warmup records such as `reservation:*` and allowed signal events. Historical `intent:*`, `receipt:*`, and admin annotation storage must remain disabled until the safety gate is reopened.
 
 Legacy app-discovery bot env:
 
@@ -144,13 +145,13 @@ The script calls Telegram `setWebhook` with:
 - The webhook must reject requests without the Telegram secret header.
 - The Bot Token is read only from env and must never be committed.
 - The webhook catches per-update failures and returns a generic response without leaking internals.
-- Real purchase execution is gated by `H72H_PRESALE_ENABLED`.
-- Signable TonConnect payloads are returned only when live getters confirm the PresaleVault is active and the requested stage is the current contract stage.
+- Real purchase execution is currently disabled independent of UI copy; production write routes for purchase intents and receipts return HTTP 503.
+- Signable TonConnect payloads must not be returned in warmup/waitlist mode. Any future re-enable requires explicit production approval and the fail-closed gate checklist.
 - Natural language is only for intent understanding, FAQ, risk prompts, human escalation, and sales signal capture.
 - Transaction generation must be deterministic and API-driven.
 - Transaction signing must happen in the Mini App through TonConnect.
 - Transaction verification must check target address, opcode/queryId, TON amount, success state, and idempotency.
-- Current receipt verifier can run TON RPC lookup and verifies target address, sent amount including the 0.12 TON gas reserve, success state, opcode, queryId, stage, tonAmount, minTokens72H, and idempotency indexes.
+- Receipt verification is not exposed in warmup/waitlist mode; the route returns HTTP 503 until intentionally re-enabled.
 - Screenshots, pasted hashes, and user self-report are not proof of purchase.
 - Browser automation must use an isolated temp profile and must not close or kill default browser sessions.
 
@@ -198,21 +199,19 @@ Phase 2:
 - Telegram Mini App shell.
 - TonConnect wallet status.
 - Public PresaleVault/Jetton Master/config status.
-- Purchase button disabled unless the feature and deterministic flow are ready.
+- Purchase button disabled; warmup/waitlist copy only.
 
 Phase 3:
 
-- Durable order/intent storage through D1/KV or the existing Capital API storage pattern.
-- Record Telegram user, wallet, amount, stage, source, and status.
-- Generate deterministic purchase intents.
-- Current implementation uses `H72H_BOT_SALES_KV`, deterministic HMAC-derived `intentId`/`queryId`, and `getPurchasedByBuyer` to block intents that would exceed the wallet cap before the user signs.
+- Durable waitlist/reservation storage through KV.
+- Record Telegram user, optional wallet, desired allocation, source, reminder preference, and warmup status.
+- Deterministic purchase intents are disabled in production warmup; the route returns HTTP 503.
 
 Phase 4:
 
-- On-chain transaction verification.
-- Check PresaleVault target, TON amount, opcode/queryId, success, and idempotency.
-- Send user receipts and operator notifications.
-- Current implementation reads public PresaleVault status getters, builds deterministic `BuyPresale` payloads, stores receipts, and verifies target/amount/success/opcode/queryId/stage/minTokens/idempotency when TON RPC returns a readable transaction body.
+- On-chain transaction verification remains a future/re-enable phase.
+- Receipt route is intentionally closed with HTTP 503 during warmup.
+- Do not send user receipt confirmations or operator purchase notifications until the production gate is explicitly reopened.
 
 Phase 5:
 
