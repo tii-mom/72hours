@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { useIsConnectionRestored, useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
 import { useLocation, useOutlet } from "react-router-dom";
 import {
   ArrowRight,
@@ -23,7 +22,7 @@ import {
 import { cn } from "../lib/utils";
 import { getSiteConfig } from "../content/site-config";
 import { useLocale } from "../lib/locale";
-import { localizeHref } from "../lib/routes";
+import { localizeHref, stripLocalePrefix } from "../lib/routes";
 import { LocalizedLink as Link } from "./LocalizedLink";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -78,35 +77,18 @@ function BrandLogo({ className = "", markClassName = "", showName = true }: { cl
   );
 }
 
-function MobileWalletButton() {
+function MobileCapitalLink() {
   const { isEnglish } = useLocale();
-  const [tonConnectUI] = useTonConnectUI();
-  const address = useTonAddress(true);
-  const isConnectionRestored = useIsConnectionRestored();
-  const label = address ? `${address.slice(0, 4)}…${address.slice(-4)}` : "TON";
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (address) {
-          void tonConnectUI.disconnect();
-          return;
-        }
-
-        void tonConnectUI.openModal();
-      }}
-      disabled={!isConnectionRestored}
+    <Link
+      to="/capital/me"
       className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-sm border border-line/70 bg-surface/80 px-2 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:cursor-wait disabled:opacity-60"
-      aria-label={
-        address
-          ? isEnglish ? "Disconnect TON wallet" : "断开 TON 钱包"
-          : isEnglish ? "Connect TON wallet" : "连接 TON 钱包"
-      }
+      aria-label={isEnglish ? "Open Capital wallet page" : "打开 Capital 钱包页"}
     >
       <Wallet size={14} strokeWidth={1.75} aria-hidden="true" />
-      <span className="truncate">{label}</span>
-    </button>
+      <span className="truncate">{isEnglish ? "Capital" : "钱包"}</span>
+    </Link>
   );
 }
 
@@ -284,6 +266,7 @@ export default function Layout() {
   const drawerTitleId = useId();
   const drawerDescriptionId = useId();
   const footerNote = siteConfig.globalDisclaimerExcerpt;
+  const isMiniAppLayout = stripLocalePrefix(location.pathname) === "/bot/presale";
 
   useEffect(() => {
     setIsOpen(false);
@@ -380,6 +363,17 @@ export default function Layout() {
     }));
   };
 
+  if (isMiniAppLayout) {
+    return (
+      <div className="relative flex min-h-screen flex-col bg-background font-sora text-foreground">
+        <div className="pointer-events-none fixed inset-0 z-0 opacity-20 bg-[linear-gradient(color-mix(in_srgb,hsl(var(--foreground))_8%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,hsl(var(--foreground))_8%,transparent)_1px,transparent_1px)] bg-[size:44px_44px]" />
+        <main id="main-content" ref={mainRef} tabIndex={-1} className="relative z-10 flex flex-1 flex-col">
+          <div className="flex min-h-0 flex-1 flex-col">{outlet}</div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background pb-[calc(5.05rem+var(--safe-bottom))] font-sora text-foreground md:pb-0">
       <a
@@ -453,7 +447,7 @@ export default function Layout() {
         <div className="mx-auto grid w-full max-w-md grid-cols-[1fr_1fr_minmax(6rem,1.2fr)_2.75rem] gap-2 px-4 pb-2 md:hidden">
           <ThemeToggle className="min-w-0 px-2" />
           <LanguageBadge className="min-w-0 px-2" onClick={toggleLocale} />
-          <MobileWalletButton />
+          <MobileCapitalLink />
           <button
             type="button"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-line/70 bg-surface/60 p-2 text-foreground transition-colors hover:text-primary active:scale-95"

@@ -1,7 +1,6 @@
-import { ArrowRight, ExternalLink, Fingerprint } from "lucide-react";
+import { AlertTriangle, ArrowRight, ExternalLink, Fingerprint, Landmark, Wallet } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { InfoCallout } from "../components/InfoCallout";
-import { InfoPageHero } from "../components/InfoPageHero";
 import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { PageLoader } from "../components/PageLoader";
 import { SpotlightCard } from "../components/SpotlightCard";
@@ -156,23 +155,68 @@ export default function CapitalApp() {
 
   return (
     <div className="page-shell pt-20 sm:pt-24">
-      <InfoPageHero
-        kicker={app.hero.kicker}
-        icon={<Fingerprint size={30} />}
-        title={app.hero.title}
-        lead={app.hero.lead}
-        noteLabel={app.hero.noteLabel}
-        noteTitle={app.hero.noteTitle}
-        noteBody={app.hero.noteBody}
-        chips={app.hero.chips.map((chip) => (
-          <span
-            key={chip}
-            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
-          >
-            {chip}
-          </span>
-        ))}
-      />
+      <section className="page-section-tight border-b border-line/70 pt-4 sm:pt-10">
+        <div className="page-container page-container-wide grid gap-5 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-end">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm border border-primary/25 bg-primary/10 text-primary">
+                <Fingerprint size={24} />
+              </div>
+              <div className="page-kicker w-fit">{app.hero.kicker}</div>
+            </div>
+            <h1 className="mt-5 max-w-4xl text-[2.55rem] font-black leading-[0.98] tracking-normal text-foreground sm:text-6xl">
+              {app.name} {isEnglish ? "participation desk" : "参与工作台"}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+              {app.hero.lead}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {app.hero.chips.map((chip) => (
+                <span
+                  key={chip}
+                  className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-md border border-line/70 bg-surface/72 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.2)] sm:p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
+              {isEnglish ? "Immediate action" : "优先动作"}
+            </div>
+            <div className="mt-4 grid gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  requestIntent("reserve.allocate", {
+                    appSlug: app.slug,
+                    seatType: "reserve",
+                    amount: getDefaultSeatAmount72H(app.slug, "reserve"),
+                  })
+                }
+                className="page-action w-full"
+              >
+                <Landmark className="mr-2 h-4 w-4" />
+                {isEnglish ? "Prepare Reserve request" : "生成 Reserve 请求"}
+              </button>
+              <button
+                type="button"
+                disabled
+                className="page-action-muted w-full cursor-not-allowed opacity-60"
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                {isEnglish ? "Alpha closed for v1" : "Alpha v1 暂不开放"}
+              </button>
+              <Link to="/capital/me" className="page-action-muted w-full">
+                <Wallet className="mr-2 h-4 w-4" />
+                {isEnglish ? "Open My Capital" : "打开我的 Capital"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="page-section-tight">
         <div className="page-container page-container-wide flex flex-col gap-12 sm:gap-16">
