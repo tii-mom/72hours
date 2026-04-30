@@ -44,7 +44,11 @@ function normalizeInviteCode(value) {
 }
 
 function createInviteCode(user) {
-  return normalizeInviteCode(user?.username) || normalizeInviteCode(`u${user?.id}`) || normalizeInviteCode(String(user?.id));
+  return normalizeInviteCode(`u${user?.id}`) || normalizeInviteCode(String(user?.id));
+}
+
+function createInviteAlias(user) {
+  return normalizeInviteCode(user?.username);
 }
 
 function createInviteLink(env, inviteCode) {
@@ -223,6 +227,7 @@ function publicReservation(record) {
     userSegment: record.userSegment,
     communityTasks: record.communityTasks,
     inviteCode: record.inviteCode,
+    inviteAlias: record.inviteAlias,
     inviteLink: record.inviteLink,
     referredByTelegramUserId: record.referredByTelegramUserId,
     referralCode: record.referralCode,
@@ -472,6 +477,7 @@ export async function onRequestPost({ request, env }) {
   const sourceReferralCandidate = ["miniapp", "miniapp_waitlist"].includes(source) ? undefined : source;
   const referralCode = normalizeInviteCode(referral) || normalizeInviteCode(sourceReferralCandidate);
   const inviteCode = createInviteCode(auth.user);
+  const inviteAlias = createInviteAlias(auth.user);
   const inviteLink = createInviteLink(env, inviteCode);
   const resolvedInviter = await resolveInviter(env, referralCode, auth.user.id);
   const baseLotteryLedger = [{
@@ -524,6 +530,7 @@ export async function onRequestPost({ request, env }) {
     communityTasks,
     shareTasks: communityTasks.sharedInvite ? createShareTasks({}, now) : { communityShareOnce: "not_started" },
     inviteCode,
+    inviteAlias,
     inviteLink,
     referralCode: resolvedInviter?.code || referralCode,
     referredByTelegramUserId: resolvedInviter?.record?.telegramUserId,
@@ -593,12 +600,14 @@ export async function onRequestPost({ request, env }) {
       telegramUserId: record.telegramUserId,
       username: record.username,
       inviteCode,
+      inviteAlias: record.inviteAlias,
       createdAt: record.createdAt,
     }, {
       type: "reservation_invite_index",
       telegramUserId: record.telegramUserId,
       username: record.username,
       inviteCode,
+      inviteAlias: record.inviteAlias,
       createdAt: record.createdAt,
     });
   }
@@ -622,6 +631,7 @@ export async function onRequestPost({ request, env }) {
     saleReminderOptIn: record.saleReminderOptIn,
     communityTaskStatus: record.communityTasks.status,
     inviteCode: record.inviteCode,
+    inviteAlias: record.inviteAlias,
     referralCode: record.referralCode,
     referredByTelegramUserId: record.referredByTelegramUserId,
     lotteryCodeCount: record.lotteryCodeCount,

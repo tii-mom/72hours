@@ -148,7 +148,7 @@ function AppRoutes() {
       <Route path="capital/me" element={withCapitalBoundary(withWalletRoute(<CapitalIdentity />))} />
       <Route path="capital/:slug" element={withCapitalBoundary(withWalletRoute(<CapitalApp />))} />
       <Route path="capital/:slug/:type/:seatNumber" element={withCapitalBoundary(<CapitalVerify />)} />
-      <Route path="bot/presale" element={withWalletRoute(<BotPresale />)} />
+      <Route path="bot/presale" element={withLazyRoute(<BotPresale />)} />
       <Route path="greenbook" element={withLazyRoute(<GreenBook />)} />
       <Route path="join" element={withWalletRoute(<Join />)} />
       <Route path="learn" element={<Learn />} />

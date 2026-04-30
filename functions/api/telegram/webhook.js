@@ -52,37 +52,46 @@ function classifySalesIntent(text) {
   return analyzeSalesSignal(text).primaryIntent;
 }
 
-function mainKeyboard(runtime) {
-  const keyboard = [
-    [{ text: "预约白名单登记", callback_data: "command:buy" }],
-    [
-      { text: "链上状态", callback_data: "command:status" },
-      { text: "计划阶段规则", callback_data: "signal:price" },
-    ],
-    [
-      { text: "安全与合约", callback_data: "signal:risk" },
-      { text: "人工跟进", callback_data: "command:human" },
-    ],
-  ];
-
-  if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard[0] = [{ text: "打开 72H 白名单登记", web_app: { url: runtime.miniAppUrl } }];
-  }
-
-  return { inline_keyboard: keyboard };
+function officialGroupUrl(env) {
+  return safeText(env.H72H_TELEGRAM_GROUP_URL, 160) || "https://t.me/the_72h";
 }
 
-function buyKeyboard(runtime) {
+function mainKeyboard(runtime, env = {}) {
+  const reserveButton = runtime.miniAppUrl?.startsWith("https://")
+    ? { text: "立即预约", web_app: { url: runtime.miniAppUrl } }
+    : { text: "立即预约", callback_data: "command:buy" };
+
+  return {
+    inline_keyboard: [
+      [reserveButton],
+      [
+        { text: "我的抽奖码", callback_data: "command:my_codes" },
+        { text: "邀请好友", callback_data: "command:invite" },
+      ],
+      [
+        { text: "分享任务", callback_data: "command:share_task" },
+        { text: "官方群", url: officialGroupUrl(env) },
+      ],
+      [
+        { text: "安全提醒", callback_data: "signal:risk" },
+        { text: "人工跟进", callback_data: "command:human" },
+      ],
+    ],
+  };
+}
+
+function reserveKeyboard(runtime, env = {}) {
   const keyboard = [];
 
   if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard.push([{ text: "打开 Mini App 登记白名单", web_app: { url: runtime.miniAppUrl } }]);
+    keyboard.push([{ text: "立即预约", web_app: { url: runtime.miniAppUrl } }]);
   }
 
   keyboard.push([
-    { text: "查看链上状态", callback_data: "command:status" },
-    { text: "需要人工跟进", callback_data: "command:human" },
+    { text: "我的抽奖码", callback_data: "command:my_codes" },
+    { text: "邀请好友", callback_data: "command:invite" },
   ]);
+  keyboard.push([{ text: "官方群", url: officialGroupUrl(env) }]);
 
   return { inline_keyboard: keyboard };
 }
@@ -148,53 +157,58 @@ async function alertSalesSignal(api, env, context) {
   });
 }
 
-async function sendStart(api, chatId, runtime) {
+async function sendStart(api, chatId, runtime, env) {
   await safeSend(api, {
     chatId,
     text: [
-      "72H Early Access / 预售预约助手",
+      "欢迎来到 72H 早期预约通道。",
       "",
-      "当前开放 Early Access 白名单预约：预约成功自动获得 1 个抽奖码；成功邀请 1 个新用户再 +1；分享/发送到群完成社群任务 +2（每人一次）。",
+      "当前阶段仅开放预约与抽奖码累计：",
+      "- 完成预约：获得 1 个抽奖码",
+      "- 邀请新用户完成预约：每成功 1 人，额外获得 1 个抽奖码",
+      "- 完成官方群/社群分享任务：可额外获得 2 个抽奖码",
       "",
-      "禁止真实购买、付款、签名、手工转账或链上额度承诺；现在只记录链下预约。",
+      "抽奖将在预约阶段结束后进行，采用链下透明开奖 + 官方钱包发奖。",
       "",
-      "安全提醒：不要发送助记词、私钥、验证码或资金截图。",
+      "当前 Bot 不会要求你购买、付款、连接钱包、签名或领取资产。如遇任何此类请求，请立即停止操作并以官方公告为准。",
     ].join("\n"),
-    replyMarkup: mainKeyboard(runtime),
+    replyMarkup: mainKeyboard(runtime, env),
   });
 }
 
-async function sendBuy(api, chatId, runtime) {
+async function sendBuy(api, chatId, runtime, env) {
   const lines = [
-    "72H Early Access 白名单预约",
+    "72H 早期预约",
     "",
-    "正式开放时间：2026-05-05 17:00（Asia/Shanghai）。现在只开放白名单预约、开售提醒和社群任务记录，不会生成交易。",
+    "请通过官方 Mini App 完成预约。预约成功后你会获得 1 个抽奖码，并可在 Bot / Mini App 内查看数量。",
     "",
-    "预约成功自动获得 1 个抽奖码，并进入 10,000,000 72H 抽奖奖池。成功邀请 1 个新用户完成预约，邀请人再获得 1 个抽奖码；发送/分享到群完成社群任务可获得 2 个抽奖码（每人限一次）。奖池由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约。Bot 不会根据聊天内容生成交易，也不会要求你付款、签名或私下转账。",
+    "获得更多抽奖码：邀请新用户完成预约 +1；完成官方社群分享任务，审核后 +2。",
+    "",
+    "本阶段不开放购买、付款、连接钱包、签名或领取资产；抽奖码不代表收益承诺、购买资格或资产权益。",
   ];
 
   await safeSend(api, {
     chatId,
     text: lines.join("\n"),
-    replyMarkup: buyKeyboard(runtime),
+    replyMarkup: reserveKeyboard(runtime, env),
   });
 }
 
-async function sendHelp(api, chatId, runtime) {
+async function sendHelp(api, chatId, runtime, env) {
   await safeSend(api, {
     chatId,
     text: [
-      "72H 预售助手说明",
+      "72H 早期预约助手说明",
       "",
-      "聊天只用于理解意图和人工跟进。",
-      "当前不开放真实购买、付款或签名；Mini App 只记录预约、邀请码、抽奖码与一次性社群分享任务。正式开放后也只认官方公告路径。",
-      "预约不等于链上额度或购买证明，不认截图或口头承诺。",
+      "聊天只用于预约说明、安全提醒和人工跟进。",
+      "当前不开放购买、付款、连接钱包、签名或领取；Mini App 只记录预约、邀请、抽奖码与一次性社群分享任务。",
+      "抽奖码仅用于本次预约阶段开奖，不代表收益承诺、购买资格或资产权益。",
       "",
       runtime.enabled
         ? "当前状态：仍以 Mini App 白名单预约与链上证据展示为准。"
         : "当前状态：真实购买关闭，Mini App 只做白名单预约与状态展示。",
     ].join("\n"),
-    replyMarkup: mainKeyboard(runtime),
+    replyMarkup: mainKeyboard(runtime, env),
   });
 }
 
@@ -203,7 +217,7 @@ async function sendStatus(api, env, chatId, runtime) {
   await safeSend(api, {
     chatId,
     text: formatPresaleStatus(statusRuntime),
-    replyMarkup: mainKeyboard(runtime),
+    replyMarkup: mainKeyboard(runtime, env),
   });
 }
 
@@ -226,7 +240,7 @@ async function sendHuman(api, env, chatId, user, text, signalType = "human_suppo
       "",
       "请简单回复你的问题或预计参与区间。不要发送助记词、私钥、验证码或资金截图。",
     ].join("\n"),
-    replyMarkup: mainKeyboard(getPresaleRuntime(env)),
+    replyMarkup: mainKeyboard(getPresaleRuntime(env), env),
   });
 
   await alertHumanSupport(api, env, {
@@ -263,26 +277,26 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
 
   switch (signalType) {
     case "buy_intent":
-      await sendBuy(api, chatId, runtime);
+      await sendBuy(api, chatId, runtime, env);
       return;
     case "wallet_help":
       await safeSend(api, {
         chatId,
         text: [
-          "钱包连接说明",
+          "安全提醒",
           "",
-          "当前只从官方 Mini App 做白名单登记与状态核对；不需要付款、签名、手工转账，也不要把助记词、私钥或验证码发给任何人。",
+          "当前阶段不需要连接钱包，不需要付款、签名或手工转账。不要把助记词、私钥或验证码发给任何人。",
           "",
-          runtime.miniAppUrl ? "点击下方按钮打开白名单登记界面。" : "Mini App URL 尚未配置。",
+          runtime.miniAppUrl ? "点击下方按钮打开早期预约界面。" : "Mini App URL 尚未配置。",
         ].join("\n"),
-        replyMarkup: mainKeyboard(runtime),
+        replyMarkup: mainKeyboard(runtime, env),
       });
       return;
     case "price_question":
       await safeSend(api, {
         chatId,
         text: [
-          "72H 计划阶段规则（当前不可购买）",
+          "72H 当前阶段：早期预约（当前不可购买）",
           "",
           "Stage 0: 1 TON = 10,072 72H",
           "Stage 1: 1 TON = 7,200 72H",
@@ -292,9 +306,9 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
           "总预售额度：4,500,000,000 72H",
           "单钱包上限：7,200,000 72H",
           "",
-          "以上仅为开售前规则核对；当前不开放真实购买、付款或签名，不承诺链上额度。",
+          "以上仅供规则核对；当前不开放购买、付款、连接钱包、签名或领取，不承诺链上额度。",
         ].join("\n"),
-        replyMarkup: mainKeyboard(runtime),
+        replyMarkup: mainKeyboard(runtime, env),
       });
       return;
     case "risk_question":
@@ -306,9 +320,9 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
           `PresaleVault: ${runtime.presaleVaultAddress}`,
           `72H Jetton Master: ${runtime.jettonMasterAddress}`,
           "",
-          "当前不开放真实购买、付款或签名。只认官方合约地址和官方公告；截图、私聊承诺和用户自报 hash 都不能作为预约、额度或购买证明。",
+          "当前不开放购买、付款、连接钱包、签名或领取。只认官方 Bot 与官方群公告；截图、私聊承诺和用户自报 hash 都不能作为预约、额度或购买证明。",
         ].join("\n"),
-        replyMarkup: mainKeyboard(runtime),
+        replyMarkup: mainKeyboard(runtime, env),
       });
       return;
     case "referral_question":
@@ -319,7 +333,7 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
           "",
           "你可以直接回复 KOL、邀请人或渠道名称，运营会在跟进时参考。",
         ].join("\n"),
-        replyMarkup: mainKeyboard(runtime),
+        replyMarkup: mainKeyboard(runtime, env),
       });
       return;
     case "human_support":
@@ -331,11 +345,61 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
         text: [
           "我已记录你的问题。",
           "",
-          "如果你想预约白名单、查看计划规则、核验合约或联系人工，可以点下方按钮。",
+          "如果你想立即预约、查看抽奖码、邀请好友、看分享任务或联系人工，可以点下方按钮。",
         ].join("\n"),
-        replyMarkup: mainKeyboard(runtime),
+        replyMarkup: mainKeyboard(runtime, env),
       });
   }
+}
+
+
+async function sendMyCodes(api, chatId, runtime, env) {
+  await safeSend(api, {
+    chatId,
+    text: [
+      "我的抽奖码",
+      "",
+      "请打开官方 Mini App 查看你的抽奖码数量与列表。",
+      "",
+      "获得更多抽奖码：邀请新用户完成预约 +1；完成官方群/社群分享任务 +2。",
+      "",
+      "所有抽奖码仅用于本次预约阶段开奖，不代表任何收益承诺、购买资格或资产权益。",
+    ].join("\n"),
+    replyMarkup: reserveKeyboard(runtime, env),
+  });
+}
+
+async function sendInvite(api, chatId, runtime, env) {
+  await safeSend(api, {
+    chatId,
+    text: [
+      "邀请好友加入 72H 早期预约。",
+      "",
+      "打开官方 Mini App 后可查看你的专属邀请链接。每成功邀请 1 位新用户完成预约，你将获得 1 个额外抽奖码。",
+      "",
+      "推荐转发文案：",
+      "我刚完成了 72H 早期预约。现在不需要付款、不需要连接钱包、不需要签名，只是预约并获得抽奖码。通过我的链接预约，你也可以获得抽奖码。",
+    ].join("\n"),
+    replyMarkup: reserveKeyboard(runtime, env),
+  });
+}
+
+async function sendShareTask(api, chatId, runtime, env) {
+  await safeSend(api, {
+    chatId,
+    text: [
+      "完成官方社群分享任务，可获得 2 个额外抽奖码。",
+      "",
+      "任务方式：",
+      "1. 将官方指定内容转发到加密相关群组/社群",
+      "2. 截图保留证明",
+      "3. 回到 Mini App 记录分享任务；如运营要求，再提交截图或链接",
+      "4. 通过审核后，系统将为你增加 2 个抽奖码",
+      "",
+      "请勿刷屏、骚扰他人或发布误导性内容。我们只认可真实、清晰、合规的分享。",
+    ].join("\n"),
+    replyMarkup: reserveKeyboard(runtime, env),
+  });
 }
 
 async function handleCommand(api, env, chatId, user, text, runtime, command) {
@@ -351,16 +415,25 @@ async function handleCommand(api, env, chatId, user, text, runtime, command) {
 
   switch (command) {
     case "/start":
-      await sendStart(api, chatId, runtime);
+      await sendStart(api, chatId, runtime, env);
       return;
     case "/buy":
-      await sendBuy(api, chatId, runtime);
+      await sendBuy(api, chatId, runtime, env);
       return;
     case "/status":
       await sendStatus(api, env, chatId, runtime);
       return;
+    case "/codes":
+      await sendMyCodes(api, chatId, runtime, env);
+      return;
+    case "/invite":
+      await sendInvite(api, chatId, runtime, env);
+      return;
+    case "/share":
+      await sendShareTask(api, chatId, runtime, env);
+      return;
     case "/help":
-      await sendHelp(api, chatId, runtime);
+      await sendHelp(api, chatId, runtime, env);
       return;
     case "/human":
       await sendHuman(api, env, chatId, user, text);
@@ -368,8 +441,8 @@ async function handleCommand(api, env, chatId, user, text, runtime, command) {
     default:
       await safeSend(api, {
         chatId,
-        text: "暂不支持这个命令。可以使用 /start、/buy、/status、/help 或 /human。",
-        replyMarkup: mainKeyboard(runtime),
+        text: "暂不支持这个命令。可以使用 /start、/buy、/codes、/invite、/share、/help 或 /human。",
+        replyMarkup: mainKeyboard(runtime, env),
       });
   }
 }
@@ -416,6 +489,15 @@ async function handleCallbackQuery(api, env, update, runtime) {
       return;
     case "command:status":
       await handleCommand(api, env, chatId, user, "/status", runtime, "/status");
+      return;
+    case "command:my_codes":
+      await sendMyCodes(api, chatId, runtime, env);
+      return;
+    case "command:invite":
+      await sendInvite(api, chatId, runtime, env);
+      return;
+    case "command:share_task":
+      await sendShareTask(api, chatId, runtime, env);
       return;
     case "command:help":
       await handleCommand(api, env, chatId, user, "/help", runtime, "/help");

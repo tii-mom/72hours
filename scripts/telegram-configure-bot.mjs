@@ -36,9 +36,12 @@ async function main() {
 
   await callTelegram(token, "setMyCommands", {
     commands: [
-      { command: "start", description: "打开 72H 预约助手" },
-      { command: "buy", description: "登记白名单预约" },
-      { command: "status", description: "查看预约与合约状态" },
+      { command: "start", description: "打开 72H 早期预约助手" },
+      { command: "buy", description: "立即预约（不购买、不付款）" },
+      { command: "codes", description: "查看抽奖码说明" },
+      { command: "invite", description: "查看邀请好友说明" },
+      { command: "share", description: "查看社群分享任务" },
+      { command: "status", description: "查看预约阶段状态" },
       { command: "help", description: "了解预约与防钓鱼规则" },
       { command: "human", description: "请求人工跟进" },
     ],
@@ -47,7 +50,7 @@ async function main() {
   await callTelegram(token, "setChatMenuButton", {
     menu_button: {
       type: "web_app",
-      text: "72H 预约",
+      text: "72H 早期预约",
       web_app: {
         url: miniAppUrl,
       },

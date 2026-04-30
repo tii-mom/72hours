@@ -1,6 +1,6 @@
 # 72H Bot Presale Warmup / Waitlist Runbook
 
-Status: BOT-only warmup/waitlist. No purchase route is enabled here, no new contract is required, and receipt/intent routes remain disabled.
+Status: BOT-only early reservation / warmup waitlist. No purchase, payment, wallet connection request, signature, claim route, new contract, or receipt/intent route is enabled here.
 
 ## Presale modes
 
@@ -46,13 +46,14 @@ Public/admin reservation records include:
 
 Default statuses:
 
-- `whitelistStatus = pending_review`
-- `lotteryEligible = true`
-- `lotteryStatus = eligible_pending_draw`
+- `whitelistStatus = registered_pending_review`
+- `lotteryCodeCount` starts at `1` after reservation success.
+- Walletless reservations are allowed for the Bot-only reservation phase and are held before draw/payout review: `lotteryEligible = false`, `lotteryStatus = ineligible_pending_wallet`, `walletVerificationStatus = missing`, `drawReviewStatus = held`.
+- Records with a unique wallet, if imported/tested by operators, are marked `lotteryEligible = true`, `lotteryStatus = eligible_pending_draw`, `walletVerificationStatus = verified_unique`.
 - `rewardStatus = not_awarded`
 - `walletDedupeStatus = unique_wallet_reserved | wallet_not_provided`
 
-Duplicate wallet across Telegram users returns `409 wallet_already_reserved`.
+Duplicate wallet across Telegram users returns `409 wallet_already_reserved`. The public Mini App copy does not ask users to connect a wallet during P0; this path remains for operator/test coverage and later review workflows.
 
 ## Deterministic lottery draw
 
@@ -92,3 +93,12 @@ npm run test:telegram-presale
 npm run lint
 npm run build
 ```
+
+
+## P0 Telegram growth copy surfaces
+
+- Bot webhook `/start` now uses early-reservation wording: reserve +1, valid invite +1, community share task +2, transparent off-chain draw, official wallet payout.
+- Bot buttons: `立即预约`, `我的抽奖码`, `邀请好友`, `分享任务`, `官方群`, `安全提醒`, `人工跟进`.
+- Mini App `/bot/presale` copy is reservation-only and does not ask users to connect a wallet, pay, sign, or claim.
+- Invite codes default to `u{telegramUserId}`; username is stored only as `inviteAlias` for display/debugging.
+- Community announcement and admin Q&A drafts live at `docs/artifacts/telegram-growth-p0-community-copy.md`.

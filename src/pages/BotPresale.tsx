@@ -1,20 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  useIsConnectionRestored,
-  useTonAddress,
-  useTonConnectUI,
-  useTonWallet,
-} from "@tonconnect/ui-react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
-  CircleDollarSign,
   ExternalLink,
   Gift,
   LifeBuoy,
   Share2,
   ShieldCheck,
-  Wallet,
 } from "lucide-react";
 import { officialLinkNote, officialLinks } from "../content/official-links";
 import { useLocale } from "../lib/locale";
@@ -72,7 +64,6 @@ type PresaleStatusState =
 
 type BuyerSignal =
   | "buy_interest"
-  | "wallet_help"
   | "contract_check"
   | "human_followup";
 
@@ -424,12 +415,6 @@ export default function BotPresale() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
   const [state, setState] = useState<PresaleStatusState>({ status: "loading" });
-  const [tonConnectUI] = useTonConnectUI();
-  const wallet = useTonWallet();
-  const address = useTonAddress(true);
-  const restored = useIsConnectionRestored();
-  const [walletActionError, setWalletActionError] = useState<string | undefined>();
-  const [walletPending, setWalletPending] = useState(false);
   const [initData, setInitData] = useState("");
   const [signalFeedback, setSignalFeedback] = useState<string | undefined>();
   const [countdownNow, setCountdownNow] = useState(() => Date.now());
@@ -451,10 +436,7 @@ export default function BotPresale() {
 
     async function loadStatus() {
       try {
-        const statusUrl = address
-          ? `/api/telegram/presale-status?${new URLSearchParams({ buyerAddress: address }).toString()}`
-          : "/api/telegram/presale-status";
-        const response = await fetch(statusUrl, {
+        const response = await fetch("/api/telegram/presale-status", {
           headers: { Accept: "application/json" },
         });
 
@@ -489,7 +471,7 @@ export default function BotPresale() {
     return () => {
       cancelled = true;
     };
-  }, [address]);
+  }, [isEnglish]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setCountdownNow(Date.now()), 1000);
@@ -531,24 +513,9 @@ export default function BotPresale() {
     };
   }, [initData]);
 
-  useEffect(() => {
-    if (!initData || !address) return;
-    void postMiniAppEvent(initData, {
-      type: "wallet_connected",
-      walletAddress: address,
-    }).catch(() => undefined);
-  }, [address, initData]);
-
   const presale = state.status === "ready" || state.status === "error" ? state.presale : FALLBACK_PRESALE;
   const liveStage = presale.chainSnapshot?.publicStage;
-  const walletName = useMemo(() => {
-    if (!wallet) return isEnglish ? "Not connected" : "未连接";
-    return "name" in wallet ? wallet.name : wallet.device.appName;
-  }, [isEnglish, wallet]);
-  const walletStatusText = !restored
-    ? isEnglish ? "Restoring session" : "正在恢复会话"
-    : address ? shortAddress(address) : isEnglish ? "Connect a TON wallet" : "连接 TON 钱包";
-  const purchaseStatus = isEnglish ? "Whitelist Reservation open · purchase not open" : "白名单预约开放 · 购买未开放";
+  const purchaseStatus = isEnglish ? "Early reservation only · no purchase / wallet action" : "早期预约阶段 · 不购买 / 不连钱包";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -577,7 +544,6 @@ export default function BotPresale() {
         },
         body: JSON.stringify({
           desiredAllocation72H,
-          walletAddress: address || undefined,
           referral: referral || undefined,
           source: "miniapp_waitlist",
           saleReminderOptIn: true,
@@ -595,7 +561,7 @@ export default function BotPresale() {
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
         ? isEnglish ? "You are already on the whitelist reservation list." : "你已经在预约白名单中。"
-        : isEnglish ? "Reservation confirmed. Whitelist status, opening reminder, 72H reward, and lottery eligibility are recorded." : "预约成功。白名单登记、开售提醒、72H 奖励与抽奖资格已记录。"
+        : isEnglish ? "Reservation confirmed. You received 1 raffle code. You can invite friends or submit the community sharing task for more codes." : "预约成功。你已获得 1 个抽奖码。可继续邀请好友或提交社群分享任务获得更多抽奖码。"
       );
     } catch (error) {
       console.warn("Reservation submission failed", error);
@@ -611,11 +577,11 @@ export default function BotPresale() {
 
     const shareText = reservation.inviteLink
       ? isEnglish
-        ? `I reserved a 72H Whitelist Reservation. Join with my official invite link: ${reservation.inviteLink}`
-        : `我已完成 72H 白名单预约。用我的官方邀请链接加入：${reservation.inviteLink}`
+        ? `I just completed my 72H early reservation. No payment, no wallet connection, no signing — this phase is only for reservation and raffle codes. Reserve through my link to get your raffle code: ${reservation.inviteLink}`
+        : `我刚完成了 72H 早期预约。现在不需要付款、不需要连接钱包、不需要签名，只是预约并获得抽奖码。通过我的链接预约，你也可以获得抽奖码：${reservation.inviteLink}`
       : isEnglish
-        ? "I reserved a 72H Whitelist Reservation. Search the official 72H Bot to join."
-        : "我已完成 72H 白名单预约，搜索官方 72H Bot 加入。";
+        ? "I just completed my 72H early reservation. No payment, no wallet connection, no signing — search the official 72H Bot to join."
+        : "我刚完成了 72H 早期预约。现在不需要付款、不需要连接钱包、不需要签名；搜索官方 72H Bot 加入。";
 
     try {
       setShareTaskPending(true);
@@ -646,40 +612,11 @@ export default function BotPresale() {
     }
   };
 
-  const connectWallet = async () => {
-    try {
-      setWalletPending(true);
-      setWalletActionError(undefined);
-      await tonConnectUI.openModal();
-    } catch (error) {
-      console.warn("Wallet connection failed", error);
-      setWalletActionError(isEnglish ? "Wallet connection did not complete. Please try again in your TON wallet." : "钱包连接未完成，请在 TON 钱包内确认后重试。");
-    } finally {
-      setWalletPending(false);
-    }
-  };
-
-  const disconnectWallet = async () => {
-    try {
-      setWalletPending(true);
-      setWalletActionError(undefined);
-      await tonConnectUI.disconnect();
-    } catch (error) {
-      console.warn("Wallet disconnect failed", error);
-      setWalletActionError(isEnglish ? "Wallet disconnect did not complete. Please try again." : "钱包断开未完成，请稍后重试。");
-    } finally {
-      setWalletPending(false);
-    }
-  };
-
   const recordBuyerSignal = (type: BuyerSignal) => {
     const messages: Record<BuyerSignal, string> = {
       buy_interest: isEnglish
         ? "Opening reminder recorded. Purchases are not open yet."
         : "开售提醒已记录。购买暂未开放。",
-      wallet_help: isEnglish
-        ? "Wallet help signal recorded."
-        : "钱包问题已记录。",
       contract_check: isEnglish
         ? "Security check signal recorded."
         : "安全核验需求已记录。",
@@ -691,7 +628,6 @@ export default function BotPresale() {
     setSignalFeedback(messages[type]);
     void postMiniAppEvent(initData, {
       type,
-      walletAddress: address || undefined,
       presaleEnabled: presale.enabled,
     }).catch(() => undefined);
   };
@@ -708,51 +644,18 @@ export default function BotPresale() {
                   ? isEnglish ? "Public evidence ready" : "公开证据已同步"
                   : isEnglish ? "Public evidence pending" : "公开证据待同步"}
               </StatusBadge>
-              <StatusBadge tone={address ? "primary" : "neutral"}>
-                {address ? (isEnglish ? "Wallet connected" : "钱包已连接") : isEnglish ? "Wallet not connected" : "钱包未连接"}
-              </StatusBadge>
             </div>
 
-            <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
+            <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)] lg:items-end">
               <div>
                 <h1 className="text-4xl font-black leading-[1.02] tracking-normal text-foreground sm:text-5xl">
-                  {isEnglish ? "72H Whitelist Reservation" : "72H 白名单预约"}
+                  {isEnglish ? "72H Early Reservation" : "72H 早期预约通道"}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Reserve your whitelist spot, keep opening reminders on, and collect lottery codes inside the official Bot / Mini App. No purchase, payment, signature, private transfer, or purchase quota is handled here."
-                    : "在官方 Telegram Bot / Mini App 内完成白名单预约、开售提醒与抽奖码记录。本页不处理购买、付款、签名、私下转账或购买额度。"}
+                    ? "This phase is for reservations and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. No purchase, payment, wallet connection, signing, claiming, private transfer, or purchase quota is handled here."
+                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，完成社群分享任务 +2。本页不会要求购买、付款、连接钱包、签名、领取资产、私下转账或承诺购买额度。"}
                 </p>
-              </div>
-
-              <div className="rounded-sm border border-line/70 bg-background/42 p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="text-xs font-semibold text-muted-foreground">{isEnglish ? "Wallet" : "钱包"}</div>
-                    <div className="mt-2 truncate text-lg font-black text-foreground">{walletName}</div>
-                    <div className="mt-1 break-all text-sm leading-6 text-muted-foreground">{walletStatusText}</div>
-                  </div>
-                  <Wallet className="h-5 w-5 shrink-0 text-gold" />
-                </div>
-
-                {walletActionError ? (
-                  <div className="mt-3 rounded-sm border border-gold/25 bg-gold/8 px-3 py-2 text-sm leading-6 text-foreground/86">
-                    {walletActionError}
-                  </div>
-                ) : null}
-
-                <button
-                  type="button"
-                  onClick={address ? disconnectWallet : connectWallet}
-                  disabled={walletPending || !restored}
-                  className={`${address ? "page-action-muted" : "page-action"} mt-4 w-full disabled:pointer-events-none disabled:opacity-60`}
-                >
-                  {walletPending
-                    ? isEnglish ? "Working" : "处理中"
-                    : address
-                      ? isEnglish ? "Disconnect" : "断开钱包"
-                      : isEnglish ? "Connect wallet" : "连接钱包"}
-                </button>
               </div>
             </div>
 
@@ -791,10 +694,10 @@ export default function BotPresale() {
               <div className="mt-4 grid gap-3 md:grid-cols-3">
                 <RuleStep
                   index="01"
-                  title={isEnglish ? "How to get the 72H reward" : "如何获得预约奖励"}
+                  title={isEnglish ? "Reservation gives 1 code" : "预约获得 1 个抽奖码"}
                   body={isEnglish
-                    ? `Submit one valid whitelist reservation in the official Mini App. Eligible records are marked for a ${RESERVATION_REWARD_LABEL} 72H manual wallet-transfer reward after the team verifies duplicates and abuse.`
-                    : `在官方 Mini App 提交一条有效白名单预约。团队核对重复与作弊后，符合条件的记录会标记为 ${RESERVATION_REWARD_LABEL} 72H 人工钱包转账奖励。`}
+                    ? "Complete one valid reservation in the official Mini App and receive 1 raffle code. Raffle codes are entries for this reservation-phase draw only."
+                    : "在官方 Mini App 完成一次有效预约，即获得 1 个抽奖码。抽奖码仅用于本次预约阶段开奖。"}
                 />
                 <RuleStep
                   index="02"
@@ -813,16 +716,11 @@ export default function BotPresale() {
               </div>
             </div>
 
-            {address && presale.chainSnapshot?.buyerRemaining72H ? (
-              <div className="mt-4 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
-                {isEnglish ? "Planned wallet cap remaining" : "计划单钱包剩余上限"}: {presale.chainSnapshot.buyerRemaining72H} 72H
-              </div>
-            ) : null}
 
             <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
               {isEnglish
-                ? "Before the official opening, this page only records whitelist reservations and reminders. No payment, signature, private transfer, or purchase quota promise is required."
-                : "正式开放前，本页只用于白名单预约和开售提醒。无需付款、无需签名、无需私下转账，也不承诺购买额度。"}
+                ? "Safety reminder: the Bot will not ask you to buy, pay, connect a wallet, sign a transaction, enter a seed phrase/private key, or claim assets at this stage."
+                : "安全提醒：当前阶段 Bot 不会要求你购买、付款、连接钱包、签名交易、输入助记词/私钥或领取资产。"}
             </div>
           </div>
 
@@ -836,8 +734,8 @@ export default function BotPresale() {
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "Submit once with your desired reservation amount. Wallet is optional now; connecting one will attach it to the reservation record."
-                        : "填写希望登记的 72H 意向数量。钱包现在可选；已连接钱包会自动写入预约记录。"}
+                        ? "Submit once to reserve and receive 1 raffle code. Do not connect a wallet or pay anything for this phase."
+                        : "提交一次即可完成预约并获得 1 个抽奖码。本阶段不需要连接钱包，也不收取任何费用。"}
                     </p>
                   </div>
                   <Gift className="h-5 w-5 text-gold" />
@@ -847,7 +745,6 @@ export default function BotPresale() {
                   <div className="mt-5 grid gap-3 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
                     <div>
                       {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
-                      {reservation.walletAddress ? ` · ${shortAddress(reservation.walletAddress)}` : ""}
                       {reservation.whitelistStatus ? ` · ${displayWhitelistStatus(reservation.whitelistStatus, isEnglish)}` : ""}
                       {reservation.userSegment ? ` · ${displayUserSegment(reservation.userSegment, isEnglish)}` : ""}
                       {reservation.rewardStatus ? ` · ${isEnglish ? "Reward status" : "发奖状态"}: ${displayPayoutStatus(reservation.rewardStatus, isEnglish)}` : ""}
@@ -917,8 +814,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current stage: Whitelist Reservation. Submit once for +1 lottery code; valid invited reservations add +1 each; the group share task adds +2 once. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, paid later by wallet transfer. No funds are accepted here.`
-                      : `当前阶段：白名单预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群分享任务每人限一次 +2。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，后续通过钱包转账发放；本页不收取资金。`}
+                      ? `Current phase: early reservation only. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task adds +2 once after review. No funds, wallet connection, signatures, or claims are accepted here.`
+                      : `当前阶段：仅早期预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核后一次性 +2。本页不收取资金、不连接钱包、不签名、不领取。`}
                   </div>
                   <button
                     type="submit"
@@ -957,14 +854,9 @@ export default function BotPresale() {
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <QuickAction
-                    icon={<CircleDollarSign className="h-4 w-4" />}
+                    icon={<Gift className="h-4 w-4" />}
                     label={isEnglish ? "Remind me when opening starts" : "开售时提醒我"}
                     onClick={() => recordBuyerSignal("buy_interest")}
-                  />
-                  <QuickAction
-                    icon={<Wallet className="h-4 w-4" />}
-                    label={isEnglish ? "Wallet help" : "钱包问题"}
-                    onClick={() => recordBuyerSignal("wallet_help")}
                   />
                   <QuickAction
                     icon={<ShieldCheck className="h-4 w-4" />}
@@ -1039,8 +931,8 @@ export default function BotPresale() {
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Before opening, only reservations, whitelist status, reminders, community task status, and user segments are recorded. Lottery rewards come from the official prize wallet; users do not need to pay gas to claim."
-                    : "开放前只记录预约、白名单状态、开售提醒、社群任务状态和用户分层。抽奖奖励由官方奖池钱包转账发放，用户无需支付 gas 领取。"}
+                    ? "At this stage, 72H Bot will never ask for payment, wallet connection, transaction signing, seed phrases/private keys, or asset claiming. Follow official Bot and group announcements only."
+                    : "当前阶段，72H Bot 不会要求付款、连接钱包、签名交易、输入助记词/私钥或领取资产。请只以官方 Bot 与官方群公告为准。"}
                 </p>
                 <p className="mt-3 text-xs font-semibold leading-5 text-gold">
                   {isEnglish ? officialLinkNote.en : officialLinkNote.zh}

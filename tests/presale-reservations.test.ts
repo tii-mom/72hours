@@ -89,8 +89,9 @@ test("presale reservation creates one idempotent off-chain whitelist record per 
   assert.equal(createdPayload.reservation.lotteryCodeLedger[1].reason, "community_share");
   assert.equal(createdPayload.reservation.lotteryCodeLedger[1].reviewStatus, "pending_manual_review");
   assert.equal(createdPayload.reservation.shareTasks.communityShareOnce, "self_attested");
-  assert.equal(createdPayload.reservation.inviteCode, "iq382");
-  assert.equal(createdPayload.reservation.inviteLink, "https://t.me/the72hbot?startapp=ref_iq382");
+  assert.equal(createdPayload.reservation.inviteCode, "u382");
+  assert.equal(createdPayload.reservation.inviteAlias, "iq382");
+  assert.equal(createdPayload.reservation.inviteLink, "https://t.me/the72hbot?startapp=ref_u382");
   assert.equal(createdPayload.reservation.reservationReward72H, "72");
   assert.equal(createdPayload.reservation.lotteryPool72H, "10000000");
   assert.equal(createdPayload.reservation.saleOpensAt, "2026-05-05T09:00:00.000Z");
@@ -160,11 +161,12 @@ test("presale lottery codes hold walletless referrals pending and support one-ti
   assert.equal(inviter.status, 201);
   const inviterPayload = await inviter.json() as any;
   assert.equal(inviterPayload.reservation.lotteryCodeCount, 1);
-  assert.equal(inviterPayload.reservation.inviteCode, "alpha");
+  assert.equal(inviterPayload.reservation.inviteCode, "u10");
+  assert.equal(inviterPayload.reservation.inviteAlias, "alpha");
   assert.equal(inviterPayload.reservation.walletVerificationStatus, "verified_unique");
 
   const invited = await onRequestPost({
-    request: reservationRequest({ telegramUser: { id: 11, username: "beta" }, desiredAllocation72H: "720", referral: "alpha" }),
+    request: reservationRequest({ telegramUser: { id: 11, username: "beta" }, desiredAllocation72H: "720", referral: "u10" }),
     env,
   });
   assert.equal(invited.status, 201);
@@ -174,7 +176,7 @@ test("presale lottery codes hold walletless referrals pending and support one-ti
   assert.equal(invitedPayload.reservation.lotteryStatus, "ineligible_pending_wallet");
   assert.equal(invitedPayload.reservation.reviewStatus, "pending_review");
   assert.equal(invitedPayload.reservation.walletVerificationStatus, "missing");
-  assert.equal(invitedPayload.reservation.referralCode, "alpha");
+  assert.equal(invitedPayload.reservation.referralCode, "u10");
   assert.equal(invitedPayload.reservation.referredByTelegramUserId, "10");
 
   const share = await onRequestPost({
@@ -282,7 +284,7 @@ test("wallet-verified referrals become valid codes and sales admin exposes KV pa
       telegramUser: { id: 21, username: "delta" },
       walletAddress: "EQDeltaWallet000000000000000000000000000000000",
       desiredAllocation72H: "720",
-      referral: "gamma",
+      referral: "u20",
     }),
     env,
   });
