@@ -12,6 +12,7 @@
     "check:i18n": "node scripts/check-public-copy-i18n.mjs",
     "test:capital-routes": "node --import tsx --test tests/capital-route-contract.test.ts",
     "test:telegram-presale": "node --import tsx --test tests/presale-reservations.test.ts",
+    "telegram:sales-admin:readonly": "node scripts/telegram-sales-admin-readonly.mjs",
     "seo:generate": "tsx scripts/generate-static-seo.ts",
     "capital:smoke:staging": "node scripts/capital-staging-smoke.mjs",
     "capital:gate:production": "node scripts/capital-production-gate.mjs",
