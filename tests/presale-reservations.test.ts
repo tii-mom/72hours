@@ -5,6 +5,8 @@ import { onRequestPost } from "../functions/api/telegram/presale-reservations.js
 import { onRequestGet as onSalesAdminGet } from "../functions/api/telegram/sales-admin.js";
 import { onRequest as onIntentRequest } from "../functions/api/telegram/presale-intents.js";
 import { onRequest as onReceiptRequest } from "../functions/api/telegram/presale-receipts.js";
+import { onRequest as onNakedIntentRequest } from "../functions/presale-intents.js";
+import { onRequest as onNakedReceiptRequest } from "../functions/presale-receipts.js";
 
 class FakeKv {
   store = new Map<string, string>();
@@ -180,9 +182,15 @@ test("presale reservation rejects unauthenticated or malformed requests", async 
 test("purchase intent and receipt routes remain disabled", async () => {
   const intent = await onIntentRequest();
   const receipt = await onReceiptRequest();
+  const nakedIntent = await onNakedIntentRequest();
+  const nakedReceipt = await onNakedReceiptRequest();
 
   assert.equal(intent.status, 503);
   assert.equal(receipt.status, 503);
+  assert.equal(nakedIntent.status, 503);
+  assert.equal(nakedReceipt.status, 503);
   assert.deepEqual(await intent.json(), { ok: false, error: "presale_route_disabled" });
   assert.deepEqual(await receipt.json(), { ok: false, error: "presale_route_disabled" });
+  assert.deepEqual(await nakedIntent.json(), { ok: false, error: "presale_route_disabled" });
+  assert.deepEqual(await nakedReceipt.json(), { ok: false, error: "presale_route_disabled" });
 });
