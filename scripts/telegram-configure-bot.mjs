@@ -47,7 +47,7 @@ async function main() {
   await callTelegram(token, "setChatMenuButton", {
     menu_button: {
       type: "web_app",
-      text: "72H 预售",
+      text: "72H 预约",
       web_app: {
         url: miniAppUrl,
       },

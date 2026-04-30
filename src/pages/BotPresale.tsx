@@ -121,7 +121,7 @@ declare global {
 const SALE_OPENS_AT = "2026-05-05T09:00:00.000Z";
 const LOTTERY_POOL_LABEL = "10,000,000";
 const RESERVATION_REWARD_LABEL = "72";
-const WARMUP_MODE_LABEL = "warmup / waitlist";
+const WARMUP_MODE_LABEL = "Early Access";
 
 const FALLBACK_PRESALE: PresaleRuntime = {
   configured: true,
@@ -613,8 +613,8 @@ export default function BotPresale() {
 
             <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
               {isEnglish
-                ? "Until the official opening time, every purchase intent and receipt route returns 503. Reservation records are off-chain waitlist signals: no payment, signature, manual transfer, or on-chain quota promise."
-                : "正式开放前，purchase intent 与 receipt 接口全部返回 503。预约记录只是链下候补名单信号：不付款、不签名、不手工转账、不承诺链上额度。"}
+                ? "Before the official opening, this page only records whitelist reservations and reminders. No payment, signature, private transfer, or on-chain quota promise is required."
+                : "正式开放前，本页只用于白名单预约和开售提醒。无需付款、无需签名、无需私下转账，也不承诺链上额度。"}
             </div>
           </div>
 
@@ -669,8 +669,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Mode: ${WARMUP_MODE_LABEL}. Reward: ${RESERVATION_REWARD_LABEL} 72H for eligible reservations. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No new claim contract and no funds are accepted here.`
-                      : `模式：${WARMUP_MODE_LABEL}。预约奖励：符合条件记录可获得 ${RESERVATION_REWARD_LABEL} 72H。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约，本页不收取资金。`}
+                      ? `Current stage: Early Access reservation. Eligible records may receive ${RESERVATION_REWARD_LABEL} 72H. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No funds are accepted here.`
+                      : `当前阶段：Early Access 白名单预约。符合条件的预约记录可获得 ${RESERVATION_REWARD_LABEL} 72H 奖励资格。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；本页不收取资金。`}
                   </div>
                   <button
                     type="submit"
