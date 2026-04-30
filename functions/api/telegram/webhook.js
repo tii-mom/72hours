@@ -54,7 +54,7 @@ function classifySalesIntent(text) {
 
 function mainKeyboard(runtime) {
   const keyboard = [
-    [{ text: "打开预售界面", callback_data: "command:buy" }],
+    [{ text: "预约白名单额度", callback_data: "command:buy" }],
     [
       { text: "链上状态", callback_data: "command:status" },
       { text: "阶段价格", callback_data: "signal:price" },
@@ -66,7 +66,7 @@ function mainKeyboard(runtime) {
   ];
 
   if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard[0] = [{ text: "打开 72H 预售界面", web_app: { url: runtime.miniAppUrl } }];
+    keyboard[0] = [{ text: "打开 72H 白名单预约", web_app: { url: runtime.miniAppUrl } }];
   }
 
   return { inline_keyboard: keyboard };
@@ -76,7 +76,7 @@ function buyKeyboard(runtime) {
   const keyboard = [];
 
   if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard.push([{ text: "打开 Mini App（当前只读）", web_app: { url: runtime.miniAppUrl } }]);
+    keyboard.push([{ text: "打开 Mini App 预约白名单", web_app: { url: runtime.miniAppUrl } }]);
   }
 
   keyboard.push([
@@ -154,11 +154,9 @@ async function sendStart(api, chatId, runtime) {
     text: [
       "72H 官方预售助手",
       "",
-      "你可以在这里完成三件事：查看预售状态、核验官方合约、进入预售界面。",
+      "你可以在这里完成三件事：预约白名单额度、查看倒计时、核验官方合约。",
       "",
-      runtime.enabled
-        ? "购买只通过官方 Mini App + TonConnect 签名。"
-        : "当前真实购买暂未开放，预售界面只做状态展示和钱包预检查。",
+      "真实购买、签名、收款和 receipt 确认暂未开放；现在只记录链下预约。",
       "",
       "安全提醒：不要发送助记词、私钥、验证码或资金截图。",
     ].join("\n"),
@@ -168,13 +166,11 @@ async function sendStart(api, chatId, runtime) {
 
 async function sendBuy(api, chatId, runtime) {
   const lines = [
-    "72H 预售界面",
+    "72H 白名单预约",
     "",
-    runtime.enabled
-      ? "请从下方按钮进入官方界面，连接钱包后再签名。"
-      : "真实购买暂未开放。你可以先查看价格、官方合约和链上状态。",
+    "正式开放时间：2026-05-05 17:00（Asia/Shanghai）。现在只可预约白名单额度，不会生成交易。",
     "",
-    "Bot 不会根据聊天内容生成交易，也不会要求你私下转账。",
+    "预约成功可获得 72H 代币奖励，并进入 10,000,000 72H 抽奖奖池。Bot 不会根据聊天内容生成交易，也不会要求你私下转账。",
   ];
 
   await safeSend(api, {
@@ -195,8 +191,8 @@ async function sendHelp(api, chatId, runtime) {
       "成交只认链上验证，不认截图或口头承诺。",
       "",
       runtime.enabled
-        ? "当前状态：购买开关已配置，请以预售界面展示为准。"
-        : "当前状态：真实购买关闭，预售界面只做状态展示。",
+        ? "当前状态：仍以 Mini App 白名单预约与链上证据展示为准。"
+        : "当前状态：真实购买关闭，Mini App 只做白名单预约与状态展示。",
     ].join("\n"),
     replyMarkup: mainKeyboard(runtime),
   });

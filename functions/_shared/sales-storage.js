@@ -2,6 +2,10 @@ function getSalesKv(env) {
   return env.H72H_BOT_SALES_KV || env.BOT_SALES_KV;
 }
 
+export function getSalesKvBinding(env) {
+  return getSalesKv(env);
+}
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -40,6 +44,27 @@ export async function putSalesRecord(env, key, record, metadata = {}) {
   });
 
   return { ok: true, key, record };
+}
+
+export async function getSalesRecord(env, key) {
+  const kv = getSalesKv(env);
+  if (!kv) {
+    return {
+      ok: false,
+      error: "sales_storage_unavailable",
+    };
+  }
+
+  const raw = await kv.get(key);
+  if (!raw) {
+    return { ok: true, key, record: undefined };
+  }
+
+  try {
+    return { ok: true, key, record: JSON.parse(raw) };
+  } catch {
+    return { ok: false, key, error: "sales_storage_record_invalid" };
+  }
 }
 
 export async function recordSalesEvent(env, event) {
