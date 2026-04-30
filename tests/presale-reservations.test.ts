@@ -20,12 +20,16 @@ class FakeKv {
     this.store.set(key, value);
   }
 
-  async list({ prefix = "", limit = 100 }: { prefix?: string; limit?: number } = {}) {
-    const keys = [...this.store.keys()]
-      .filter((name) => name.startsWith(prefix))
-      .slice(0, limit)
-      .map((name) => ({ name }));
-    return { keys, list_complete: true };
+  async list({ prefix = "", limit = 100, cursor }: { prefix?: string; limit?: number; cursor?: string } = {}) {
+    const offset = Number(cursor || 0);
+    const allKeys = [...this.store.keys()].filter((name) => name.startsWith(prefix));
+    const page = allKeys.slice(offset, offset + limit);
+    const nextOffset = offset + page.length;
+    return {
+      keys: page.map((name) => ({ name })),
+      cursor: nextOffset < allKeys.length ? String(nextOffset) : undefined,
+      list_complete: nextOffset >= allKeys.length,
+    };
   }
 }
 
@@ -75,9 +79,16 @@ test("presale reservation creates one idempotent off-chain whitelist record per 
   assert.equal(createdPayload.reservation.rewardStatus, "not_awarded");
   assert.equal(createdPayload.reservation.lotteryEligible, true);
   assert.equal(createdPayload.reservation.lotteryStatus, "eligible_pending_draw");
+  assert.equal(createdPayload.reservation.walletVerificationStatus, "verified_unique");
+  assert.equal(createdPayload.reservation.reviewStatus, "auto_pass");
+  assert.equal(createdPayload.reservation.riskLevel, "medium");
+  assert.deepEqual(createdPayload.reservation.riskFlags, ["share_self_attested"]);
+  assert.equal(createdPayload.reservation.drawReviewStatus, "eligible");
   assert.equal(createdPayload.reservation.lotteryCodeCount, 3);
   assert.equal(createdPayload.reservation.lotteryCodeLedger[0].reason, "reservation_success");
   assert.equal(createdPayload.reservation.lotteryCodeLedger[1].reason, "community_share");
+  assert.equal(createdPayload.reservation.lotteryCodeLedger[1].reviewStatus, "pending_manual_review");
+  assert.equal(createdPayload.reservation.shareTasks.communityShareOnce, "self_attested");
   assert.equal(createdPayload.reservation.inviteCode, "iq382");
   assert.equal(createdPayload.reservation.inviteLink, "https://t.me/the72hbot?startapp=ref_iq382");
   assert.equal(createdPayload.reservation.reservationReward72H, "72");
@@ -131,23 +142,26 @@ test("presale reservation rejects duplicate wallets across Telegram users", asyn
   const payload = await second.json() as any;
   assert.equal(payload.error, "wallet_already_reserved");
   assert.equal(payload.walletDedupeStatus, "duplicate_wallet_rejected");
+  assert.equal(payload.walletVerificationStatus, "duplicate_rejected");
+  assert.deepEqual(payload.riskFlags, ["duplicate_wallet_attempt"]);
 });
 
 
-test("presale lottery codes support referrals and one-time community share task", async () => {
+test("presale lottery codes hold walletless referrals pending and support one-time self-attested community share", async () => {
   const env = {
     H72H_TELEGRAM_WEBHOOK_SECRET: "test-secret",
     H72H_BOT_SALES_KV: new FakeKv(),
   };
 
   const inviter = await onRequestPost({
-    request: reservationRequest({ telegramUser: { id: 10, username: "alpha" }, desiredAllocation72H: "720" }),
+    request: reservationRequest({ telegramUser: { id: 10, username: "alpha" }, walletAddress: "EQAlphaWallet0000000000000000000000000000000000", desiredAllocation72H: "720" }),
     env,
   });
   assert.equal(inviter.status, 201);
   const inviterPayload = await inviter.json() as any;
   assert.equal(inviterPayload.reservation.lotteryCodeCount, 1);
   assert.equal(inviterPayload.reservation.inviteCode, "alpha");
+  assert.equal(inviterPayload.reservation.walletVerificationStatus, "verified_unique");
 
   const invited = await onRequestPost({
     request: reservationRequest({ telegramUser: { id: 11, username: "beta" }, desiredAllocation72H: "720", referral: "alpha" }),
@@ -156,6 +170,10 @@ test("presale lottery codes support referrals and one-time community share task"
   assert.equal(invited.status, 201);
   const invitedPayload = await invited.json() as any;
   assert.equal(invitedPayload.reservation.lotteryCodeCount, 1);
+  assert.equal(invitedPayload.reservation.lotteryEligible, false);
+  assert.equal(invitedPayload.reservation.lotteryStatus, "ineligible_pending_wallet");
+  assert.equal(invitedPayload.reservation.reviewStatus, "pending_review");
+  assert.equal(invitedPayload.reservation.walletVerificationStatus, "missing");
   assert.equal(invitedPayload.reservation.referralCode, "alpha");
   assert.equal(invitedPayload.reservation.referredByTelegramUserId, "10");
 
@@ -168,6 +186,8 @@ test("presale lottery codes support referrals and one-time community share task"
   assert.equal(sharePayload.duplicate, false);
   assert.equal(sharePayload.reservation.lotteryCodeCount, 3);
   assert.equal(sharePayload.reservation.communityTasks.sharedInvite, true);
+  assert.equal(sharePayload.reservation.shareTasks.communityShareOnce, "self_attested");
+  assert.equal(sharePayload.reservation.lotteryCodeLedger.find((item: any) => item.reason === "community_share").reviewStatus, "pending_manual_review");
 
   const shareAgain = await onRequestPost({
     request: reservationRequest({ telegramUser: { id: 11 }, action: "community_share_completed" }),
@@ -187,10 +207,15 @@ test("presale lottery codes support referrals and one-time community share task"
   const listedPayload = await listed.json() as any;
   const alpha = listedPayload.reservations.find((record: any) => record.telegramUserId === "10");
   const beta = listedPayload.reservations.find((record: any) => record.telegramUserId === "11");
-  assert.equal(alpha.validReferralCount, 1);
-  assert.equal(alpha.lotteryCodeCount, 2);
-  assert.equal(alpha.lotteryCodeLedger.some((item: any) => item.reason === "valid_referral"), true);
+  assert.equal(alpha.validReferralCount, 0);
+  assert.equal(alpha.pendingReferralCount, 1);
+  assert.equal(alpha.lotteryCodeCount, 1);
+  assert.equal(alpha.lotteryCodeLedger.some((item: any) => item.reason === "pending_referral" && item.codes === 0), true);
   assert.equal(beta.lotteryCodeCount, 3);
+  assert.equal(beta.lotteryEligible, false);
+  assert.equal(beta.walletVerificationStatus, "missing");
+  assert.equal(beta.reviewStatus, "pending_review");
+  assert.equal(beta.riskFlags.includes("share_self_attested"), true);
 });
 
 test("sales admin lists waitlist reservations without enabling admin writes", async () => {
@@ -222,15 +247,69 @@ test("sales admin lists waitlist reservations without enabling admin writes", as
   assert.equal(listedPayload.reservations.length, 1);
   assert.equal(listedPayload.reservations[0].source, "kol_a");
   assert.equal(listedPayload.reservations[0].whitelistStatus, "registered_pending_review");
-  assert.equal(listedPayload.reservations[0].rewardEligible, true);
+  assert.equal(listedPayload.reservations[0].rewardEligible, false);
   assert.equal(listedPayload.reservations[0].reservationReward72H, "72");
   assert.equal(listedPayload.reservations[0].lotteryCodeCount, 1);
   assert.equal(listedPayload.reservations[0].lotteryCodeLedger[0].reason, "reservation_success");
-  assert.equal(listedPayload.reservations[0].lotteryEligible, true);
-  assert.equal(listedPayload.reservations[0].lotteryStatus, "eligible_pending_draw");
+  assert.equal(listedPayload.reservations[0].lotteryEligible, false);
+  assert.equal(listedPayload.reservations[0].lotteryStatus, "ineligible_pending_wallet");
+  assert.equal(listedPayload.reservations[0].walletVerificationStatus, "missing");
+  assert.equal(listedPayload.reservations[0].reviewStatus, "pending_review");
+  assert.equal(listedPayload.reservations[0].drawReviewStatus, "held");
+  assert.equal(listedPayload.page.listComplete, true);
   assert.equal(listedPayload.reservations[0].lotteryPool72H, "10000000");
   assert.equal(listedPayload.reservations[0].lotteryEvidence.payoutMode, "official_wallet_transfer_no_new_contract");
   assert.equal(listedPayload.reservations[0].rewardStatus, "not_awarded");
+});
+
+
+test("wallet-verified referrals become valid codes and sales admin exposes KV pagination warnings", async () => {
+  const env = {
+    H72H_TELEGRAM_WEBHOOK_SECRET: "test-secret",
+    H72H_BOT_SALES_KV: new FakeKv(),
+  };
+
+  await onRequestPost({
+    request: reservationRequest({
+      telegramUser: { id: 20, username: "gamma" },
+      walletAddress: "EQGammaWallet000000000000000000000000000000000",
+      desiredAllocation72H: "720",
+    }),
+    env,
+  });
+  await onRequestPost({
+    request: reservationRequest({
+      telegramUser: { id: 21, username: "delta" },
+      walletAddress: "EQDeltaWallet000000000000000000000000000000000",
+      desiredAllocation72H: "720",
+      referral: "gamma",
+    }),
+    env,
+  });
+
+  const firstPage = await onSalesAdminGet({
+    request: new Request("https://72h.example/api/telegram/sales-admin?limit=1", {
+      headers: { "x-telegram-bot-api-secret-token": "test-secret" },
+    }),
+    env,
+  });
+  const firstPayload = await firstPage.json() as any;
+  assert.equal(firstPayload.page.listComplete, false);
+  assert.equal(typeof firstPayload.page.nextCursor, "string");
+  assert.match(firstPayload.page.warning, /More KV records/);
+
+  const secondPage = await onSalesAdminGet({
+    request: new Request(`https://72h.example/api/telegram/sales-admin?limit=10&cursor=${firstPayload.page.nextCursor}`, {
+      headers: { "x-telegram-bot-api-secret-token": "test-secret" },
+    }),
+    env,
+  });
+  const secondPayload = await secondPage.json() as any;
+  const gamma = secondPayload.reservations.find((record: any) => record.telegramUserId === "20");
+  assert.equal(gamma.validReferralCount, 1);
+  assert.equal(gamma.pendingReferralCount, 0);
+  assert.equal(gamma.lotteryCodeCount, 2);
+  assert.equal(gamma.lotteryCodeLedger.some((item: any) => item.reason === "valid_referral" && item.codes === 1), true);
 });
 
 test("presale reservation rejects unauthenticated or malformed requests", async () => {

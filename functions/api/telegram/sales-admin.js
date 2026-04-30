@@ -23,6 +23,7 @@ function publicAdminReservation(record) {
     username: record.username,
     walletAddress: record.walletAddress,
     walletDedupeStatus: record.walletDedupeStatus,
+    walletVerificationStatus: record.walletVerificationStatus,
     desiredAllocation72H: record.desiredAllocation72H,
     source: record.source,
     channelSource: record.channelSource,
@@ -33,12 +34,22 @@ function publicAdminReservation(record) {
     referralCode: record.referralCode,
     referredByTelegramUserId: record.referredByTelegramUserId,
     validReferralCount: record.validReferralCount,
-    rewardEligible: record.rewardStatus !== "rejected" && record.status !== "cancelled",
+    pendingReferralCount: record.pendingReferralCount,
+    rejectedReferralCount: record.rejectedReferralCount,
+    rewardEligible: record.rewardStatus !== "rejected" && record.status !== "cancelled" && record.walletVerificationStatus === "verified_unique",
     reservationReward72H: record.reservationReward72H,
     lotteryCodeCount: record.lotteryCodeCount,
     lotteryCodeLedger: record.lotteryCodeLedger,
     lotteryEligible: record.lotteryEligible,
     lotteryStatus: record.lotteryStatus,
+    drawReviewStatus: record.drawReviewStatus,
+    payoutReviewStatus: record.payoutReviewStatus,
+    reviewStatus: record.reviewStatus,
+    reviewReason: record.reviewReason,
+    riskScore: record.riskScore,
+    riskLevel: record.riskLevel,
+    riskFlags: record.riskFlags,
+    telegramVerificationStatus: record.telegramVerificationStatus,
     lotteryPool72H: record.lotteryPool72H,
     lotteryEvidence: record.lotteryEvidence,
     drawStatus: record.drawStatus,
@@ -53,6 +64,7 @@ function publicAdminReservation(record) {
     saleReminderOptIn: record.saleReminderOptIn,
     userSegment: record.userSegment,
     communityTasks: record.communityTasks,
+    shareTasks: record.shareTasks,
   };
 }
 
@@ -63,7 +75,8 @@ export async function onRequestGet({ request, env }) {
 
   const url = new URL(request.url);
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 100), 1), 500);
-  const listed = await listSalesRecords(env, { prefix: "reservation:", limit });
+  const cursor = url.searchParams.get("cursor") || undefined;
+  const listed = await listSalesRecords(env, { prefix: "reservation:", limit, cursor });
   if (!listed.ok) {
     return json({ ok: false, error: listed.error, storage: getSalesStorageStatus(env) }, 503);
   }
@@ -84,6 +97,13 @@ export async function onRequestGet({ request, env }) {
     presaleMode: getPresaleMode(env),
     reservations,
     count: reservations.length,
+    page: {
+      limit,
+      cursor,
+      nextCursor: listed.cursor,
+      listComplete: listed.listComplete !== false,
+      warning: listed.listComplete === false ? "More KV records are available; request the next page with cursor=nextCursor before using this export for draw/review." : undefined,
+    },
   });
 }
 

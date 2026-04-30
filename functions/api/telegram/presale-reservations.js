@@ -74,6 +74,42 @@ function walletDedupeKey(walletAddress) {
   return walletAddress ? walletAddress.toLowerCase() : undefined;
 }
 
+function createEligibilityFields({ walletKey, riskFlags = [] } = {}) {
+  const hasWallet = Boolean(walletKey);
+  const hasHighRisk = riskFlags.includes("duplicate_wallet_attempt") || riskFlags.includes("blocked");
+  return {
+    riskScore: riskFlags.length,
+    riskLevel: hasHighRisk ? "high" : riskFlags.length ? "medium" : "low",
+    riskFlags,
+    reviewStatus: hasHighRisk ? "pending_manual_review" : hasWallet ? "auto_pass" : "pending_review",
+    reviewReason: hasWallet ? undefined : "wallet_required_before_draw_or_payout",
+    walletVerificationStatus: hasWallet ? "verified_unique" : "missing",
+    telegramVerificationStatus: "init_data_verified",
+    drawReviewStatus: hasWallet && !hasHighRisk ? "eligible" : "held",
+    payoutReviewStatus: hasWallet && !hasHighRisk ? "not_started" : "wallet_required",
+    lotteryEligible: hasWallet && !hasHighRisk,
+    lotteryStatus: hasWallet && !hasHighRisk ? "eligible_pending_draw" : "ineligible_pending_wallet",
+  };
+}
+
+function addRiskFlag(record, flag) {
+  const riskFlags = Array.from(new Set([...(record.riskFlags || []), flag].filter(Boolean)));
+  return {
+    ...record,
+    ...createEligibilityFields({ walletKey: record.walletDedupeKey || walletDedupeKey(record.walletAddress), riskFlags }),
+  };
+}
+
+function createShareTasks(existing = {}, now) {
+  return {
+    ...existing,
+    communityShareOnce: "self_attested",
+    source: existing.source || "telegram_miniapp",
+    reviewStatus: existing.reviewStatus || "pending_manual_review",
+    selfAttestedAt: existing.selfAttestedAt || now,
+  };
+}
+
 function cleanDesiredAllocation(value) {
   const raw = typeof value === "number" ? String(value) : cleanString(value, 32);
   if (!raw) return undefined;
@@ -204,6 +240,18 @@ function publicReservation(record) {
     saleOpensAt: record.saleOpensAt,
     contractEvidence: record.contractEvidence,
     lotteryEvidence: record.lotteryEvidence,
+    riskScore: record.riskScore,
+    riskLevel: record.riskLevel,
+    riskFlags: record.riskFlags,
+    reviewStatus: record.reviewStatus,
+    reviewReason: record.reviewReason,
+    walletVerificationStatus: record.walletVerificationStatus,
+    telegramVerificationStatus: record.telegramVerificationStatus,
+    drawReviewStatus: record.drawReviewStatus,
+    payoutReviewStatus: record.payoutReviewStatus,
+    pendingReferralCount: record.pendingReferralCount,
+    rejectedReferralCount: record.rejectedReferralCount,
+    shareTasks: record.shareTasks,
   };
 }
 
@@ -253,26 +301,38 @@ async function resolveInviter(env, referralCode, selfTelegramUserId) {
   return { code: normalized };
 }
 
-async function awardReferralCode(env, inviterRecord, invitedRecord, now) {
-  if (!inviterRecord || hasLotteryLedgerEntry(inviterRecord, "valid_referral", invitedRecord.telegramUserId)) return;
+async function recordReferralProgress(env, inviterRecord, invitedRecord, now) {
+  if (!inviterRecord) return;
+  const alreadyValid = hasLotteryLedgerEntry(inviterRecord, "valid_referral", invitedRecord.telegramUserId);
+  const alreadyPending = hasLotteryLedgerEntry(inviterRecord, "pending_referral", invitedRecord.telegramUserId);
+  if (alreadyValid || alreadyPending) return;
+
+  const invitedEffective = invitedRecord.walletVerificationStatus === "verified_unique"
+    && invitedRecord.reviewStatus !== "pending_review"
+    && invitedRecord.riskLevel !== "high"
+    && invitedRecord.riskLevel !== "blocked";
+  const reason = invitedEffective ? "valid_referral" : "pending_referral";
   const ledger = [...(inviterRecord.lotteryCodeLedger || []), {
-    reason: "valid_referral",
-    codes: REFERRAL_LOTTERY_CODES,
+    reason,
+    codes: invitedEffective ? REFERRAL_LOTTERY_CODES : 0,
     relatedTelegramUserId: invitedRecord.telegramUserId,
     relatedReservationId: invitedRecord.id,
     createdAt: now,
-    note: "Invited user completed a whitelist reservation.",
+    reviewStatus: invitedEffective ? "auto_pass" : "pending_manual_review",
+    note: invitedEffective
+      ? "Invited user completed an effective reservation with a unique wallet."
+      : "Invited user reserved but referral reward is pending wallet/review eligibility.",
   }];
   const updated = {
     ...inviterRecord,
     updatedAt: now,
-    validReferralCount: (Number(inviterRecord.validReferralCount) || 0) + 1,
+    validReferralCount: (Number(inviterRecord.validReferralCount) || 0) + (invitedEffective ? 1 : 0),
+    pendingReferralCount: (Number(inviterRecord.pendingReferralCount) || 0) + (invitedEffective ? 0 : 1),
     lotteryCodeLedger: ledger,
     lotteryCodeCount: getLotteryCodeCount(ledger),
   };
-  await writeReservationRecord(env, updated, { type: "reservation_referral_awarded" });
+  await writeReservationRecord(env, updated, { type: invitedEffective ? "reservation_referral_awarded" : "reservation_referral_pending" });
 }
-
 async function handleCommunityShare({ auth, env, modeGate, storage }) {
   const now = new Date().toISOString();
   const read = await getSalesRecord(env, `reservation:user:${auth.user.id}`);
@@ -284,16 +344,20 @@ async function handleCommunityShare({ auth, env, modeGate, storage }) {
     reason: "community_share",
     codes: COMMUNITY_SHARE_LOTTERY_CODES,
     createdAt: now,
-    note: "User marked group/community share task complete; one-time off-chain task.",
+    source: "telegram_miniapp",
+    reviewStatus: "pending_manual_review",
+    selfAttested: true,
+    note: "User self-attested group/community share task complete; one-time off-chain task pending review.",
   }];
   const communityTasks = cleanCommunityTasks({ ...(read.record.communityTasks || {}), sharedInvite: true });
-  const record = {
+  const record = addRiskFlag({
     ...read.record,
     updatedAt: now,
     communityTasks,
+    shareTasks: createShareTasks(read.record.shareTasks, now),
     lotteryCodeLedger: ledger,
     lotteryCodeCount: getLotteryCodeCount(ledger),
-  };
+  }, "share_self_attested");
   const write = await writeReservationRecord(env, record, { type: "reservation_community_share" });
   if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
 
@@ -388,6 +452,9 @@ export async function onRequestPost({ request, env }) {
         storage,
         presaleMode: modeGate.presaleMode,
         walletDedupeStatus: "duplicate_wallet_rejected",
+        walletVerificationStatus: "duplicate_rejected",
+        riskFlags: ["duplicate_wallet_attempt"],
+        reviewStatus: "pending_manual_review",
       }, 409);
     }
   }
@@ -419,10 +486,15 @@ export async function onRequestPost({ request, env }) {
       reason: "community_share",
       codes: COMMUNITY_SHARE_LOTTERY_CODES,
       createdAt: now,
-      note: "User marked group/community share task complete; one-time off-chain task.",
+      source: "telegram_miniapp",
+      reviewStatus: "pending_manual_review",
+      selfAttested: true,
+      note: "User self-attested group/community share task complete; one-time off-chain task pending review.",
     });
   }
   const indexKey = `reservation:${now}:${id}`;
+  const initialRiskFlags = communityTasks.sharedInvite ? ["share_self_attested"] : [];
+  const eligibility = createEligibilityFields({ walletKey, riskFlags: initialRiskFlags });
   const record = {
     id,
     version: 3,
@@ -441,6 +513,7 @@ export async function onRequestPost({ request, env }) {
     walletAddress,
     walletDedupeKey: walletKey,
     walletDedupeStatus: walletKey ? "unique_wallet_reserved" : "wallet_not_provided",
+    walletVerificationStatus: eligibility.walletVerificationStatus,
     desiredAllocation72H,
     referral,
     source,
@@ -449,15 +522,26 @@ export async function onRequestPost({ request, env }) {
     saleReminderOptIn: payload?.saleReminderOptIn !== false,
     userSegment: classifyUserSegment(desiredAllocation72H, auth.user),
     communityTasks,
+    shareTasks: communityTasks.sharedInvite ? createShareTasks({}, now) : { communityShareOnce: "not_started" },
     inviteCode,
     inviteLink,
     referralCode: resolvedInviter?.code || referralCode,
     referredByTelegramUserId: resolvedInviter?.record?.telegramUserId,
     validReferralCount: 0,
+    pendingReferralCount: 0,
+    rejectedReferralCount: 0,
     lotteryCodeLedger: baseLotteryLedger,
     lotteryCodeCount: getLotteryCodeCount(baseLotteryLedger),
-    lotteryEligible: true,
-    lotteryStatus: "eligible_pending_draw",
+    lotteryEligible: eligibility.lotteryEligible,
+    lotteryStatus: eligibility.lotteryStatus,
+    riskScore: eligibility.riskScore,
+    riskLevel: eligibility.riskLevel,
+    riskFlags: eligibility.riskFlags,
+    reviewStatus: eligibility.reviewStatus,
+    reviewReason: eligibility.reviewReason,
+    telegramVerificationStatus: auth.actorType === "telegram_init_data" ? "init_data_verified" : "secret_imported",
+    drawReviewStatus: eligibility.drawReviewStatus,
+    payoutReviewStatus: eligibility.payoutReviewStatus,
     rewardStatus: "not_awarded",
     rewardTxHash: undefined,
     rewardAwardedAt: undefined,
@@ -545,7 +629,7 @@ export async function onRequestPost({ request, env }) {
     presaleEnabled: false,
   });
 
-  await awardReferralCode(env, resolvedInviter?.record, record, now);
+  await recordReferralProgress(env, resolvedInviter?.record, record, now);
 
   return json({
     ok: true,

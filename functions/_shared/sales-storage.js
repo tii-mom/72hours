@@ -67,7 +67,7 @@ export async function getSalesRecord(env, key) {
   }
 }
 
-export async function listSalesRecords(env, { prefix, limit = 100 } = {}) {
+export async function listSalesRecords(env, { prefix, limit = 100, cursor } = {}) {
   const kv = getSalesKv(env);
   if (!kv) {
     return {
@@ -83,7 +83,9 @@ export async function listSalesRecords(env, { prefix, limit = 100 } = {}) {
     };
   }
 
-  const listed = await kv.list({ prefix, limit });
+  const listOptions = { prefix, limit };
+  if (cursor) listOptions.cursor = cursor;
+  const listed = await kv.list(listOptions);
   const records = [];
   for (const entry of listed.keys || []) {
     const key = typeof entry === "string" ? entry : entry.name;

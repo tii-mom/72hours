@@ -50,6 +50,9 @@ async function fetchSalesAdminReservations(args) {
   if (!response.ok || body?.ok === false) {
     fail(body?.error || `sales-admin read failed with HTTP ${response.status}`);
   }
+  if (body.page?.listComplete === false) {
+    fail(`sales-admin export is incomplete; rerun read-only export with cursor ${body.page.nextCursor || "<next>"} and merge pages before drawing.`);
+  }
   return body.reservations || [];
 }
 
@@ -88,6 +91,15 @@ function summarize(result) {
       rewardAmount72H: record.rewardAmount72H,
       payoutStatus: record.payoutStatus,
       payoutTx: record.payoutTx,
+      lotteryEligible: record.lotteryEligible,
+      lotteryStatus: record.lotteryStatus,
+      walletVerificationStatus: record.walletVerificationStatus,
+      reviewStatus: record.reviewStatus,
+      drawReviewStatus: record.drawReviewStatus,
+      payoutReviewStatus: record.payoutReviewStatus,
+      riskLevel: record.riskLevel,
+      riskScore: record.riskScore,
+      riskFlags: record.riskFlags,
     })),
     notice: "Off-chain deterministic draw only. Review this file, then execute official/private prize-wallet transfers manually; this script never sends on-chain transactions.",
   };

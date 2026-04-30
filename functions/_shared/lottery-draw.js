@@ -61,16 +61,22 @@ function shuffle(items, random) {
 }
 
 function getTicketCount(record) {
+  const ledger = Array.isArray(record?.lotteryCodeLedger) ? record.lotteryCodeLedger : [];
+  const ledgerCount = ledger.reduce((sum, item) => sum + (Number(item?.codes) || 0), 0);
+  if (ledger.length) return Math.max(0, Math.floor(ledgerCount));
   const explicit = Number(record?.lotteryCodeCount);
   if (Number.isFinite(explicit) && explicit > 0) return Math.floor(explicit);
-  const ledgerCount = (record?.lotteryCodeLedger || []).reduce((sum, item) => sum + (Number(item?.codes) || 0), 0);
-  return Math.max(0, Math.floor(ledgerCount));
+  return 0;
 }
 
 function isEligible(record) {
   if (!record || record.lotteryEligible === false) return false;
   if (["cancelled", "rejected"].includes(record.status)) return false;
   if (record.rewardStatus === "rejected") return false;
+  if (record.walletVerificationStatus && record.walletVerificationStatus !== "verified_unique") return false;
+  if (["high", "blocked"].includes(record.riskLevel)) return false;
+  if (["rejected", "pending_review"].includes(record.reviewStatus)) return false;
+  if (["held", "ineligible"].includes(record.drawReviewStatus)) return false;
   return getTicketCount(record) > 0;
 }
 

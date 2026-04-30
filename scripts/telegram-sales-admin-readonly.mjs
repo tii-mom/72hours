@@ -19,6 +19,7 @@ function parseArgs(argv) {
   return {
     baseUrl: readFlag("--base-url") || env("H72H_BOT_PUBLIC_BASE_URL") || "https://72h.lol",
     limit: readFlag("--limit") || "100",
+    cursor: readFlag("--cursor"),
     telegramUserId: readFlag("--telegram-user-id"),
     username: readFlag("--username"),
   };
@@ -39,6 +40,7 @@ function sanitizeReservation(record) {
     username: record.username,
     walletAddress: maskWallet(record.walletAddress),
     walletDedupeStatus: record.walletDedupeStatus,
+    walletVerificationStatus: record.walletVerificationStatus,
     desiredAllocation72H: record.desiredAllocation72H,
     source: record.source,
     channelSource: record.channelSource,
@@ -49,12 +51,22 @@ function sanitizeReservation(record) {
     referralCode: record.referralCode,
     referredByTelegramUserId: record.referredByTelegramUserId,
     validReferralCount: record.validReferralCount,
+    pendingReferralCount: record.pendingReferralCount,
+    rejectedReferralCount: record.rejectedReferralCount,
     rewardEligible: record.rewardEligible,
     reservationReward72H: record.reservationReward72H,
     lotteryCodeCount: record.lotteryCodeCount,
     lotteryCodeLedger: record.lotteryCodeLedger,
     lotteryEligible: record.lotteryEligible,
     lotteryStatus: record.lotteryStatus,
+    drawReviewStatus: record.drawReviewStatus,
+    payoutReviewStatus: record.payoutReviewStatus,
+    reviewStatus: record.reviewStatus,
+    reviewReason: record.reviewReason,
+    riskScore: record.riskScore,
+    riskLevel: record.riskLevel,
+    riskFlags: record.riskFlags,
+    telegramVerificationStatus: record.telegramVerificationStatus,
     lotteryPool72H: record.lotteryPool72H,
     lotteryEvidence: record.lotteryEvidence,
     drawStatus: record.drawStatus,
@@ -69,6 +81,7 @@ function sanitizeReservation(record) {
     saleReminderOptIn: record.saleReminderOptIn,
     userSegment: record.userSegment,
     communityTasks: record.communityTasks,
+    shareTasks: record.shareTasks,
   };
 }
 
@@ -92,6 +105,7 @@ async function main() {
   const limit = Math.min(Math.max(Number(args.limit) || 100, 1), 500);
   const url = new URL("/api/telegram/sales-admin", baseUrl);
   url.searchParams.set("limit", String(limit));
+  if (args.cursor) url.searchParams.set("cursor", args.cursor);
 
   const response = await fetch(url, {
     method: "GET",
@@ -116,6 +130,8 @@ async function main() {
     storage: body.storage,
     presaleMode: body.presaleMode,
     count: reservations.length,
+    page: body.page,
+    exportWarning: body.page?.warning,
     reservations,
   }, null, 2));
 }
