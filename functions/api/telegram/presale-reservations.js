@@ -9,6 +9,7 @@ const LOTTERY_POOL_72H = "10000000";
 const CONTRACT_EVIDENCE_STATUS = "deployed_inactive_not_purchase";
 const LOTTERY_PAYOUT_MODE = "official_wallet_transfer_no_new_contract";
 const LOTTERY_FUNDING_STATUS = "awaiting_private_wallet_funding_tx";
+const WAITLIST_MODE = "warmup_waitlist_only";
 const RATE_LIMIT_TTL_SECONDS = 60;
 
 function json(data, status = 200) {
@@ -139,6 +140,7 @@ function publicReservation(record) {
     referral: record.referral,
     source: record.source,
     channelSource: record.channelSource,
+    waitlistMode: record.waitlistMode,
     presaleMode: record.presaleMode,
     requestedPresaleMode: record.requestedPresaleMode,
     botOnly: record.botOnly,
@@ -249,6 +251,7 @@ export async function onRequestPost({ request, env }) {
     updatedAt: now,
     status: modeGate.presaleMode.mode === "warmup" ? "warmup_registered" : "waitlist_registered",
     saleOpensAt: RESERVATION_OPEN_AT,
+    waitlistMode: WAITLIST_MODE,
     presaleMode: modeGate.presaleMode.mode,
     requestedPresaleMode: modeGate.presaleMode.requestedMode,
     botOnly: true,
@@ -263,7 +266,7 @@ export async function onRequestPost({ request, env }) {
     referral: cleanString(payload?.referral, 120),
     source,
     channelSource,
-    whitelistStatus: "pending_review",
+    whitelistStatus: "registered_pending_review",
     saleReminderOptIn: payload?.saleReminderOptIn !== false,
     userSegment: classifyUserSegment(desiredAllocation72H, auth.user),
     communityTasks: cleanCommunityTasks(payload?.communityTasks),
