@@ -1,3 +1,4 @@
+import { assertBotOnlyReservationMode } from "../../_shared/presale-mode.js";
 import { DEFAULT_72H_JETTON_MASTER, DEFAULT_PRESALE_VAULT_ADDRESS } from "../../_shared/presale-runtime.js";
 import { getSalesKvBinding, getSalesRecord, getSalesStorageStatus, putSalesRecord, recordSalesEvent } from "../../_shared/sales-storage.js";
 import { readTelegramMiniAppInitData, verifyTelegramMiniAppInitData, verifyTelegramWebhookSecret } from "../../_shared/telegram-security.js";
@@ -31,6 +32,10 @@ function cleanWallet(value) {
   return wallet;
 }
 
+function walletDedupeKey(walletAddress) {
+  return walletAddress ? walletAddress.toLowerCase() : undefined;
+}
+
 function cleanDesiredAllocation(value) {
   const raw = typeof value === "number" ? String(value) : cleanString(value, 32);
   if (!raw) return undefined;
@@ -38,6 +43,35 @@ function cleanDesiredAllocation(value) {
   if (!/^\d+(?:\.\d{1,4})?$/.test(normalized)) return undefined;
   if (Number(normalized) <= 0) return undefined;
   return normalized;
+}
+
+function classifyUserSegment(desiredAllocation72H, user) {
+  const amount = Number(desiredAllocation72H);
+  if (Number.isFinite(amount) && amount >= 7200000) return "priority_whale";
+  if (Number.isFinite(amount) && amount >= 720000) return "priority_core";
+  if (user?.is_premium) return "telegram_premium";
+  return "warmup_waitlist";
+}
+
+function cleanCommunityTasks(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {
+      joinedTelegram: false,
+      followedX: false,
+      sharedInvite: false,
+      status: "not_started",
+    };
+  }
+  const tasks = {
+    joinedTelegram: value.joinedTelegram === true,
+    followedX: value.followedX === true,
+    sharedInvite: value.sharedInvite === true,
+  };
+  const completedCount = Object.values(tasks).filter(Boolean).length;
+  return {
+    ...tasks,
+    status: completedCount === 0 ? "not_started" : completedCount === 3 ? "completed" : "in_progress",
+  };
 }
 
 function cleanTelegramUser(value) {
@@ -104,7 +138,21 @@ function publicReservation(record) {
     desiredAllocation72H: record.desiredAllocation72H,
     referral: record.referral,
     source: record.source,
+    channelSource: record.channelSource,
+    presaleMode: record.presaleMode,
+    requestedPresaleMode: record.requestedPresaleMode,
+    botOnly: record.botOnly,
+    purchaseEnabled: record.purchaseEnabled,
+    whitelistStatus: record.whitelistStatus,
+    saleReminderOptIn: record.saleReminderOptIn,
+    userSegment: record.userSegment,
+    communityTasks: record.communityTasks,
     lotteryEligible: record.lotteryEligible,
+    lotteryStatus: record.lotteryStatus,
+    walletDedupeStatus: record.walletDedupeStatus,
+    rewardStatus: record.rewardStatus,
+    rewardTxHash: record.rewardTxHash,
+    rewardAwardedAt: record.rewardAwardedAt,
     reservationReward72H: record.reservationReward72H,
     lotteryPool72H: record.lotteryPool72H,
     saleOpensAt: record.saleOpensAt,
@@ -120,10 +168,12 @@ export async function onRequestGet({ request, env }) {
   const key = `reservation:user:${auth.user.id}`;
   const read = await getSalesRecord(env, key);
   if (!read.ok) return json({ ok: false, error: read.error, storage: getSalesStorageStatus(env) }, 503);
+  const modeGate = assertBotOnlyReservationMode(env);
 
   return json({
     ok: true,
     storage: getSalesStorageStatus(env),
+    presaleMode: modeGate.presaleMode,
     reservation: publicReservation(read.record),
     saleOpensAt: RESERVATION_OPEN_AT,
     lotteryPool72H: LOTTERY_POOL_72H,
@@ -142,11 +192,18 @@ export async function onRequestPost({ request, env }) {
   const auth = await authenticate(request, env, payload);
   if (!auth.ok) return json({ ok: false, error: auth.error }, 401);
 
+  const modeGate = assertBotOnlyReservationMode(env);
+  if (!modeGate.ok) {
+    return json({ ok: false, error: modeGate.error, presaleMode: modeGate.presaleMode }, 403);
+  }
+
   const desiredAllocation72H = cleanDesiredAllocation(payload?.desiredAllocation72H ?? payload?.desiredAllocation);
   if (!desiredAllocation72H) {
     return json({ ok: false, error: "desired_allocation_required" }, 400);
   }
 
+  const walletAddress = cleanWallet(payload?.walletAddress);
+  const walletKey = walletDedupeKey(walletAddress);
   const storage = getSalesStorageStatus(env);
   const key = `reservation:user:${auth.user.id}`;
   const existing = await getSalesRecord(env, key);
@@ -156,9 +213,24 @@ export async function onRequestPost({ request, env }) {
       ok: true,
       duplicate: true,
       storage,
+      presaleMode: modeGate.presaleMode,
       reservation: publicReservation(existing.record),
       message: "reservation_already_exists",
     });
+  }
+
+  if (walletKey) {
+    const walletRead = await getSalesRecord(env, `reservation:wallet:${walletKey}`);
+    if (!walletRead.ok) return json({ ok: false, error: walletRead.error, storage }, 503);
+    if (walletRead.record?.telegramUserId && walletRead.record.telegramUserId !== auth.user.id) {
+      return json({
+        ok: false,
+        error: "wallet_already_reserved",
+        storage,
+        presaleMode: modeGate.presaleMode,
+        walletDedupeStatus: "duplicate_wallet_rejected",
+      }, 409);
+    }
   }
 
   const rate = await hitRateLimit(env, auth.user.id);
@@ -168,21 +240,38 @@ export async function onRequestPost({ request, env }) {
 
   const now = new Date().toISOString();
   const id = `rsv_${crypto.randomUUID()}`;
+  const source = cleanString(payload?.source, 80) || auth.startParam || "miniapp";
+  const channelSource = cleanString(payload?.channelSource, 80) || source;
   const record = {
     id,
-    version: 1,
+    version: 2,
     createdAt: now,
     updatedAt: now,
-    status: "reserved",
+    status: modeGate.presaleMode.mode === "warmup" ? "warmup_registered" : "waitlist_registered",
     saleOpensAt: RESERVATION_OPEN_AT,
+    presaleMode: modeGate.presaleMode.mode,
+    requestedPresaleMode: modeGate.presaleMode.requestedMode,
+    botOnly: true,
+    purchaseEnabled: false,
     telegramUserId: auth.user.id,
     username: auth.user.username,
     telegramUser: auth.user,
-    walletAddress: cleanWallet(payload?.walletAddress),
+    walletAddress,
+    walletDedupeKey: walletKey,
+    walletDedupeStatus: walletKey ? "unique_wallet_reserved" : "wallet_not_provided",
     desiredAllocation72H,
     referral: cleanString(payload?.referral, 120),
-    source: cleanString(payload?.source, 80) || auth.startParam || "miniapp",
+    source,
+    channelSource,
+    whitelistStatus: "pending_review",
+    saleReminderOptIn: payload?.saleReminderOptIn !== false,
+    userSegment: classifyUserSegment(desiredAllocation72H, auth.user),
+    communityTasks: cleanCommunityTasks(payload?.communityTasks),
     lotteryEligible: true,
+    lotteryStatus: "eligible_pending_draw",
+    rewardStatus: "not_awarded",
+    rewardTxHash: undefined,
+    rewardAwardedAt: undefined,
     reservationReward72H: RESERVATION_REWARD_72H,
     lotteryPool72H: LOTTERY_POOL_72H,
     contractEvidence: {
@@ -211,14 +300,37 @@ export async function onRequestPost({ request, env }) {
     telegramUserId: record.telegramUserId,
     username: record.username,
     status: record.status,
+    whitelistStatus: record.whitelistStatus,
+    lotteryStatus: record.lotteryStatus,
+    rewardStatus: record.rewardStatus,
+    presaleMode: record.presaleMode,
+    channelSource: record.channelSource,
     createdAt: record.createdAt,
   });
   if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
+
+  if (walletKey) {
+    await putSalesRecord(env, `reservation:wallet:${walletKey}`, {
+      reservationId: id,
+      telegramUserId: record.telegramUserId,
+      walletAddress,
+      status: record.status,
+      createdAt: record.createdAt,
+    }, {
+      type: "reservation_wallet_index",
+      telegramUserId: record.telegramUserId,
+      walletAddress,
+      createdAt: record.createdAt,
+    });
+  }
 
   await putSalesRecord(env, `reservation:${now}:${id}`, record, {
     type: "reservation_index",
     telegramUserId: record.telegramUserId,
     status: record.status,
+    whitelistStatus: record.whitelistStatus,
+    presaleMode: record.presaleMode,
+    channelSource: record.channelSource,
     createdAt: record.createdAt,
   });
 
@@ -227,9 +339,19 @@ export async function onRequestPost({ request, env }) {
     telegramUserId: record.telegramUserId,
     username: record.username,
     walletAddress: record.walletAddress,
+    walletDedupeStatus: record.walletDedupeStatus,
     desiredAllocation72H: record.desiredAllocation72H,
     source: record.source,
+    channelSource: record.channelSource,
     referral: record.referral,
+    userSegment: record.userSegment,
+    whitelistStatus: record.whitelistStatus,
+    lotteryEligible: record.lotteryEligible,
+    lotteryStatus: record.lotteryStatus,
+    rewardStatus: record.rewardStatus,
+    saleReminderOptIn: record.saleReminderOptIn,
+    communityTaskStatus: record.communityTasks.status,
+    presaleMode: record.presaleMode,
     presaleEnabled: false,
   });
 
@@ -237,6 +359,7 @@ export async function onRequestPost({ request, env }) {
     ok: true,
     duplicate: false,
     storage,
+    presaleMode: modeGate.presaleMode,
     reservation: publicReservation(record),
   }, 201);
 }

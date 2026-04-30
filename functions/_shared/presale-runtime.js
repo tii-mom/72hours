@@ -1,3 +1,5 @@
+import { getPresaleMode } from "./presale-mode.js";
+
 export const DEFAULT_PRESALE_VAULT_ADDRESS = "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9";
 export const DEFAULT_72H_JETTON_MASTER = "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg";
 
@@ -49,7 +51,8 @@ function resolveMiniAppUrl(env) {
 }
 
 export function getPresaleRuntime(env) {
-  const enabled = readBoolean(env.H72H_PRESALE_ENABLED);
+  const presaleMode = getPresaleMode(env);
+  const enabled = readBoolean(env.H72H_PRESALE_ENABLED) && presaleMode.purchaseEnabled;
   const presaleVaultAddress = readString(env.H72H_PRESALE_VAULT_ADDRESS) || DEFAULT_PRESALE_VAULT_ADDRESS;
   const jettonMasterAddress = readString(env.H72H_72H_JETTON_MASTER) || DEFAULT_72H_JETTON_MASTER;
   const networkMode = readString(env.H72H_PRESALE_NETWORK_MODE) || "mainnet";
@@ -70,9 +73,10 @@ export function getPresaleRuntime(env) {
     tonRpcConfigured: Boolean(tonRpcUrl),
     tonApiKeyConfigured: Boolean(tonApiKey),
     storageConfigured,
-    purchaseFlowStatus: enabled ? "intent_only" : "read_only",
+    presaleMode,
+    purchaseFlowStatus: presaleMode.purchaseEnabled ? "intent_only" : "bot_only_waitlist",
     configStatus: configured ? "configured" : "unavailable",
-    tradingStatus: enabled ? "configured" : "disabled",
+    tradingStatus: presaleMode.purchaseEnabled ? "configured" : "disabled",
     chainGetterStatus: tonRpcUrl ? "configured" : "disabled",
     chainVerifierStatus: tonRpcUrl ? "manual_review_only" : "disabled",
     chainGetterMessage: tonRpcUrl

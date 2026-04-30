@@ -67,6 +67,43 @@ export async function getSalesRecord(env, key) {
   }
 }
 
+export async function listSalesRecords(env, { prefix, limit = 100 } = {}) {
+  const kv = getSalesKv(env);
+  if (!kv) {
+    return {
+      ok: false,
+      error: "sales_storage_unavailable",
+    };
+  }
+
+  if (typeof kv.list !== "function") {
+    return {
+      ok: false,
+      error: "sales_storage_list_unavailable",
+    };
+  }
+
+  const listed = await kv.list({ prefix, limit });
+  const records = [];
+  for (const entry of listed.keys || []) {
+    const key = typeof entry === "string" ? entry : entry.name;
+    if (!key) continue;
+    const read = await getSalesRecord(env, key);
+    if (read.ok && read.record) {
+      records.push({ key, metadata: entry.metadata, record: read.record });
+    }
+  }
+
+  return {
+    ok: true,
+    prefix,
+    limit,
+    cursor: listed.cursor,
+    listComplete: listed.list_complete,
+    records,
+  };
+}
+
 export async function recordSalesEvent(env, event) {
   const createdAt = event.createdAt || nowIso();
   const id = event.id || createRecordId("evt");
