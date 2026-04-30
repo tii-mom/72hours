@@ -1,4 +1,4 @@
-import { ArrowRight, CircleDollarSign, Landmark, ShieldAlert, Wallet } from "lucide-react";
+import { ArrowRight, BookOpen, ShieldAlert } from "lucide-react";
 import { InfoCallout } from "../components/InfoCallout";
 import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { PageLoader } from "../components/PageLoader";
@@ -76,13 +76,13 @@ export default function Capital() {
 
           <div className="rounded-md border border-line/70 bg-surface/72 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.2)] sm:p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
-              {isEnglish ? "Capital status" : "Capital 状态"}
+              {isEnglish ? "Read-only status" : "只读状态"}
             </div>
             <div className="mt-4 grid gap-2">
               {[
-                { icon: <Wallet className="h-4 w-4" />, label: isEnglish ? "Connect wallet" : "连接钱包" },
-                { icon: <Landmark className="h-4 w-4" />, label: isEnglish ? "Reserve not configurable" : "Reserve 暂不可配置" },
-                { icon: <CircleDollarSign className="h-4 w-4" />, label: isEnglish ? "Alpha closed" : "Alpha 暂不开放" },
+                { icon: <BookOpen className="h-4 w-4" />, label: isEnglish ? "Rule reference only" : "仅作规则参考" },
+                { icon: <ShieldAlert className="h-4 w-4" />, label: isEnglish ? "No wallet action" : "无钱包动作" },
+                { icon: <ShieldAlert className="h-4 w-4" />, label: isEnglish ? "No seat setup" : "无席位配置" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-sm border border-line/70 bg-background/42 px-3 py-3 text-sm font-semibold text-foreground">
                   <span className="text-primary">{item.icon}</span>
@@ -92,18 +92,18 @@ export default function Capital() {
             </div>
             <div className="mt-4 grid gap-2">
               <Link to="/capital/72hours" className="page-action w-full">
-                {isEnglish ? "View 72hours status" : "查看 72hours 状态"}
+                {isEnglish ? "Read 72hours reference" : "阅读 72hours 参考"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link to="/capital/me" className="page-action-muted w-full">
-                {isEnglish ? "My Capital" : "我的 Capital"}
+              <Link to="/ecosystem" className="page-action-muted w-full">
+                {isEnglish ? "Back to ecosystem" : "返回生态应用"}
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="page-section-tight pb-6 sm:pb-12">
+      <section className="hidden">
         <div className="page-container page-container-wide grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-5">
           {overview.summaryMetrics.map((metric) => (
             <Reveal key={metric.label}>
@@ -119,7 +119,7 @@ export default function Capital() {
         </div>
       </section>
 
-      <section className="page-section-tight pt-0">
+      <section className="hidden">
         <div className="page-container page-container-wide grid gap-5 lg:grid-cols-2">
           {overview.programs.map((program) => (
             <Reveal key={program.type}>
@@ -191,15 +191,15 @@ export default function Capital() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <span className="inline-flex min-h-8 items-center rounded-sm border border-primary/20 bg-primary/10 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                    {app.reserveLabel}
+                    {isEnglish ? "Reference only" : "仅供参考"}
                   </span>
                   <span className="inline-flex min-h-8 items-center rounded-sm border border-gold/20 bg-gold/10 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
-                    {app.alphaLabel}
+                    {isEnglish ? "Actions closed" : "动作关闭"}
                   </span>
                 </div>
                 <div className="mt-auto flex flex-wrap gap-3">
                   <Link to={app.detailHref} className="page-action w-full sm:w-auto">
-                    {isEnglish ? "Open Capital page" : "进入 Capital 页面"}
+                    {isEnglish ? "Read reference" : "阅读参考"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                   <Link to={app.verifyHref} className="page-action-muted hidden sm:inline-flex">
@@ -216,7 +216,9 @@ export default function Capital() {
         <div className="page-container page-container-wide grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
           <div className="hidden sm:block">
             <Reveal>
-              <CapitalWalletPanel locale={locale} />
+              <div className="pointer-events-none opacity-45">
+                <CapitalWalletPanel locale={locale} />
+              </div>
             </Reveal>
           </div>
           <Reveal>

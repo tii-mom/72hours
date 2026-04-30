@@ -505,7 +505,7 @@ const appRecords: readonly RawCapitalApp[] = [
     reserveRemaining: 34,
     alphaRemaining: 5,
     highlights: [
-      copy("Reserve 先开放；Alpha 在 Reserve 稳定前保持关闭。", "Reserve opens first; Alpha remains closed until Reserve is stable."),
+      copy("Reserve 与 Alpha 当前均为规则参考，真实动作保持关闭。", "Reserve and Alpha are rule references only; real actions remain closed."),
       copy("适合把 Capital 身份与生态参与绑定。", "Best for linking capital identity with broader ecosystem participation."),
       copy("公开验证页默认不展示金额或奖励。", "Public verification intentionally omits amount and reward data."),
     ],
@@ -1082,8 +1082,8 @@ function mapProgram(
     riskDisclosure: pick(locale, program.riskDisclosure),
     cta: {
       label: locale === "en-US"
-        ? `Request ${program.type === "reserve" ? "Reserve" : "Alpha"} Seat`
-        : `请求 ${program.type === "reserve" ? "Reserve" : "Alpha"} 席位`,
+        ? `Read ${program.type === "reserve" ? "Reserve" : "Alpha"} reference`
+        : `阅读 ${program.type === "reserve" ? "Reserve" : "Alpha"} 参考`,
       href: "/capital/me",
       variant: "primary",
     },
@@ -1245,7 +1245,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
           value: new Intl.NumberFormat(locale).format(app.participants),
         },
         {
-          label: locale === "en-US" ? "Reserve open" : "Reserve 余量",
+          label: locale === "en-US" ? "Reserve reference" : "Reserve 参考",
           value: `${app.reserveRemaining} / 72`,
         },
         {

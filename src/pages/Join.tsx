@@ -157,8 +157,8 @@ export default function Join() {
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
                 {isEnglish
-                  ? "Start from the public app map, community, and Green Book. This page is a navigation entry, not a purchase, claim, event, or Capital action workflow."
-                  : "从公开应用地图、社区和绿皮书开始。本页是导航入口，不是购买台、领取入口、活动页面或 Capital 动作流程。"}
+                  ? "Start from the public app map, community, and Green Book. This page is a navigation entry, not a purchase, claim, event, or Capital operation page."
+                  : "从公开应用地图、社区和绿皮书开始。本页是导航入口，不是购买台、领取入口、活动页面或 Capital 操作页。"}
               </p>
             </div>
             <div className="rounded-md border border-gold/25 bg-[linear-gradient(180deg,rgba(185,157,87,0.12),rgba(7,14,10,0.72))] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.22)]">

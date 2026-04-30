@@ -40,12 +40,12 @@ const categoryIcons: Record<ProjectAppCategory, ReactNode> = {
   content: <Sparkles size={14} strokeWidth={1.75} />,
 };
 
-const featuredSlugs = ["multi-millionaire", "wan", "distribution"];
+const featuredSlugs = ["wan", "distribution", "72hours-control-room"];
 
 function categoryLabel(category: ProjectAppCategory, isEnglish: boolean) {
   const labels: Record<ProjectAppCategory, string> = isEnglish
-    ? { tool: "Tools", game: "Games", social: "Social", capital: "Capital", content: "Content" }
-    : { tool: "工具", game: "游戏", social: "社交", capital: "投资", content: "内容" };
+    ? { tool: "Tools", game: "Games", social: "Social", capital: "Reference", content: "Content" }
+    : { tool: "工具", game: "游戏", social: "社交", capital: "参考", content: "内容" };
   return labels[category];
 }
 
