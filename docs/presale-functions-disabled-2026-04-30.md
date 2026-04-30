@@ -10,7 +10,7 @@ The safe unblock route is to disable write/admin routes instead of implementing 
 
 ## Disabled Routes
 
-The following routes intentionally return HTTP 503 with:
+The following purchase routes intentionally return HTTP 503 with:
 
 ```json
 {"ok":false,"error":"presale_route_disabled"}
@@ -18,18 +18,27 @@ The following routes intentionally return HTTP 503 with:
 
 - `functions/api/telegram/presale-intents.js`
 - `functions/api/telegram/presale-receipts.js`
-- `functions/api/telegram/sales-admin.js`
 
 ## Still Allowed
 
-Read-only/status and signal-only routes may continue only if they remain non-transactional and fail closed:
+Read-only/status, signal-only, and off-chain reservation routes may continue only if they remain non-transactional and fail closed:
 
 - `GET /api/telegram/presale-status`
 - `POST /api/telegram/presale-events`
+- `GET/POST /api/telegram/presale-reservations` for authenticated off-chain waitlist records only
+- `GET /api/telegram/sales-admin` for secret-protected read-only reservation listing only
+
+Admin writes remain disabled:
+
+```json
+{"ok":false,"error":"presale_admin_writes_disabled"}
+```
+
+- `POST /api/telegram/sales-admin`
 
 ## Required Gate Before Re-enabling
 
-Do not re-enable intents, receipts, admin, purchase payloads, or sale storage until all are true:
+Do not re-enable intents, receipts, admin writes, purchase payloads, or sale storage until all are true:
 
 1. 博士 explicitly approves Presale route work.
 2. Contract route is selected and audited.

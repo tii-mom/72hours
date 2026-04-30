@@ -18,7 +18,7 @@ This bot is currently a Telegram Mini App waitlist and sales-signal assistant fo
 - `POST /api/telegram/presale-intents` is disabled in production warmup and returns HTTP 503 (`presale_route_disabled`).
 - `POST /api/telegram/presale-receipts` is disabled in production warmup and returns HTTP 503 (`presale_route_disabled`).
 - `POST /api/telegram/presale-reservations` is the only user write path for the waitlist; it requires Telegram initData or the configured bot secret and must remain non-transactional.
-- `GET/POST /api/telegram/sales-admin` is disabled with the same production safety guard until admin auth/storage is reviewed.
+- `GET /api/telegram/sales-admin` is a secret-protected read-only reservation list for operators; `POST /api/telegram/sales-admin` remains disabled and must not mutate records.
 - `functions/_shared/telegram-alerts.js` sends optional operator alerts for human support and non-transactional warmup signals when configured.
 - `src/pages/BotPresale.tsx` is the Telegram Mini App shell and wallet surface.
 - `scripts/telegram-set-webhook.mjs` configures Telegram `setWebhook` with `secret_token`.
