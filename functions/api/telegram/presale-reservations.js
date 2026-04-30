@@ -1,9 +1,11 @@
+import { DEFAULT_72H_JETTON_MASTER, DEFAULT_PRESALE_VAULT_ADDRESS } from "../../_shared/presale-runtime.js";
 import { getSalesKvBinding, getSalesRecord, getSalesStorageStatus, putSalesRecord, recordSalesEvent } from "../../_shared/sales-storage.js";
 import { readTelegramMiniAppInitData, verifyTelegramMiniAppInitData, verifyTelegramWebhookSecret } from "../../_shared/telegram-security.js";
 
 const RESERVATION_OPEN_AT = "2026-05-05T09:00:00.000Z";
 const RESERVATION_REWARD_72H = "72";
 const LOTTERY_POOL_72H = "10000000";
+const CONTRACT_EVIDENCE_STATUS = "deployed_inactive_not_purchase";
 const RATE_LIMIT_TTL_SECONDS = 60;
 
 function json(data, status = 200) {
@@ -104,6 +106,7 @@ function publicReservation(record) {
     reservationReward72H: record.reservationReward72H,
     lotteryPool72H: record.lotteryPool72H,
     saleOpensAt: record.saleOpensAt,
+    contractEvidence: record.contractEvidence,
   };
 }
 
@@ -179,6 +182,13 @@ export async function onRequestPost({ request, env }) {
     lotteryEligible: true,
     reservationReward72H: RESERVATION_REWARD_72H,
     lotteryPool72H: LOTTERY_POOL_72H,
+    contractEvidence: {
+      status: CONTRACT_EVIDENCE_STATUS,
+      presaleVaultAddress: cleanString(payload?.presaleVaultAddress, 96) || DEFAULT_PRESALE_VAULT_ADDRESS,
+      jettonMasterAddress: cleanString(payload?.jettonMasterAddress, 96) || DEFAULT_72H_JETTON_MASTER,
+      saleOpensAt: RESERVATION_OPEN_AT,
+      note: "Off-chain reservation evidence only; not a purchase, payment, signature, or on-chain quota.",
+    },
     actorType: auth.actorType,
     authDate: auth.authDate,
   };

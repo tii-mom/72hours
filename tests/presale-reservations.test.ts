@@ -52,6 +52,9 @@ test("presale reservation creates one idempotent off-chain whitelist record per 
   assert.equal(createdPayload.reservation.reservationReward72H, "72");
   assert.equal(createdPayload.reservation.lotteryPool72H, "10000000");
   assert.equal(createdPayload.reservation.saleOpensAt, "2026-05-05T09:00:00.000Z");
+  assert.equal(createdPayload.reservation.contractEvidence.status, "deployed_inactive_not_purchase");
+  assert.equal(createdPayload.reservation.contractEvidence.presaleVaultAddress, "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9");
+  assert.equal(createdPayload.reservation.contractEvidence.jettonMasterAddress, "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg");
 
   const duplicate = await onRequestPost({ request: reservationRequest({ ...body, desiredAllocation72H: "1" }), env });
   assert.equal(duplicate.status, 200);
