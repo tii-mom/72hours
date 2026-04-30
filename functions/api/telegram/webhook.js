@@ -54,10 +54,10 @@ function classifySalesIntent(text) {
 
 function mainKeyboard(runtime) {
   const keyboard = [
-    [{ text: "预约白名单额度", callback_data: "command:buy" }],
+    [{ text: "预约白名单登记", callback_data: "command:buy" }],
     [
       { text: "链上状态", callback_data: "command:status" },
-      { text: "阶段价格", callback_data: "signal:price" },
+      { text: "计划阶段规则", callback_data: "signal:price" },
     ],
     [
       { text: "安全与合约", callback_data: "signal:risk" },
@@ -66,7 +66,7 @@ function mainKeyboard(runtime) {
   ];
 
   if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard[0] = [{ text: "打开 72H 白名单预约", web_app: { url: runtime.miniAppUrl } }];
+    keyboard[0] = [{ text: "打开 72H 白名单登记", web_app: { url: runtime.miniAppUrl } }];
   }
 
   return { inline_keyboard: keyboard };
@@ -76,7 +76,7 @@ function buyKeyboard(runtime) {
   const keyboard = [];
 
   if (runtime.miniAppUrl?.startsWith("https://")) {
-    keyboard.push([{ text: "打开 Mini App 预约白名单", web_app: { url: runtime.miniAppUrl } }]);
+    keyboard.push([{ text: "打开 Mini App 登记白名单", web_app: { url: runtime.miniAppUrl } }]);
   }
 
   keyboard.push([
@@ -152,11 +152,11 @@ async function sendStart(api, chatId, runtime) {
   await safeSend(api, {
     chatId,
     text: [
-      "72H 官方预售助手",
+      "72H Early Access / 预售预约助手",
       "",
-      "你可以在这里完成三件事：预约白名单额度、查看倒计时、核验官方合约。",
+      "当前是 warmup / waitlist 阶段：预售预约、白名单登记、10,000,000 72H 抽奖资格、开售提醒、社群任务和用户分层。",
       "",
-      "真实购买、签名、收款和 receipt 确认暂未开放；现在只记录链下预约。",
+      "禁止真实购买、付款、签名、手工转账或链上额度承诺；现在只记录链下预约。",
       "",
       "安全提醒：不要发送助记词、私钥、验证码或资金截图。",
     ].join("\n"),
@@ -166,11 +166,11 @@ async function sendStart(api, chatId, runtime) {
 
 async function sendBuy(api, chatId, runtime) {
   const lines = [
-    "72H 白名单预约",
+    "72H Early Access 白名单预约",
     "",
-    "正式开放时间：2026-05-05 17:00（Asia/Shanghai）。现在只可预约白名单额度，不会生成交易。",
+    "正式开放时间：2026-05-05 17:00（Asia/Shanghai）。现在只可登记 waitlist / 白名单、开售提醒和社群任务状态，不会生成交易。",
     "",
-    "预约成功可获得 72H 代币奖励，并进入 10,000,000 72H 抽奖奖池。奖池由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约。Bot 不会根据聊天内容生成交易，也不会要求你私下转账。",
+    "预约成功可获得 72H 代币奖励资格，并进入 10,000,000 72H 抽奖奖池。奖池由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约。Bot 不会根据聊天内容生成交易，也不会要求你付款、签名或私下转账。",
   ];
 
   await safeSend(api, {
@@ -187,8 +187,8 @@ async function sendHelp(api, chatId, runtime) {
       "72H 预售助手说明",
       "",
       "聊天只用于理解意图和人工跟进。",
-      "交易只走官方 Mini App + TonConnect。",
-      "成交只认链上验证，不认截图或口头承诺。",
+      "当前不开放真实购买、付款或签名；正式开放后也只认官方 Mini App 公告路径。",
+      "预约不等于链上额度或购买证明，不认截图或口头承诺。",
       "",
       runtime.enabled
         ? "当前状态：仍以 Mini App 白名单预约与链上证据展示为准。"
@@ -224,7 +224,7 @@ async function sendHuman(api, env, chatId, user, text, signalType = "human_suppo
     text: [
       "已通知人工运营",
       "",
-      "请简单回复你的问题或计划购买金额区间。不要发送助记词、私钥、验证码或资金截图。",
+      "请简单回复你的问题或预计参与区间。不要发送助记词、私钥、验证码或资金截图。",
     ].join("\n"),
     replyMarkup: mainKeyboard(getPresaleRuntime(env)),
   });
@@ -271,9 +271,9 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
         text: [
           "钱包连接说明",
           "",
-          "只从官方预售界面连接钱包。钱包弹窗里确认交易即可，不需要把助记词、私钥或验证码发给任何人。",
+          "当前只从官方 Mini App 做白名单登记与状态核对；不需要付款、签名、手工转账，也不要把助记词、私钥或验证码发给任何人。",
           "",
-          runtime.miniAppUrl ? "点击下方按钮打开预售界面。" : "Mini App URL 尚未配置。",
+          runtime.miniAppUrl ? "点击下方按钮打开白名单登记界面。" : "Mini App URL 尚未配置。",
         ].join("\n"),
         replyMarkup: mainKeyboard(runtime),
       });
@@ -282,7 +282,7 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
       await safeSend(api, {
         chatId,
         text: [
-          "72H 预售阶段价格",
+          "72H 计划阶段规则（当前不可购买）",
           "",
           "Stage 0: 1 TON = 10,072 72H",
           "Stage 1: 1 TON = 7,200 72H",
@@ -292,7 +292,7 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
           "总预售额度：4,500,000,000 72H",
           "单钱包上限：7,200,000 72H",
           "",
-          "当前阶段以链上状态为准。",
+          "以上仅为开售前规则核对；当前不开放真实购买、付款或签名，不承诺链上额度。",
         ].join("\n"),
         replyMarkup: mainKeyboard(runtime),
       });
@@ -306,7 +306,7 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
           `PresaleVault: ${runtime.presaleVaultAddress}`,
           `72H Jetton Master: ${runtime.jettonMasterAddress}`,
           "",
-          "只认官方合约地址、官方预售界面和 TonConnect 签名。截图、私聊承诺和用户自报 hash 都不能作为购买证明。",
+          "当前不开放真实购买、付款或签名。只认官方合约地址和官方公告；截图、私聊承诺和用户自报 hash 都不能作为预约、额度或购买证明。",
         ].join("\n"),
         replyMarkup: mainKeyboard(runtime),
       });
@@ -331,7 +331,7 @@ async function respondToSignal(api, env, chatId, user, text, runtime, signalType
         text: [
           "我已记录你的问题。",
           "",
-          "如果你想购买、查价格、核验合约或联系人工，可以点下方按钮。",
+          "如果你想预约白名单、查看计划规则、核验合约或联系人工，可以点下方按钮。",
         ].join("\n"),
         replyMarkup: mainKeyboard(runtime),
       });

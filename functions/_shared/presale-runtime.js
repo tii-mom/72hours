@@ -91,13 +91,13 @@ export function getPresaleRuntime(env) {
 export function formatPresaleStatus(runtime) {
   const live = runtime.chainSnapshot;
   const lines = [
-    "72H 预售状态",
+    "72H 预售预约状态",
     "",
-    `购买状态：${runtime.enabled ? "已开放受控入口" : "暂未开放"}`,
+    `真实购买状态：${runtime.enabled ? "受控开关开启，仍需官方公告确认" : "暂未开放"}`,
     `链上状态：${live ? (live.active ? "合约 active" : "合约未开启") : "读取中"}`,
     live ? `当前阶段：Stage ${live.publicStage ?? "?"}` : undefined,
-    live ? `已售出：${live.sold72H} 72H` : undefined,
-    live ? `销售收入：${live.saleProceedsTon} TON` : undefined,
+    live ? `合约已记录售出：${live.sold72H} 72H` : undefined,
+    live ? `合约已记录收入：${live.saleProceedsTon} TON` : undefined,
     ...(live
       ? [
           "",
@@ -121,8 +121,8 @@ export function formatPresaleStatus(runtime) {
     `72H Jetton: ${runtime.jettonMasterAddress}`,
     "",
     runtime.enabled
-      ? "请只通过官方预售界面 + TonConnect 签名。"
-      : "当前真实购买关闭，预售界面只做状态展示和钱包预检查。",
+      ? "当前仍以官方公告为准；不要私下付款、签名或手工转账。"
+      : "当前真实购买关闭，预售界面只做状态展示和白名单预检查。",
   ].filter(Boolean);
 
   return lines.join("\n");

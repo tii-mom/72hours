@@ -84,6 +84,16 @@ type ReservationRecord = {
   desiredAllocation72H: string;
   referral?: string;
   source?: string;
+  waitlistMode?: string;
+  whitelistStatus?: string;
+  saleReminderOptIn?: boolean;
+  userSegment?: string;
+  communityTasks?: {
+    joinedTelegram: boolean;
+    followedX: boolean;
+    sharedInvite: boolean;
+    status: "not_started" | "in_progress" | "completed";
+  };
   lotteryEligible: boolean;
   reservationReward72H: string;
   lotteryPool72H: string;
@@ -111,6 +121,7 @@ declare global {
 const SALE_OPENS_AT = "2026-05-05T09:00:00.000Z";
 const LOTTERY_POOL_LABEL = "10,000,000";
 const RESERVATION_REWARD_LABEL = "72";
+const WARMUP_MODE_LABEL = "warmup / waitlist";
 
 const FALLBACK_PRESALE: PresaleRuntime = {
   configured: true,
@@ -412,7 +423,7 @@ export default function BotPresale() {
   const walletStatusText = !restored
     ? isEnglish ? "Restoring session" : "正在恢复会话"
     : address ? shortAddress(address) : isEnglish ? "Connect a TON wallet" : "连接 TON 钱包";
-  const purchaseStatus = isEnglish ? "Reservation only · purchases disabled" : "仅开放预约 · 真实购买关闭";
+  const purchaseStatus = isEnglish ? "Warmup waitlist · purchases disabled" : "预热候补名单 · 真实购买关闭";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -444,6 +455,12 @@ export default function BotPresale() {
           walletAddress: address || undefined,
           referral: referral || undefined,
           source: "miniapp_waitlist",
+          saleReminderOptIn: true,
+          communityTasks: {
+            joinedTelegram: true,
+            followedX: false,
+            sharedInvite: Boolean(referral),
+          },
         }),
       });
       const payload = (await response.json()) as { ok?: boolean; error?: string; duplicate?: boolean; reservation?: ReservationRecord };
@@ -453,7 +470,7 @@ export default function BotPresale() {
       setReservation(payload.reservation);
       setReservationFeedback(payload.duplicate
         ? isEnglish ? "You are already on the whitelist reservation list." : "你已经在预约白名单中。"
-        : isEnglish ? "Reservation confirmed. Your 72H reward and lottery eligibility are recorded." : "预约成功。72H 奖励与抽奖资格已记录。"
+        : isEnglish ? "Reservation confirmed. Whitelist status, opening reminder, 72H reward, and lottery eligibility are recorded." : "预约成功。白名单登记、开售提醒、72H 奖励与抽奖资格已记录。"
       );
     } catch (error) {
       setReservationFeedback(error instanceof Error ? error.message : isEnglish ? "Reservation failed." : "预约失败。");
@@ -489,8 +506,8 @@ export default function BotPresale() {
   const recordBuyerSignal = (type: BuyerSignal) => {
     const messages: Record<BuyerSignal, string> = {
       buy_interest: isEnglish
-        ? "Interest recorded. Real purchases remain disabled."
-        : "购买意向已记录。真实购买仍未开放。",
+        ? "Sale reminder recorded. Real purchases remain disabled."
+        : "开售提醒已记录。真实购买仍未开放。",
       wallet_help: isEnglish
         ? "Wallet help signal recorded."
         : "钱包问题已记录。",
@@ -530,12 +547,12 @@ export default function BotPresale() {
             <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
               <div>
                 <h1 className="text-4xl font-black leading-[1.02] tracking-normal text-foreground sm:text-5xl">
-                  {isEnglish ? "72H Whitelist Reservation" : "72H 白名单额度预约"}
+                  {isEnglish ? "72H Whitelist Reservation" : "72H 白名单登记"}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Official sales are only inside the Bot. Real purchase, signature, payment, and receipt confirmation are disabled; reserve a whitelist allocation first and watch the countdown."
-                    : "代币销售只在 Bot 内出现。真实购买、签名、收款、receipt 确认全部关闭；现在只开放白名单额度预约与倒计时。"}
+                    ? "Whitelist and opening reminders are only handled inside the Bot / Mini App. Real purchase, signature, payment, manual transfer, on-chain quota promises, and receipt confirmation are disabled; register for the waitlist first and watch the countdown."
+                    : "预售信息只在 Telegram Bot / Mini App 内展示。真实购买、付款、签名、手工转账、链上额度承诺和 receipt 确认全部关闭；现在只开放白名单登记、开售提醒与倒计时。"}
                 </p>
               </div>
 
@@ -572,7 +589,7 @@ export default function BotPresale() {
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <MetricCard
-                label={isEnglish ? "Official sale opens" : "正式开放时间"}
+                label={isEnglish ? "Official opening reminder" : "开售提醒时间"}
                 value={countdownText}
                 detail={`${saleOpenLabel} · GMT+8`}
               />
@@ -584,20 +601,20 @@ export default function BotPresale() {
               <MetricCard
                 label={isEnglish ? "Lottery pool" : "抽奖奖池"}
                 value={LOTTERY_POOL_LABEL}
-                detail="72H"
+                detail={isEnglish ? "72H wallet-funded prize pool" : "72H 钱包注入奖池"}
               />
             </div>
 
             {address && presale.chainSnapshot?.buyerRemaining72H ? (
               <div className="mt-4 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
-                {isEnglish ? "Wallet remaining cap" : "本钱包剩余额度"}: {presale.chainSnapshot.buyerRemaining72H} 72H
+                {isEnglish ? "Planned wallet cap remaining" : "计划单钱包剩余上限"}: {presale.chainSnapshot.buyerRemaining72H} 72H
               </div>
             ) : null}
 
             <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
               {isEnglish
-                ? "Until the official opening time, every purchase intent and receipt route returns 503. Reservation records are off-chain and do not collect funds."
-                : "正式开放前，purchase intent 与 receipt 接口全部返回 503。预约记录仅为链下白名单，不收款。"}
+                ? "Until the official opening time, every purchase intent and receipt route returns 503. Reservation records are off-chain waitlist signals: no payment, signature, manual transfer, or on-chain quota promise."
+                : "正式开放前，purchase intent 与 receipt 接口全部返回 503。预约记录只是链下候补名单信号：不付款、不签名、不手工转账、不承诺链上额度。"}
             </div>
           </div>
 
@@ -607,12 +624,12 @@ export default function BotPresale() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-black tracking-normal text-foreground">
-                      {isEnglish ? "Reserve whitelist allocation" : "预约白名单额度"}
+                      {isEnglish ? "Register waitlist preference" : "登记白名单意向"}
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "Submit once with your desired 72H allocation. Wallet is optional now; connecting one will attach it to the record."
-                        : "填写希望预约的 72H 额度。钱包现在可选；已连接钱包会自动写入预约记录。"}
+                        ? "Submit once with your desired waitlist amount. Wallet is optional now; connecting one will attach it to the off-chain record."
+                        : "填写希望登记的 72H 意向数量。钱包现在可选；已连接钱包会自动写入链下预约记录。"}
                     </p>
                   </div>
                   <Gift className="h-5 w-5 text-gold" />
@@ -622,13 +639,15 @@ export default function BotPresale() {
                   <div className="mt-5 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
                     {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
                     {reservation.walletAddress ? ` · ${shortAddress(reservation.walletAddress)}` : ""}
+                    {reservation.whitelistStatus ? ` · ${reservation.whitelistStatus}` : ""}
+                    {reservation.userSegment ? ` · ${reservation.userSegment}` : ""}
                     {reservation.lotteryEligible ? ` · ${isEnglish ? "lottery eligible" : "已获抽奖资格"}` : ""}
                   </div>
                 ) : null}
 
                 <form className="mt-5 grid gap-4" onSubmit={submitReservation}>
                   <label className="grid gap-2 text-sm font-bold text-foreground">
-                    {isEnglish ? "Desired allocation (72H)" : "希望预约额度（72H）"}
+                    {isEnglish ? "Desired waitlist amount (72H)" : "希望登记数量（72H）"}
                     <input
                       value={desiredAllocation72H}
                       onChange={(event) => setDesiredAllocation72H(event.target.value)}
@@ -650,8 +669,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Reward: ${RESERVATION_REWARD_LABEL} 72H for eligible reservations. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No new claim contract and no funds are accepted here.`
-                      : `预约奖励：符合条件记录可获得 ${RESERVATION_REWARD_LABEL} 72H。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约，本页不收取资金。`}
+                      ? `Mode: ${WARMUP_MODE_LABEL}. Reward: ${RESERVATION_REWARD_LABEL} 72H for eligible reservations. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No new claim contract and no funds are accepted here.`
+                      : `模式：${WARMUP_MODE_LABEL}。预约奖励：符合条件记录可获得 ${RESERVATION_REWARD_LABEL} 72H。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；不新增领奖合约，本页不收取资金。`}
                   </div>
                   <button
                     type="submit"
@@ -681,7 +700,7 @@ export default function BotPresale() {
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "These choices are recorded as sales signals for follow-up."
+                        ? "These choices are recorded as reservation/reminder signals for follow-up."
                         : "这些选择会沉淀为运营跟进信号，不会生成交易。"}
                     </p>
                   </div>
@@ -691,7 +710,7 @@ export default function BotPresale() {
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <QuickAction
                     icon={<CircleDollarSign className="h-4 w-4" />}
-                    label={isEnglish ? "Notify me when official purchase opens" : "正式开放时通知我"}
+                    label={isEnglish ? "Remind me when opening starts" : "开售时提醒我"}
                     onClick={() => recordBuyerSignal("buy_interest")}
                   />
                   <QuickAction
@@ -725,7 +744,7 @@ export default function BotPresale() {
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {isEnglish
                     ? "Not currently purchasable. These are planned rules for official review only."
-                    : "当前不可购买。以下仅为官方核对用的计划规则。"}
+                    : "当前不可购买、不承诺链上额度。以下仅为开售前规则核对。"}
                 </p>
                 <div className="mt-5 overflow-hidden rounded-sm border border-line/70">
                   {presale.stageRules.map((item) => (
@@ -739,7 +758,7 @@ export default function BotPresale() {
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <MetricCard
-                    label={isEnglish ? "Total cap" : "总额度"}
+                    label={isEnglish ? "Planned total cap" : "计划总上限"}
                     value={presale.totalCap72H}
                     detail="72H"
                   />
@@ -772,8 +791,8 @@ export default function BotPresale() {
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Before opening, only off-chain reservations are recorded. After opening, a purchase can only be confirmed by TonConnect signature plus matching on-chain evidence."
-                    : "开放前只记录链下预约。开放后，只有官方 Mini App 内的 TonConnect 签名和匹配链上交易，才能确认购买。"}
+                    ? "Before opening, only off-chain reservations, whitelist status, reminders, community task status, and user segments are recorded. Lottery rewards come from official/private wallet transfers; no new contract is added."
+                    : "开放前只记录链下预约、白名单状态、开售提醒、社群任务状态和用户分层。抽奖奖励由官方/私人钱包转账发放，不新增合约。"}
                 </p>
                 <a
                   href="https://t.me/the72hbot?start=human"

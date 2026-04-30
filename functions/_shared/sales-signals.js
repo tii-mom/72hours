@@ -108,24 +108,24 @@ function followUpPriority({ primaryIntent, intentStrength, amountTon, objections
 
 function operatorSuggestion(signal) {
   if (signal.primaryIntent === "buy_intent" && signal.amountTon !== undefined) {
-    return `先确认 ${signal.amountTon} TON 是否为计划购买金额，再提醒真实购买只走官方 Mini App + TonConnect。`;
+    return `先确认 ${signal.amountTon} TON 是否为预计参与区间，再提醒当前不开放真实购买、付款或签名。`;
   }
   if (signal.primaryIntent === "buy_intent") {
-    return "先确认计划购买金额区间、钱包是否已准备好，再引导打开预售界面。";
+    return "先确认预计参与区间和白名单登记需求，再引导打开官方预约界面。";
   }
   if (signal.primaryIntent === "wallet_help") {
     return "优先确认用户使用的钱包类型和连接报错，不要索要助记词、私钥或验证码。";
   }
   if (signal.primaryIntent === "risk_question") {
-    return "先发官方 PresaleVault 和 Jetton Master 地址，再说明截图和私聊承诺不能作为购买证明。";
+    return "先发官方 PresaleVault 和 Jetton Master 地址，再说明截图和私聊承诺不能作为预约、额度或购买证明。";
   }
   if (signal.primaryIntent === "referral_question") {
     return "记录 KOL/渠道来源，确认是否需要人工标记来源标签。";
   }
   if (signal.primaryIntent === "human_support") {
-    return "尽快人工回复，先问问题类型和计划金额区间。";
+    return "尽快人工回复，先问问题类型和预计参与区间。";
   }
-  return "询问用户是想购买、查价格、核验合约还是需要人工跟进。";
+  return "询问用户是想预约白名单、查计划规则、核验合约还是需要人工跟进。";
 }
 
 function confidenceFor(primaryIntent, text) {

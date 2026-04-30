@@ -36,10 +36,10 @@ async function main() {
 
   await callTelegram(token, "setMyCommands", {
     commands: [
-      { command: "start", description: "打开 72H 预售助手" },
-      { command: "buy", description: "进入官方预售界面" },
-      { command: "status", description: "查看链上预售状态" },
-      { command: "help", description: "了解安全购买路径" },
+      { command: "start", description: "打开 72H 预约助手" },
+      { command: "buy", description: "登记白名单预约" },
+      { command: "status", description: "查看预约与合约状态" },
+      { command: "help", description: "了解预约与防钓鱼规则" },
       { command: "human", description: "请求人工跟进" },
     ],
   });

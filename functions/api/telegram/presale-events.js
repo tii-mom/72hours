@@ -64,7 +64,7 @@ async function maybeAlertOperator(env, auth, eventType, event, signal) {
 
   const record = event.record || {};
   await sendTelegramAlert(env, formatOperatorAlertLines({
-    title: eventType === "buy_interest" ? "72H Mini App 购买意向" : "72H Mini App 人工跟进",
+    title: eventType === "buy_interest" ? "72H Mini App 开售提醒/预约意向" : "72H Mini App 人工跟进",
     userLabel: userLabel(auth.user),
     userId: auth.user.id,
     signal,
