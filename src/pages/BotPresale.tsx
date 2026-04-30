@@ -423,7 +423,7 @@ export default function BotPresale() {
   const walletStatusText = !restored
     ? isEnglish ? "Restoring session" : "正在恢复会话"
     : address ? shortAddress(address) : isEnglish ? "Connect a TON wallet" : "连接 TON 钱包";
-  const purchaseStatus = isEnglish ? "Warmup waitlist · purchases disabled" : "预热候补名单 · 真实购买关闭";
+  const purchaseStatus = isEnglish ? "Early Access reservation · purchase not open" : "白名单预约开放 · 购买未开放";
   const saleOpenMs = new Date(SALE_OPENS_AT).getTime() - countdownNow;
   const saleOpenLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -506,8 +506,8 @@ export default function BotPresale() {
   const recordBuyerSignal = (type: BuyerSignal) => {
     const messages: Record<BuyerSignal, string> = {
       buy_interest: isEnglish
-        ? "Sale reminder recorded. Real purchases remain disabled."
-        : "开售提醒已记录。真实购买仍未开放。",
+        ? "Opening reminder recorded. Purchases are not open yet."
+        : "开售提醒已记录。购买暂未开放。",
       wallet_help: isEnglish
         ? "Wallet help signal recorded."
         : "钱包问题已记录。",
@@ -551,8 +551,8 @@ export default function BotPresale() {
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "Whitelist and opening reminders are only handled inside the Bot / Mini App. Real purchase, signature, payment, manual transfer, on-chain quota promises, and receipt confirmation are disabled; register for the waitlist first and watch the countdown."
-                    : "预售信息只在 Telegram Bot / Mini App 内展示。真实购买、付款、签名、手工转账、链上额度承诺和 receipt 确认全部关闭；现在只开放白名单登记、开售提醒与倒计时。"}
+                    ? "Whitelist registration and opening reminders are handled inside the official Bot / Mini App. This page does not request payment, signatures, private transfers, or promise on-chain quota; register first and watch the countdown."
+                    : "预售信息只在官方 Telegram Bot / Mini App 内展示。本页不会要求付款、签名或私下转账，也不承诺链上额度；现在只开放白名单登记、开售提醒与倒计时。"}
                 </p>
               </div>
 
@@ -624,12 +624,12 @@ export default function BotPresale() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-black tracking-normal text-foreground">
-                      {isEnglish ? "Register waitlist preference" : "登记白名单意向"}
+                      {isEnglish ? "Register whitelist preference" : "登记白名单意向"}
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "Submit once with your desired waitlist amount. Wallet is optional now; connecting one will attach it to the off-chain record."
-                        : "填写希望登记的 72H 意向数量。钱包现在可选；已连接钱包会自动写入链下预约记录。"}
+                        ? "Submit once with your desired reservation amount. Wallet is optional now; connecting one will attach it to the reservation record."
+                        : "填写希望登记的 72H 意向数量。钱包现在可选；已连接钱包会自动写入预约记录。"}
                     </p>
                   </div>
                   <Gift className="h-5 w-5 text-gold" />
@@ -647,7 +647,7 @@ export default function BotPresale() {
 
                 <form className="mt-5 grid gap-4" onSubmit={submitReservation}>
                   <label className="grid gap-2 text-sm font-bold text-foreground">
-                    {isEnglish ? "Desired waitlist amount (72H)" : "希望登记数量（72H）"}
+                    {isEnglish ? "Desired reservation amount (72H)" : "希望登记数量（72H）"}
                     <input
                       value={desiredAllocation72H}
                       onChange={(event) => setDesiredAllocation72H(event.target.value)}
@@ -700,8 +700,8 @@ export default function BotPresale() {
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {isEnglish
-                        ? "These choices are recorded as reservation/reminder signals for follow-up."
-                        : "这些选择会沉淀为运营跟进信号，不会生成交易。"}
+                        ? "These choices help the team follow up on your reservation and reminders."
+                        : "这些选择会用于预约与提醒跟进，不会生成交易。"}
                     </p>
                   </div>
                   <CheckCircle2 className="h-5 w-5 text-primary" />

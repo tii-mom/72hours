@@ -325,10 +325,10 @@ export default function CapitalApp() {
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
               eyebrow={isEnglish ? "Action boundary" : "动作边界"}
-              title={isEnglish ? "Seat requests are disabled before signing opens." : "真实席位配置暂未开放，正式开放前不可签名。"}
+              title={isEnglish ? "Capital seat actions open only after the official signing window." : "Capital 席位动作将在官方签名窗口开放后启用。"}
               body={isEnglish
-                ? "Seat requests can create a wallet-aware action record for verification. TON contract signing and on-chain submission remain closed until the official release."
-                : "本页仅展示状态。真实 Capital 席位配置、TON 签名与链上提交在正式开放前保持关闭。"}
+                ? "This page is currently for status review. TON contract signing and on-chain submission will only open after the official release."
+                : "本页当前用于状态核对。Capital 席位配置、TON 签名与链上提交只会在官方开放后启用。"}
             />
 
             <CapitalIntentConsole

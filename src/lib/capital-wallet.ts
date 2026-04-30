@@ -138,8 +138,8 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
         eyebrow: isEnglish ? "Wallet boundary" : "钱包边界",
         title: isEnglish ? "TON wallet is connected to Capital." : "TON 钱包已连接到 Capital。",
         body: isEnglish
-          ? "Connection is live for identity review and routing. Seat allocation, vault signing, and settlement are not open for signing on this website."
-          : "连接已可用于身份核对与路由联动。席位配置、资金池签名与结算暂不在官网开放签名。",
+          ? "Connection is available for identity review and routing. Seat allocation, vault signing, and settlement will only open through the official flow."
+          : "连接已可用于身份核对与路由联动。席位配置、资金池签名与结算只会通过官方流程开放。",
         stateLabel: isEnglish ? "Connected" : "已连接",
         status: "connected",
         metrics: [
@@ -148,8 +148,8 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
           buildMetric(isEnglish ? "Network" : "网络", formatChainLabel(locale, wallet.account.chain)),
         ],
         note: isEnglish
-          ? "Network fees are paid by the user wallet when official transactions open. Capital seat transactions are currently disabled here."
-          : "正式交易开放后，链上网络费用由用户钱包自行承担。当前 Capital 席位交易在此保持关闭。",
+          ? "Network fees are paid by the user wallet only when official transactions open. This page is for review only today."
+          : "正式交易开放后，链上网络费用由用户钱包自行承担。本页当前仅用于核对。",
         actions: [
           {
             label:
@@ -184,8 +184,8 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
       eyebrow: isEnglish ? "Wallet boundary" : "钱包边界",
       title: isEnglish ? "Wallet connection is available for identity review." : "钱包连接可用于身份核对。",
       body: isEnglish
-        ? "TonConnect can connect a wallet on this page. Signing, vault interaction, and settlement remain unavailable until the official TON flow opens."
-        : "本页可通过 TonConnect 连接钱包。签名、资金池交互与结算在正式 TON 流程开放前保持不可用。",
+        ? "TonConnect can connect a wallet on this page. Signing, vault interaction, and settlement will only open through the official TON flow."
+        : "本页可通过 TonConnect 连接钱包。签名、资金池交互与结算只会通过正式 TON 流程开放。",
       stateLabel: isEnglish ? "Standby" : "待连接",
       status: "standby",
       metrics: [
@@ -194,8 +194,8 @@ export function useCapitalWalletView(locale: Locale): CapitalWalletView {
         buildMetric(isEnglish ? "Fee policy" : "Gas 规则", isEnglish ? "User-paid" : "用户自付"),
       ],
       note: isEnglish
-        ? "Wallet connection is live for review. Signing, vault interaction, and settlement remain disabled until official opening."
-        : "钱包连接已可用于核对。签名、资金池交互和结算动作在正式开放前保持关闭。",
+        ? "Wallet connection is available for review. Signing, vault interaction, and settlement will only open after the official announcement."
+        : "钱包连接已可用于核对。签名、资金池交互和结算动作只会在官方公告后开放。",
       actions: [
         {
           label:

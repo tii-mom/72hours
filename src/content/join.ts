@@ -16,7 +16,7 @@ const joinContentZh = {
 
 const joinContentEn = {
   title: "Enter 72hours.",
-  subtitle: "Start from the public app map, community, and Green Book. This page is navigation only; purchase, claim, and real seat actions are not open.",
+  subtitle: "Start from the public app map, community, and Green Book. This page is navigation only; purchase, claim, and real seat actions will open only after an official announcement.",
   whyTitle: "Public entry",
   whyBody: "The 72H site helps users find apps, community, Green Book, and boundary notes first.",
   joinedTitle: "What opens next",

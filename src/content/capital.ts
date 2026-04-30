@@ -410,7 +410,7 @@ const appRecords: readonly RawCapitalApp[] = [
       "Rewards come from AppRewardPool, may draw from protocol campaigns, strategic inventory, and curated partner distributions, and may be 0.",
     ),
     surfaceHref: "/join",
-    surfaceLabel: copy("加入候补名单", "Join waitlist"),
+    surfaceLabel: copy("加入预约名单", "Join reservation list"),
     surfaceExternal: false,
     updatedOn: "2026-04-23",
     tvl72H: 12_960_000,
@@ -505,7 +505,7 @@ const appRecords: readonly RawCapitalApp[] = [
     reserveRemaining: 34,
     alphaRemaining: 5,
     highlights: [
-      copy("Reserve 与 Alpha 当前均为规则参考，真实动作保持关闭。", "Reserve and Alpha are rule references only; real actions remain closed."),
+      copy("Reserve 与 Alpha 当前均为规则参考，真实动作只会在官方公告后开放。", "Reserve and Alpha are rule references only; real actions will open only after an official announcement."),
       copy("适合把 Capital 身份与生态参与绑定。", "Best for linking capital identity with broader ecosystem participation."),
       copy("公开验证页默认不展示金额或奖励。", "Public verification intentionally omits amount and reward data."),
     ],
@@ -1120,7 +1120,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       noteLabel: locale === "en-US" ? "First release" : "首批开放",
       noteTitle: locale === "en-US" ? "243 limited seats across 3 applications." : "3 个应用，共 243 个限量席位。",
       noteBody: locale === "en-US"
-        ? "Current public data is for review only. Real Capital seat actions are not open; any future opening must be announced officially."
+        ? "Current public data is for review only. Real Capital seat actions will open only after an official announcement."
         : "当前公开数据仅供核对。真实 Capital 席位动作未开放；未来如开放，以官方公告为准。",
       chips: [
         "multi-millionaire",
@@ -1145,7 +1145,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       {
         label: locale === "en-US" ? "Alpha seats" : "Alpha 席位",
         value: `${totalAlphaSeats - totalAlphaRemaining} / ${totalAlphaSeats}`,
-        hint: locale === "en-US" ? "Closed until Reserve is stable" : "Reserve 稳定前保持关闭",
+        hint: locale === "en-US" ? "Opens after Reserve is stable" : "Reserve 稳定后再按官方公告开放",
         tone: "gold",
       },
       {

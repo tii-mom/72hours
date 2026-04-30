@@ -216,7 +216,7 @@ const projectsZh: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "multi-millionaire 候补说明与身份规则参考，真实锁仓和奖励领取暂未开放。",
+    oneLineValue: "multi-millionaire 预约说明与身份规则参考，真实锁仓和奖励领取只会在官方公告后开放。",
     summary: "当前仅保留候补与规则说明，不开放真实链上锁仓、席位配置或奖励领取。",
     detailIntro: "适合先阅读规则、风险边界和未来开放条件。",
     category: "main_entry",
@@ -543,8 +543,8 @@ const projectsEn: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "Waitlist and identity-rule reference for multi-millionaire; real lock-up and reward claims are not open.",
-    summary: "Currently a waitlist and rule note only; real on-chain lock-up, seat actions, and reward claiming are not open.",
+    oneLineValue: "Reservation and identity-rule reference for multi-millionaire; real lock-up and reward claims open only after an official announcement.",
+    summary: "Currently a reservation and rule reference only; real on-chain lock-up, seat actions, and reward claiming will open only after an official announcement.",
     detailIntro: "Use this to read rules, risk boundaries, and future opening conditions first.",
     category: "main_entry",
     status: "community_pilot",
@@ -558,7 +558,7 @@ const projectsEn: Project[] = [
     },
     hoursRelation: {
       level: "supported",
-      summary: "Rule reference and waitlist only; configuration remains closed.",
+      summary: "Rule reference and reservation only; configuration remains closed.",
     },
     learnRelation: {
       level: "prep",

@@ -15,7 +15,7 @@ function normalizedPayload(payload: TelegramBotProjectPayload): TelegramBotProje
 
   return {
     ...payload,
-    oneLineValue: "multi-millionaire waitlist / rule reference; real lock-up and reward claims are not open.",
+    oneLineValue: "multi-millionaire reservation / rule reference; real lock-up and reward claims are not open.",
     developmentStage: "building",
     isInvestable: false,
   };

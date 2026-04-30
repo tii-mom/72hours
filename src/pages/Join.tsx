@@ -120,7 +120,7 @@ export default function Join() {
       kicker: isEnglish ? "Capital" : "Capital",
       title: isEnglish ? "Rules are visible, actions are closed" : "规则可读，动作未开放",
       body: isEnglish
-        ? "Capital, Reserve, and Alpha pages are read-only rule references now. Real seat actions, purchase, claim, and reward actions are not open."
+        ? "Capital, Reserve, and Alpha pages are rule references now. Seat actions, purchase, claim, and reward flows will open only after an official announcement."
         : "Capital、Reserve 与 Alpha 页面当前只作为规则参考。真实席位动作、购买、领取和奖励动作均未开放。",
       cta: isEnglish ? "Review boundary" : "查看边界",
       href: "/capital",

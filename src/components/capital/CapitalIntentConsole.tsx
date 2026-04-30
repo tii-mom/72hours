@@ -90,7 +90,7 @@ export function CapitalIntentConsole({
         body={
           state.status === "idle"
             ? isEnglish
-              ? "Real Capital seat configuration is not open. This panel only shows status records; contract signing stays closed."
+              ? "Capital seat configuration will open only through the official release. This panel currently shows status records only."
               : "真实 Capital 席位配置尚未开放。此处仅显示状态记录，不开放合约签名。"
             : state.status === "loading"
               ? isEnglish

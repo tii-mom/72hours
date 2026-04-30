@@ -138,7 +138,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       barePath,
       `${siteConfig.siteName} | 72H Early Access Bot`,
       isEnglish
-        ? "Telegram Mini App waitlist for 72H Early Access reservations, whitelist status, reminders, lottery eligibility, and human follow-up."
+        ? "Telegram Mini App for 72H Early Access reservations, whitelist status, reminders, lottery eligibility, and human follow-up."
         : "72H Early Access Telegram Mini App 候补名单入口，用于预约、白名单状态、开售提醒、抽奖资格与人工跟进。",
       {
         robots: "noindex, nofollow",
@@ -173,7 +173,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital/multi-millionaire": {
       title: `${siteConfig.siteName} | multi-millionaire Capital`,
       description: isEnglish
-        ? "Read the multi-millionaire waitlist and Capital rule boundary. Real lock-up, seat actions, and reward claiming are not open."
+        ? "Read the multi-millionaire reservation and Capital rule boundary. Real lock-up, seat actions, and reward claiming will open only after an official announcement."
         : "查看 multi-millionaire 候补与 Capital 规则边界；真实锁仓、席位配置和奖励领取均未开放。",
     },
     "/capital/72hours": {
