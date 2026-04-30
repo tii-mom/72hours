@@ -53,6 +53,10 @@ export interface ProjectRelation {
 
 export type ProjectSignalTone = "new" | "hot" | "core" | "guide";
 export type ProjectCategory = "new_launch" | "main_entry" | "tools" | "coming_soon";
+export type ProjectChain = "TON" | "BSC" | "BASE" | "ETH";
+export type ProjectAppCategory = "tool" | "game" | "social" | "capital" | "content";
+export type ProjectDevelopmentStage = "new" | "live" | "building" | "investable";
+export type ProjectVisibility = "public" | "hidden";
 
 export interface ProjectSignal {
   tone: ProjectSignalTone;
@@ -75,13 +79,36 @@ export interface Project {
   proofAssets: ProofAsset[];
   featured: boolean;
   priority: number;
-  visibility?: "public" | "hidden";
+  visibility?: ProjectVisibility;
   iconKey?: "box" | "beaker" | "check" | "spark" | "shield" | "relay";
   logoSrc?: string;
   logoAlt?: string;
   brandStripSrc?: string;
   brandStripAlt?: string;
+  chains?: ProjectChain[];
+  appCategories?: ProjectAppCategory[];
+  developmentStage?: ProjectDevelopmentStage;
+  heroImageSrc?: string;
+  heroImageAlt?: string;
+  isInvestable?: boolean;
   signals?: ProjectSignal[];
+}
+
+export interface TelegramBotProjectPayload {
+  slug: string;
+  name: string;
+  oneLineValue: string;
+  chains: ProjectChain[];
+  appCategories: ProjectAppCategory[];
+  developmentStage: ProjectDevelopmentStage;
+  isInvestable: boolean;
+  heroImageSrc?: string;
+  heroImageAlt?: string;
+  externalLink: ExternalLink;
+  priority: number;
+  visibility: ProjectVisibility;
+  updatedBy: string;
+  updatedAt: string;
 }
 
 export interface Channel {

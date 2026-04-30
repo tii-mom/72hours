@@ -1,4 +1,4 @@
-import type { Project } from "../lib/content-types";
+import type { Project, ProjectAppCategory, ProjectChain, ProjectDevelopmentStage } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
@@ -192,7 +192,7 @@ const projectsZh: Project[] = [
     participationMode: ["join_community", "follow_updates", "deeper_participation"],
     externalLink: {
       label: "进入",
-      url: "https://72hours.72h.lol",
+      url: "https://72h.lol",
       type: "app",
       isOfficial: true,
     },
@@ -519,7 +519,7 @@ const projectsEn: Project[] = [
     participationMode: ["join_community", "follow_updates", "deeper_participation"],
     externalLink: {
       label: "Enter",
-      url: "https://72hours.72h.lol",
+      url: "https://72h.lol",
       type: "app",
       isOfficial: true,
     },
@@ -658,6 +658,97 @@ const projectsEn: Project[] = [
 
 export const projects = projectsZh;
 
+const projectDiscoveryMeta: Record<
+  string,
+  {
+    appCategories: ProjectAppCategory[];
+    chains: ProjectChain[];
+    developmentStage: ProjectDevelopmentStage;
+    isInvestable?: boolean;
+    heroImageSrc?: string;
+    heroImageAlt?: string;
+  }
+> = {
+  distribution: {
+    chains: ["TON"],
+    appCategories: ["tool", "social"],
+    developmentStage: "live",
+  },
+  wan: {
+    chains: ["TON"],
+    appCategories: ["tool"],
+    developmentStage: "new",
+    isInvestable: true,
+  },
+  sigma: {
+    chains: ["TON"],
+    appCategories: ["tool"],
+    developmentStage: "building",
+  },
+  "proof-card-builder": {
+    chains: ["TON"],
+    appCategories: ["tool", "content"],
+    developmentStage: "building",
+  },
+  "sticker-meme-studio": {
+    chains: ["TON"],
+    appCategories: ["content"],
+    developmentStage: "building",
+  },
+  "daily-pulse-vote": {
+    chains: ["TON"],
+    appCategories: ["social"],
+    developmentStage: "building",
+  },
+  "72hours-control-room": {
+    chains: ["TON"],
+    appCategories: ["social"],
+    developmentStage: "investable",
+    isInvestable: true,
+  },
+  "multi-millionaire": {
+    chains: ["TON"],
+    appCategories: ["capital"],
+    developmentStage: "investable",
+    isInvestable: true,
+  },
+  "coop-raid-room": {
+    chains: ["TON"],
+    appCategories: ["game", "social"],
+    developmentStage: "building",
+  },
+  "meme-court": {
+    chains: ["TON"],
+    appCategories: ["game", "content"],
+    developmentStage: "building",
+  },
+  "chain-relay-canvas": {
+    chains: ["TON"],
+    appCategories: ["tool", "content"],
+    developmentStage: "building",
+  },
+};
+
+function withDiscoveryMeta(projectList: Project[]) {
+  return projectList.map((project) => {
+    const meta = projectDiscoveryMeta[project.slug];
+
+    if (!meta) {
+      return {
+        chains: ["TON"] as ProjectChain[],
+        appCategories: ["tool"] as ProjectAppCategory[],
+        developmentStage: project.status === "live" ? "live" as const : "building" as const,
+        ...project,
+      };
+    }
+
+    return {
+      ...project,
+      ...meta,
+    };
+  });
+}
+
 export function getProjects(locale: Locale) {
-  return localized(locale, projectsZh, projectsEn);
+  return withDiscoveryMeta(localized(locale, projectsZh, projectsEn));
 }
