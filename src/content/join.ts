@@ -2,29 +2,29 @@ import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
 const joinContentZh = {
-  title: "社区、公开动态与补充说明。",
-  subtitle: "Telegram 是主社区入口，X 对应公开动态，微信提供补充说明。",
-  whyTitle: "社区入口",
-  whyBody: "Telegram、X 与微信构成当前的官方联系层。",
+  title: "持币进入学习报名、应用与 Capital。",
+  subtitle: "连接 TON 钱包，用 72H 完成资格核对，再选择学习报名、投资席位或社区协作入口。",
+  whyTitle: "参与入口",
+  whyBody: "72H 不只是展示资产，而是进入学习、应用和 Capital 身份的统一凭证。",
   joinedTitle: "进入后可见",
-  joinedBody: "社区讨论、公开动态和补充说明共同构成当前联系层。",
-  contactTitle: "联系入口",
-  contactBody: "Telegram、X 和微信说明页。",
+  joinedBody: "学习报名、席位规则、应用入口与人工核对会集中在同一个参与工作台。",
+  contactTitle: "人工核对",
+  contactBody: "Telegram 用于提交意向、余额异常核对和最终名额确认。",
   verifyTitle: "核对方式",
-  verifyBody: "本站、Telegram、X 和绿皮书共同提供公开核对信息。",
+  verifyBody: "钱包余额、72H 合约、风险边界与公开页面共同构成参与前的核对信息。",
 };
 
 const joinContentEn = {
-  title: "Community, public updates, and supplementary notes.",
-  subtitle: "Telegram is the main community entry. X covers public updates, and WeChat is supplementary.",
-  whyTitle: "Community entry",
-  whyBody: "Telegram, X, and WeChat make up the current contact layer.",
-  joinedTitle: "What you see inside",
-  joinedBody: "Community discussion, public updates, and supplementary notes make up the current contact layer.",
-  contactTitle: "Contact entry",
-  contactBody: "Telegram, X, and WeChat notes.",
+  title: "Use 72H to enter learning applications, apps, and Capital.",
+  subtitle: "Connect a TON wallet, verify 72H eligibility, then choose a learning application, capital seat, or community collaboration path.",
+  whyTitle: "Participation entry",
+  whyBody: "72H is not only a displayed asset; it is the shared credential for learning, apps, and Capital identity.",
+  joinedTitle: "What opens next",
+  joinedBody: "Learning applications, seat rules, app entries, and manual review stay in the same participation console.",
+  contactTitle: "Manual review",
+  contactBody: "Telegram handles intent submission, balance review, and final seat confirmation.",
   verifyTitle: "How to verify",
-  verifyBody: "This site, Telegram, X, and Green Book provide public verification context.",
+  verifyBody: "Wallet balance, the 72H contract, risk boundaries, and public pages together form the pre-entry verification record.",
 };
 
 export const joinContent = joinContentZh;
