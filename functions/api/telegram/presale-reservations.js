@@ -11,6 +11,9 @@ const LOTTERY_PAYOUT_MODE = "official_wallet_transfer_no_new_contract";
 const LOTTERY_FUNDING_STATUS = "awaiting_private_wallet_funding_tx";
 const WAITLIST_MODE = "warmup_waitlist_only";
 const RATE_LIMIT_TTL_SECONDS = 60;
+const BASE_RESERVATION_LOTTERY_CODES = 1;
+const REFERRAL_LOTTERY_CODES = 1;
+const COMMUNITY_SHARE_LOTTERY_CODES = 2;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -24,6 +27,40 @@ function json(data, status = 200) {
 
 function cleanString(value, maxLength = 160) {
   return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, maxLength) : undefined;
+}
+
+function normalizeInviteCode(value) {
+  const cleaned = cleanString(value, 80);
+  if (!cleaned) return undefined;
+  const withoutPrefix = cleaned
+    .replace(/^https?:\/\/t\.me\/[^?]+\?(?:startapp|start)=/i, "")
+    .replace(/^(?:startapp=|start=)/i, "")
+    .replace(/^ref[_:-]/i, "")
+    .replace(/^@/, "")
+    .trim()
+    .toLowerCase();
+  const code = withoutPrefix.match(/[a-z0-9_.-]{2,64}/)?.[0];
+  return code || undefined;
+}
+
+function createInviteCode(user) {
+  return normalizeInviteCode(user?.username) || normalizeInviteCode(`u${user?.id}`) || normalizeInviteCode(String(user?.id));
+}
+
+function createInviteLink(env, inviteCode) {
+  if (!inviteCode) return undefined;
+  const botUsername = cleanString(env.H72H_TELEGRAM_BOT_USERNAME, 64) || "the72hbot";
+  return `https://t.me/${botUsername.replace(/^@/, "")}?startapp=ref_${encodeURIComponent(inviteCode)}`;
+}
+
+function getLotteryCodeCount(ledger = []) {
+  return ledger.reduce((sum, item) => sum + (Number(item.codes) || 0), 0);
+}
+
+function hasLotteryLedgerEntry(record, reason, relatedTelegramUserId) {
+  return (record?.lotteryCodeLedger || []).some((item) => (
+    item.reason === reason && (!relatedTelegramUserId || item.relatedTelegramUserId === relatedTelegramUserId)
+  ));
 }
 
 function cleanWallet(value) {
@@ -149,6 +186,13 @@ function publicReservation(record) {
     saleReminderOptIn: record.saleReminderOptIn,
     userSegment: record.userSegment,
     communityTasks: record.communityTasks,
+    inviteCode: record.inviteCode,
+    inviteLink: record.inviteLink,
+    referredByTelegramUserId: record.referredByTelegramUserId,
+    referralCode: record.referralCode,
+    validReferralCount: record.validReferralCount,
+    lotteryCodeCount: record.lotteryCodeCount,
+    lotteryCodeLedger: record.lotteryCodeLedger,
     lotteryEligible: record.lotteryEligible,
     lotteryStatus: record.lotteryStatus,
     walletDedupeStatus: record.walletDedupeStatus,
@@ -161,6 +205,115 @@ function publicReservation(record) {
     contractEvidence: record.contractEvidence,
     lotteryEvidence: record.lotteryEvidence,
   };
+}
+
+async function writeReservationRecord(env, record, metadata = {}) {
+  const baseMetadata = {
+    type: "reservation",
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    status: record.status,
+    whitelistStatus: record.whitelistStatus,
+    lotteryStatus: record.lotteryStatus,
+    rewardStatus: record.rewardStatus,
+    presaleMode: record.presaleMode,
+    channelSource: record.channelSource,
+    lotteryCodeCount: record.lotteryCodeCount,
+    createdAt: record.createdAt,
+    ...metadata,
+  };
+  const write = await putSalesRecord(env, `reservation:user:${record.telegramUserId}`, record, baseMetadata);
+  if (!write.ok) return write;
+  if (record.indexKey) {
+    await putSalesRecord(env, record.indexKey, record, { ...baseMetadata, type: "reservation_index" });
+  }
+  return write;
+}
+
+async function resolveInviter(env, referralCode, selfTelegramUserId) {
+  const normalized = normalizeInviteCode(referralCode);
+  if (!normalized) return undefined;
+  const directUserId = normalized.replace(/^u/, "");
+  const candidateKeys = [
+    `reservation:invite:${normalized}`,
+    /^\d+$/.test(directUserId) ? `reservation:user:${directUserId}` : undefined,
+  ].filter(Boolean);
+
+  for (const key of candidateKeys) {
+    const read = await getSalesRecord(env, key);
+    if (!read.ok || !read.record) continue;
+    const reservationId = read.record.reservationId;
+    const userId = read.record.telegramUserId || (key.startsWith("reservation:user:") ? key.split(":").pop() : undefined);
+    if (!userId || String(userId) === String(selfTelegramUserId)) continue;
+    const inviterRead = await getSalesRecord(env, `reservation:user:${userId}`);
+    if (inviterRead.ok && inviterRead.record) {
+      return { code: normalized, record: inviterRead.record, reservationId };
+    }
+  }
+  return { code: normalized };
+}
+
+async function awardReferralCode(env, inviterRecord, invitedRecord, now) {
+  if (!inviterRecord || hasLotteryLedgerEntry(inviterRecord, "valid_referral", invitedRecord.telegramUserId)) return;
+  const ledger = [...(inviterRecord.lotteryCodeLedger || []), {
+    reason: "valid_referral",
+    codes: REFERRAL_LOTTERY_CODES,
+    relatedTelegramUserId: invitedRecord.telegramUserId,
+    relatedReservationId: invitedRecord.id,
+    createdAt: now,
+    note: "Invited user completed a whitelist reservation.",
+  }];
+  const updated = {
+    ...inviterRecord,
+    updatedAt: now,
+    validReferralCount: (Number(inviterRecord.validReferralCount) || 0) + 1,
+    lotteryCodeLedger: ledger,
+    lotteryCodeCount: getLotteryCodeCount(ledger),
+  };
+  await writeReservationRecord(env, updated, { type: "reservation_referral_awarded" });
+}
+
+async function handleCommunityShare({ auth, env, modeGate, storage }) {
+  const now = new Date().toISOString();
+  const read = await getSalesRecord(env, `reservation:user:${auth.user.id}`);
+  if (!read.ok) return json({ ok: false, error: read.error, storage }, 503);
+  if (!read.record) return json({ ok: false, error: "reservation_required_before_share_task", storage }, 404);
+
+  const alreadyCompleted = hasLotteryLedgerEntry(read.record, "community_share");
+  const ledger = alreadyCompleted ? read.record.lotteryCodeLedger || [] : [...(read.record.lotteryCodeLedger || []), {
+    reason: "community_share",
+    codes: COMMUNITY_SHARE_LOTTERY_CODES,
+    createdAt: now,
+    note: "User marked group/community share task complete; one-time off-chain task.",
+  }];
+  const communityTasks = cleanCommunityTasks({ ...(read.record.communityTasks || {}), sharedInvite: true });
+  const record = {
+    ...read.record,
+    updatedAt: now,
+    communityTasks,
+    lotteryCodeLedger: ledger,
+    lotteryCodeCount: getLotteryCodeCount(ledger),
+  };
+  const write = await writeReservationRecord(env, record, { type: "reservation_community_share" });
+  if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
+
+  await recordSalesEvent(env, {
+    signalType: alreadyCompleted ? "community_share_duplicate" : "community_share_completed",
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    reservationId: record.id,
+    lotteryCodeCount: record.lotteryCodeCount,
+    lotteryCodeDelta: alreadyCompleted ? 0 : COMMUNITY_SHARE_LOTTERY_CODES,
+    presaleEnabled: false,
+  });
+
+  return json({
+    ok: true,
+    duplicate: alreadyCompleted,
+    storage,
+    presaleMode: modeGate.presaleMode,
+    reservation: publicReservation(record),
+  });
 }
 
 export async function onRequestGet({ request, env }) {
@@ -199,6 +352,11 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: modeGate.error, presaleMode: modeGate.presaleMode }, 403);
   }
 
+  const storage = getSalesStorageStatus(env);
+  if (payload?.action === "community_share_completed") {
+    return handleCommunityShare({ auth, env, modeGate, storage });
+  }
+
   const desiredAllocation72H = cleanDesiredAllocation(payload?.desiredAllocation72H ?? payload?.desiredAllocation);
   if (!desiredAllocation72H) {
     return json({ ok: false, error: "desired_allocation_required" }, 400);
@@ -206,7 +364,6 @@ export async function onRequestPost({ request, env }) {
 
   const walletAddress = cleanWallet(payload?.walletAddress);
   const walletKey = walletDedupeKey(walletAddress);
-  const storage = getSalesStorageStatus(env);
   const key = `reservation:user:${auth.user.id}`;
   const existing = await getSalesRecord(env, key);
   if (!existing.ok) return json({ ok: false, error: existing.error, storage }, 503);
@@ -244,9 +401,31 @@ export async function onRequestPost({ request, env }) {
   const id = `rsv_${crypto.randomUUID()}`;
   const source = cleanString(payload?.source, 80) || auth.startParam || "miniapp";
   const channelSource = cleanString(payload?.channelSource, 80) || source;
+  const referral = cleanString(payload?.referral, 120) || normalizeInviteCode(auth.startParam);
+  const sourceReferralCandidate = ["miniapp", "miniapp_waitlist"].includes(source) ? undefined : source;
+  const referralCode = normalizeInviteCode(referral) || normalizeInviteCode(sourceReferralCandidate);
+  const inviteCode = createInviteCode(auth.user);
+  const inviteLink = createInviteLink(env, inviteCode);
+  const resolvedInviter = await resolveInviter(env, referralCode, auth.user.id);
+  const baseLotteryLedger = [{
+    reason: "reservation_success",
+    codes: BASE_RESERVATION_LOTTERY_CODES,
+    createdAt: now,
+    note: "User completed one valid off-chain whitelist reservation.",
+  }];
+  const communityTasks = cleanCommunityTasks(payload?.communityTasks);
+  if (communityTasks.sharedInvite) {
+    baseLotteryLedger.push({
+      reason: "community_share",
+      codes: COMMUNITY_SHARE_LOTTERY_CODES,
+      createdAt: now,
+      note: "User marked group/community share task complete; one-time off-chain task.",
+    });
+  }
+  const indexKey = `reservation:${now}:${id}`;
   const record = {
     id,
-    version: 2,
+    version: 3,
     createdAt: now,
     updatedAt: now,
     status: modeGate.presaleMode.mode === "warmup" ? "warmup_registered" : "waitlist_registered",
@@ -263,13 +442,20 @@ export async function onRequestPost({ request, env }) {
     walletDedupeKey: walletKey,
     walletDedupeStatus: walletKey ? "unique_wallet_reserved" : "wallet_not_provided",
     desiredAllocation72H,
-    referral: cleanString(payload?.referral, 120),
+    referral,
     source,
     channelSource,
     whitelistStatus: "registered_pending_review",
     saleReminderOptIn: payload?.saleReminderOptIn !== false,
     userSegment: classifyUserSegment(desiredAllocation72H, auth.user),
-    communityTasks: cleanCommunityTasks(payload?.communityTasks),
+    communityTasks,
+    inviteCode,
+    inviteLink,
+    referralCode: resolvedInviter?.code || referralCode,
+    referredByTelegramUserId: resolvedInviter?.record?.telegramUserId,
+    validReferralCount: 0,
+    lotteryCodeLedger: baseLotteryLedger,
+    lotteryCodeCount: getLotteryCodeCount(baseLotteryLedger),
     lotteryEligible: true,
     lotteryStatus: "eligible_pending_draw",
     rewardStatus: "not_awarded",
@@ -296,20 +482,10 @@ export async function onRequestPost({ request, env }) {
     },
     actorType: auth.actorType,
     authDate: auth.authDate,
+    indexKey,
   };
 
-  const write = await putSalesRecord(env, key, record, {
-    type: "reservation",
-    telegramUserId: record.telegramUserId,
-    username: record.username,
-    status: record.status,
-    whitelistStatus: record.whitelistStatus,
-    lotteryStatus: record.lotteryStatus,
-    rewardStatus: record.rewardStatus,
-    presaleMode: record.presaleMode,
-    channelSource: record.channelSource,
-    createdAt: record.createdAt,
-  });
+  const write = await writeReservationRecord(env, record);
   if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
 
   if (walletKey) {
@@ -327,15 +503,22 @@ export async function onRequestPost({ request, env }) {
     });
   }
 
-  await putSalesRecord(env, `reservation:${now}:${id}`, record, {
-    type: "reservation_index",
-    telegramUserId: record.telegramUserId,
-    status: record.status,
-    whitelistStatus: record.whitelistStatus,
-    presaleMode: record.presaleMode,
-    channelSource: record.channelSource,
-    createdAt: record.createdAt,
-  });
+  if (inviteCode) {
+    await putSalesRecord(env, `reservation:invite:${inviteCode}`, {
+      reservationId: id,
+      telegramUserId: record.telegramUserId,
+      username: record.username,
+      inviteCode,
+      createdAt: record.createdAt,
+    }, {
+      type: "reservation_invite_index",
+      telegramUserId: record.telegramUserId,
+      username: record.username,
+      inviteCode,
+      createdAt: record.createdAt,
+    });
+  }
+
 
   await recordSalesEvent(env, {
     signalType: "reservation_created",
@@ -354,9 +537,15 @@ export async function onRequestPost({ request, env }) {
     rewardStatus: record.rewardStatus,
     saleReminderOptIn: record.saleReminderOptIn,
     communityTaskStatus: record.communityTasks.status,
+    inviteCode: record.inviteCode,
+    referralCode: record.referralCode,
+    referredByTelegramUserId: record.referredByTelegramUserId,
+    lotteryCodeCount: record.lotteryCodeCount,
     presaleMode: record.presaleMode,
     presaleEnabled: false,
   });
+
+  await awardReferralCode(env, resolvedInviter?.record, record, now);
 
   return json({
     ok: true,

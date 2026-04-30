@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Gift,
   LifeBuoy,
+  Share2,
   ShieldCheck,
   Wallet,
 } from "lucide-react";
@@ -94,8 +95,26 @@ type ReservationRecord = {
     sharedInvite: boolean;
     status: "not_started" | "in_progress" | "completed";
   };
+  inviteCode?: string;
+  inviteLink?: string;
+  referralCode?: string;
+  referredByTelegramUserId?: string;
+  validReferralCount?: number;
+  lotteryCodeCount?: number;
+  lotteryCodeLedger?: {
+    reason: string;
+    codes: number;
+    relatedTelegramUserId?: string;
+    relatedReservationId?: string;
+    createdAt: string;
+    note?: string;
+  }[];
   lotteryEligible: boolean;
+  lotteryStatus?: string;
   reservationReward72H: string;
+  rewardStatus?: string;
+  rewardTxHash?: string;
+  rewardAwardedAt?: string;
   lotteryPool72H: string;
   saleOpensAt: string;
   lotteryEvidence?: {
@@ -299,6 +318,28 @@ function QuickAction({
   );
 }
 
+function RuleStep({
+  index,
+  title,
+  body,
+}: {
+  index: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-4">
+      <div className="flex items-center gap-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-xs font-black text-primary">
+          {index}
+        </span>
+        <h3 className="text-sm font-black text-foreground">{title}</h3>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
+    </div>
+  );
+}
+
 export default function BotPresale() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
@@ -316,6 +357,7 @@ export default function BotPresale() {
   const [referral, setReferral] = useState("");
   const [reservation, setReservation] = useState<ReservationRecord | undefined>();
   const [reservationPending, setReservationPending] = useState(false);
+  const [shareTaskPending, setShareTaskPending] = useState(false);
   const [reservationFeedback, setReservationFeedback] = useState<string | undefined>();
 
   useEffect(() => {
@@ -459,7 +501,7 @@ export default function BotPresale() {
           communityTasks: {
             joinedTelegram: true,
             followedX: false,
-            sharedInvite: Boolean(referral),
+            sharedInvite: false,
           },
         }),
       });
@@ -476,6 +518,46 @@ export default function BotPresale() {
       setReservationFeedback(error instanceof Error ? error.message : isEnglish ? "Reservation failed." : "预约失败。");
     } finally {
       setReservationPending(false);
+    }
+  };
+
+  const completeShareTask = async () => {
+    setReservationFeedback(undefined);
+    if (!initData || !reservation) return;
+
+    const shareText = reservation.inviteLink
+      ? isEnglish
+        ? `I reserved 72H Early Access. Join with my invite link: ${reservation.inviteLink}`
+        : `我已预约 72H Early Access 白名单。用我的邀请链接加入：${reservation.inviteLink}`
+      : isEnglish
+        ? "I reserved 72H Early Access. Search the official 72H Bot to join."
+        : "我已预约 72H Early Access 白名单，搜索官方 72H Bot 加入。";
+
+    try {
+      setShareTaskPending(true);
+      await navigator.clipboard?.writeText(shareText).catch(() => undefined);
+      const response = await fetch("/api/telegram/presale-reservations", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Telegram-Init-Data": initData,
+        },
+        body: JSON.stringify({ action: "community_share_completed" }),
+      });
+      const payload = (await response.json()) as { ok?: boolean; error?: string; duplicate?: boolean; reservation?: ReservationRecord };
+      if (!response.ok || !payload.ok || !payload.reservation) {
+        throw new Error(payload.error || `share_task_failed_${response.status}`);
+      }
+      setReservation(payload.reservation);
+      setReservationFeedback(payload.duplicate
+        ? isEnglish ? "Share task was already recorded once. Invite text copied again." : "社群分享任务已记录过一次；邀请文案已再次复制。"
+        : isEnglish ? "Share task recorded: +2 lottery codes. Invite text copied." : "社群分享任务已记录：+2 个抽奖码。邀请文案已复制。"
+      );
+    } catch (error) {
+      setReservationFeedback(error instanceof Error ? error.message : isEnglish ? "Share task failed." : "分享任务记录失败。");
+    } finally {
+      setShareTaskPending(false);
     }
   };
 
@@ -594,15 +676,54 @@ export default function BotPresale() {
                 detail={`${saleOpenLabel} · GMT+8`}
               />
               <MetricCard
-                label={isEnglish ? "Reservation reward" : "预约奖励"}
-                value={`${RESERVATION_REWARD_LABEL} 72H`}
-                detail={isEnglish ? "for eligible reservation records" : "符合条件的预约记录可获得"}
+                label={isEnglish ? "Base lottery code" : "基础抽奖码"}
+                value="1"
+                detail={isEnglish ? "auto-added after reservation" : "预约成功自动获得"}
               />
               <MetricCard
                 label={isEnglish ? "Lottery pool" : "抽奖奖池"}
                 value={LOTTERY_POOL_LABEL}
                 detail={isEnglish ? "72H wallet-funded prize pool" : "72H 钱包注入奖池"}
               />
+            </div>
+
+            <div className="mt-5 rounded-md border border-line/70 bg-background/35 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-black tracking-normal text-foreground">
+                    {isEnglish ? "Reward and lottery rules" : "奖励与抽奖规则"}
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {isEnglish
+                      ? "This is a reservation record only. It creates off-chain eligibility evidence for later manual payout review; it does not open purchase, payment, signature, claim, or a new smart contract."
+                      : "当前只是预约记录。它会生成链下资格证据，供后续人工发奖核对；不会开放购买、付款、签名、领取，也不会新增合约。"}
+                  </p>
+                </div>
+                <Gift className="h-5 w-5 shrink-0 text-gold" />
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <RuleStep
+                  index="01"
+                  title={isEnglish ? "How to get the 72H reward" : "如何获得预约奖励"}
+                  body={isEnglish
+                    ? `Submit one valid whitelist reservation in the official Mini App. Eligible records are marked for a ${RESERVATION_REWARD_LABEL} 72H manual wallet-transfer reward after the team verifies duplicates and abuse.`
+                    : `在官方 Mini App 提交一条有效白名单预约。团队核对重复与作弊后，符合条件的记录会标记为 ${RESERVATION_REWARD_LABEL} 72H 人工钱包转账奖励。`}
+                />
+                <RuleStep
+                  index="02"
+                  title={isEnglish ? "How to get more codes" : "如何获得更多抽奖码"}
+                  body={isEnglish
+                    ? "Reservation success gives +1 code. Each valid new user invited through your code gives +1. Completing the group/community share task gives +2 once per user."
+                    : "预约成功 +1 个抽奖码；通过你的邀请码成功邀请 1 个新用户 +1；完成群/社群分享任务一次性 +2。"}
+                />
+                <RuleStep
+                  index="03"
+                  title={isEnglish ? "How rewards are paid" : "奖励如何发放"}
+                  body={isEnglish
+                    ? `The ${LOTTERY_POOL_LABEL} 72H lottery pool and reservation rewards are paid later from an official/private prize wallet. There is no self-claim page and no contract claim action here.`
+                    : `${LOTTERY_POOL_LABEL} 72H 抽奖奖池与预约奖励后续由官方/私人奖池钱包转账发放。本页没有自助领取入口，也没有合约领取动作。`}
+                />
+              </div>
             </div>
 
             {address && presale.chainSnapshot?.buyerRemaining72H ? (
@@ -636,12 +757,44 @@ export default function BotPresale() {
                 </div>
 
                 {reservation ? (
-                  <div className="mt-5 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
-                    {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
-                    {reservation.walletAddress ? ` · ${shortAddress(reservation.walletAddress)}` : ""}
-                    {reservation.whitelistStatus ? ` · ${reservation.whitelistStatus}` : ""}
-                    {reservation.userSegment ? ` · ${reservation.userSegment}` : ""}
-                    {reservation.lotteryEligible ? ` · ${isEnglish ? "lottery eligible" : "已获抽奖资格"}` : ""}
+                  <div className="mt-5 grid gap-3 rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-6 text-foreground/90">
+                    <div>
+                      {isEnglish ? "Reserved" : "已预约"}: {reservation.desiredAllocation72H} 72H
+                      {reservation.walletAddress ? ` · ${shortAddress(reservation.walletAddress)}` : ""}
+                      {reservation.whitelistStatus ? ` · ${reservation.whitelistStatus}` : ""}
+                      {reservation.userSegment ? ` · ${reservation.userSegment}` : ""}
+                      {reservation.rewardStatus ? ` · ${isEnglish ? "reward" : "发奖"}: ${reservation.rewardStatus}` : ""}
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <MetricCard
+                        label={isEnglish ? "Your lottery codes" : "当前抽奖码"}
+                        value={String(reservation.lotteryCodeCount ?? (reservation.lotteryEligible ? 1 : 0))}
+                        detail={isEnglish ? "+1 reserve · +1 per valid invite · +2 one-time group share" : "预约 +1；每邀请 1 个有效新用户 +1；群分享任务一次 +2"}
+                      />
+                      <MetricCard
+                        label={isEnglish ? "Valid invites" : "有效邀请"}
+                        value={String(reservation.validReferralCount ?? 0)}
+                        detail={reservation.inviteCode ? `${isEnglish ? "Code" : "邀请码"}: ${reservation.inviteCode}` : undefined}
+                      />
+                      <button
+                        type="button"
+                        onClick={completeShareTask}
+                        disabled={shareTaskPending}
+                        className="flex min-h-[6rem] items-center justify-center rounded-sm border border-gold/30 bg-gold/10 px-4 text-sm font-black text-gold transition-colors hover:bg-gold/15 disabled:pointer-events-none disabled:opacity-60"
+                      >
+                        <Share2 className="mr-2 h-4 w-4" />
+                        {shareTaskPending
+                          ? isEnglish ? "Recording" : "记录中"
+                          : reservation.communityTasks?.sharedInvite
+                            ? isEnglish ? "Copy invite again" : "再次复制邀请"
+                            : isEnglish ? "Record group share +2" : "记录群分享 +2"}
+                      </button>
+                    </div>
+                    {reservation.inviteLink ? (
+                      <div className="break-all rounded-sm border border-line/60 bg-background/35 px-3 py-2 text-xs text-muted-foreground">
+                        {isEnglish ? "Invite link" : "邀请链接"}: {reservation.inviteLink}
+                      </div>
+                    ) : null}
                   </div>
                 ) : null}
 
@@ -669,8 +822,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current stage: Early Access reservation. Eligible records may receive ${RESERVATION_REWARD_LABEL} 72H. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, funded from the official/private prize wallet and paid by wallet transfer after winners are finalized. No funds are accepted here.`
-                      : `当前阶段：Early Access 白名单预约。符合条件的预约记录可获得 ${RESERVATION_REWARD_LABEL} 72H 奖励资格。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，由官方/私人奖池钱包注入，开奖后通过钱包转账发放；本页不收取资金。`}
+                      ? `Current stage: Early Access reservation. Submit once for +1 lottery code; valid invited reservations add +1 each; the group share task adds +2 once. Lottery pool: ${LOTTERY_POOL_LABEL} 72H, paid later by wallet transfer. No funds are accepted here.`
+                      : `当前阶段：Early Access 白名单预约。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群分享任务每人限一次 +2。抽奖奖池：${LOTTERY_POOL_LABEL} 72H，后续通过钱包转账发放；本页不收取资金。`}
                   </div>
                   <button
                     type="submit"
