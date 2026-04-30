@@ -17,14 +17,54 @@ const metadataUrl = "https://gateway.pinata.cloud/ipfs/QmZkjBvKmHhsh56bPbbnwgPL8
 const logoUrl = "https://gateway.pinata.cloud/ipfs/QmNzFgWkVCxuJJBym1hoDq5tG4PwFBT8mUMMXdPefb23S4";
 
 const coreContracts = [
-  ["V2 Jetton Master", "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg"],
-  ["SeasonVault", "EQCdSSWPVbwh9zIzhF5pnxwRKw-I8xc4bS1iyiVcbXKfnWe-"],
-  ["SeasonClaim", "EQCYvg-_oFE8q8cweVScna-WDRzDYol-FBwHKuTcAjcFGonS"],
-  ["FundVesting", "EQDO0AMsITst5rWGcabJ8OF7Ys079UMPGNOq9H8WtiJakID4"],
-  ["DevelopmentFund", "EQAPkdB1YJDEsVixATzfDjf--yl0frlKRkLPYHHUv6nVFkEU"],
-  ["PresaleVault", "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9"],
-  ["EcosystemTreasury", "EQARGC33uqypROhxiJMVOeKPYbYRgAEhXUkTxkrK7CrKDP3O"],
-  ["TeamVesting", "EQD5PnUEuEUYBt1XktTPlvN7HE5n-AIBI4XiAyd4qUgHasrK"],
+  {
+    label: "V2 Jetton Master",
+    value: "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg",
+    statusEn: "Live / fixed supply",
+    statusZh: "已上线 / 固定供应",
+  },
+  {
+    label: "SeasonVault",
+    value: "EQCdSSWPVbwh9zIzhF5pnxwRKw-I8xc4bS1iyiVcbXKfnWe-",
+    statusEn: "Deployed / season operations not automatically open",
+    statusZh: "已部署 / 赛季运营不自动开放",
+  },
+  {
+    label: "SeasonClaim",
+    value: "EQCYvg-_oFE8q8cweVScna-WDRzDYol-FBwHKuTcAjcFGonS",
+    statusEn: "Deployed / claims require official list + window",
+    statusZh: "已部署 / 领取需官方名单和窗口",
+  },
+  {
+    label: "FundVesting",
+    value: "EQDO0AMsITst5rWGcabJ8OF7Ys079UMPGNOq9H8WtiJakID4",
+    statusEn: "Deployed / failed-round vesting custody",
+    statusZh: "已部署 / 失败轮锁仓托管",
+  },
+  {
+    label: "DevelopmentFund",
+    value: "EQAPkdB1YJDEsVixATzfDjf--yl0frlKRkLPYHHUv6nVFkEU",
+    statusEn: "Deployed / development custody",
+    statusZh: "已部署 / 开发基金托管",
+  },
+  {
+    label: "PresaleVault",
+    value: "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9",
+    statusEn: "Deployed / presale not open",
+    statusZh: "已部署 / 预售未开放",
+  },
+  {
+    label: "EcosystemTreasury",
+    value: "EQARGC33uqypROhxiJMVOeKPYbYRgAEhXUkTxkrK7CrKDP3O",
+    statusEn: "Deployed / ecosystem custody",
+    statusZh: "已部署 / 生态资金托管",
+  },
+  {
+    label: "TeamVesting",
+    value: "EQD5PnUEuEUYBt1XktTPlvN7HE5n-AIBI4XiAyd4qUgHasrK",
+    statusEn: "Deployed / team vesting custody",
+    statusZh: "已部署 / 团队锁仓托管",
+  },
 ] as const;
 
 const allocations = [
@@ -58,15 +98,22 @@ function ExternalAction({
   );
 }
 
-function AddressRow({ label, value }: { label: string; value: string }) {
+function AddressRow({ label, value, status }: { label: string; value: string; status: string }) {
   return (
     <div className="grid gap-2 border-b border-line/70 px-4 py-4 last:border-b-0 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-center sm:px-5">
-      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-        {label}
+      <div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          {label}
+        </div>
+        <div className="mt-2 inline-flex rounded-sm border border-primary/20 bg-primary/8 px-2 py-1 text-[11px] font-semibold leading-5 text-primary">
+          {status}
+        </div>
       </div>
-      <code className="break-all rounded-sm border border-line/70 bg-background/55 px-3 py-2 text-xs leading-6 text-foreground sm:text-sm">
-        {value}
-      </code>
+      <a href={`https://tonviewer.com/${value}`} target="_blank" rel="noreferrer" className="group block">
+        <code className="block break-all rounded-sm border border-line/70 bg-background/55 px-3 py-2 text-xs leading-6 text-foreground transition-colors group-hover:border-primary/30 sm:text-sm">
+          {value}
+        </code>
+      </a>
     </div>
   );
 }
@@ -162,8 +209,13 @@ export default function Contracts() {
               </h2>
             </div>
             <div>
-              {coreContracts.map(([label, value]) => (
-                <AddressRow key={label} label={label} value={value} />
+              {coreContracts.map((contract) => (
+                <AddressRow
+                  key={contract.label}
+                  label={contract.label}
+                  value={contract.value}
+                  status={isEnglish ? contract.statusEn : contract.statusZh}
+                />
               ))}
             </div>
           </SpotlightCard>

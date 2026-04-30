@@ -25,8 +25,9 @@ const STATIC_BARE_PATHS = [
   "/contact",
   ...LEGAL_SLUGS.map((slug) => `/legal/${slug}` as const),
 ] as const;
+const STATIC_HTML_BARE_PATHS = [...STATIC_BARE_PATHS, "/token", "/bot/presale"] as const;
 
-export type StaticBarePath = (typeof STATIC_BARE_PATHS)[number];
+export type StaticBarePath = (typeof STATIC_HTML_BARE_PATHS)[number];
 
 export interface ResolvedRouteMeta {
   locale: Locale;
@@ -114,6 +115,35 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     if (doc) {
       return buildResolvedMeta(locale, barePath, `${siteConfig.siteName} | ${doc.title}`, doc.summary);
     }
+  }
+
+  if (barePath === "/token") {
+    return buildResolvedMeta(
+      locale,
+      barePath,
+      `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
+      isEnglish
+        ? "Official 72H V2 token and contract evidence. This entry redirects to the contracts page."
+        : "72H V2 官方代币与合约证据入口，会跳转到合约页面。",
+      {
+        canonicalBarePath: "/contracts",
+        robots: "noindex, follow",
+      }
+    );
+  }
+
+  if (barePath === "/bot/presale") {
+    return buildResolvedMeta(
+      locale,
+      barePath,
+      `${siteConfig.siteName} | 72H Presale Bot`,
+      isEnglish
+        ? "Telegram Mini App entry for 72H presale status, wallet connection, and human follow-up."
+        : "72H 预售 Telegram Mini App 入口，用于状态、钱包连接与人工跟进。",
+      {
+        robots: "noindex, nofollow",
+      }
+    );
   }
 
   const metaByPath: Record<string, { title: string; description: string }> = {
@@ -228,7 +258,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
 
 export function getStaticPageEntries() {
   return (["zh-CN", "en-US"] as const).flatMap((locale) =>
-    STATIC_BARE_PATHS.map((barePath) => ({
+    STATIC_HTML_BARE_PATHS.map((barePath) => ({
       locale,
       barePath,
       pathname: localizePath(barePath, locale),

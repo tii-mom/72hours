@@ -24,7 +24,7 @@ const channelsZh: Channel[] = [
   {
     type: "x",
     label: "X",
-    url: "https://x.com/taichi2077",
+    url: "https://x.com/72hour_s",
     suitableFor: [
       "公开动态",
       "快速了解",
@@ -75,7 +75,7 @@ const channelsEn: Channel[] = [
   {
     type: "x",
     label: "X",
-    url: "https://x.com/taichi2077",
+    url: "https://x.com/72hour_s",
     suitableFor: ["Quick look", "Public updates"],
     expectationAfterJoining: ["Public updates", "Extra context"],
     officialVerificationNote: "X is for observing public updates.",

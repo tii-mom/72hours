@@ -496,7 +496,7 @@ const appRecords: readonly RawCapitalApp[] = [
       "奖励来自 AppRewardPool，可接收生态收入路由与活动分配，奖励可为 0。",
       "Rewards come from AppRewardPool, may receive ecosystem revenue routing and campaign allocations, and may be 0.",
     ),
-    surfaceHref: "https://72hours.72h.lol",
+    surfaceHref: "https://72h.lol",
     surfaceLabel: copy("打开 72hours 主场", "Open 72hours"),
     surfaceExternal: true,
     updatedOn: "2026-04-23",
