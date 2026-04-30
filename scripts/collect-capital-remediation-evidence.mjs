@@ -4,6 +4,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+const workspaceRoot = path.dirname(root);
+const repoPath = (envName, fallbackDir) =>
+  process.env[envName] || path.join(workspaceRoot, fallbackDir);
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const evidenceDir = path.join(
   root,
@@ -14,55 +17,61 @@ const evidenceDir = path.join(
 const commands = [
   {
     name: "contracts-tact-build",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-contracts",
+    cwd: repoPath("H72H_CAPITAL_CONTRACTS_DIR", "72h-capital-contracts"),
     cmd: "npm",
     args: ["run", "tact:build"],
   },
   {
     name: "contracts-typecheck",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-contracts",
+    cwd: repoPath("H72H_CAPITAL_CONTRACTS_DIR", "72h-capital-contracts"),
     cmd: "npm",
     args: ["run", "typecheck"],
   },
   {
     name: "contracts-test",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-contracts",
+    cwd: repoPath("H72H_CAPITAL_CONTRACTS_DIR", "72h-capital-contracts"),
     cmd: "npm",
     args: ["run", "test"],
   },
   {
     name: "contracts-build",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-contracts",
+    cwd: repoPath("H72H_CAPITAL_CONTRACTS_DIR", "72h-capital-contracts"),
     cmd: "npm",
     args: ["run", "build"],
   },
   {
     name: "shared-typecheck",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-shared",
+    cwd: repoPath("H72H_CAPITAL_SHARED_DIR", "72h-capital-shared"),
     cmd: "npm",
     args: ["run", "typecheck"],
   },
   {
     name: "api-check",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-api",
+    cwd: repoPath("H72H_CAPITAL_API_DIR", "72h-capital-api"),
     cmd: "npm",
     args: ["run", "check"],
   },
   {
+    name: "api-capital-route-test",
+    cwd: repoPath("H72H_CAPITAL_API_DIR", "72h-capital-api"),
+    cmd: "npm",
+    args: ["run", "test:capital"],
+  },
+  {
     name: "indexer-check",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-indexer",
+    cwd: repoPath("H72H_CAPITAL_INDEXER_DIR", "72h-capital-indexer"),
     cmd: "npm",
     args: ["run", "check"],
   },
   {
     name: "indexer-poller-test",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-indexer",
+    cwd: repoPath("H72H_CAPITAL_INDEXER_DIR", "72h-capital-indexer"),
     cmd: "npm",
     args: ["run", "test:poller"],
   },
   {
     name: "admin-build",
-    cwd: "/Users/yudeyou/Desktop/72h-capital-admin",
+    cwd: repoPath("H72H_CAPITAL_ADMIN_DIR", "72h-capital-admin"),
     cmd: "npm",
     args: ["run", "build"],
   },
