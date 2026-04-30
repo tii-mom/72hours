@@ -94,13 +94,13 @@ export async function verifyHoursBalance({
     }
   }
 
-  console.warn("72H balance verification fell back to manual review.", lastError);
+  console.warn("72H balance verification fell back to human confirmation.", lastError);
 
   return {
     source: "manual_review",
     status: "manual_review",
     message: isEnglish
-      ? "Automatic balance proof is unstable. Send the wallet address for manual review."
+      ? "Automatic balance check is unstable. Send the wallet address for human confirmation."
       : "自动验资暂不稳定，请发送钱包地址进入人工核对。",
   };
 }

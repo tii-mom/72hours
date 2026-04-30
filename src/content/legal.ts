@@ -178,7 +178,7 @@ const legalDocsEn: Array<
     sections: [
       {
         heading: "Site positioning",
-        body: "The 72hours site explains official entries, ecosystem apps, Green Book, 72H Use, learning content, and public contact channels. It is an information and navigation surface, not a custody account, return dashboard, or guaranteed settlement interface.",
+        body: "The 72hours site explains official entries, ecosystem apps, Green Book, 72H Use, learning content, and public contact channels. It is an information and navigation entry, not a custody account, return dashboard, purchase page, claim page, or guaranteed settlement interface.",
       },
       {
         heading: "Official entry and verification",

@@ -10,14 +10,12 @@ function buildSiteConfig(locale: Locale): SiteConfig {
     siteName: glossary.brandName,
     siteUrl: "https://72h.lol",
     language: locale,
-    primaryCtaLabel: isEnglish ? "Participate" : "参与",
+    primaryCtaLabel: isEnglish ? "Enter" : "进入",
     secondaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
     primaryJoinRoute: "/join",
     navItems: [
-      { label: glossary.pageLabels.join, href: "/join" },
+      { label: isEnglish ? "Enter" : "进入", href: "/join" },
       { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
-      { label: glossary.pageLabels.capital, href: "/capital" },
-      { label: glossary.pageLabels.contracts, href: "/contracts" },
       { label: glossary.pageLabels.greenBook, href: "/greenbook" },
     ],
     footerGroups: [
@@ -27,10 +25,10 @@ function buildSiteConfig(locale: Locale): SiteConfig {
         links: [
           { label: "Telegram", href: "https://t.me/the_72h" },
           { label: "X", href: "https://x.com/72hour_s" },
+          { label: isEnglish ? "Enter" : "进入", href: "/join" },
           { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
-          { label: glossary.pageLabels.capital, href: "/capital" },
+          { label: glossary.pageLabels.greenBook, href: "/greenbook" },
           { label: glossary.pageLabels.contracts, href: "/contracts" },
-          { label: glossary.pageLabels.join, href: "/join" },
         ],
       },
       {

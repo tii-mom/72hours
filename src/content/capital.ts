@@ -354,8 +354,8 @@ const reserveRisk = copy(
 );
 
 const alphaRisk = copy(
-  "High-conviction Alpha Seat 是 72 周长期高风险配置。本金一经配置不支持赎回，并可能产生部分或全部本金损失；奖励权重高于 Reserve，但奖励可为 0。",
-  "A High-conviction Alpha Seat is a 72-week long-term high-risk allocation. Alpha principal is non-redeemable once allocated and may result in partial or total principal loss; reward weight is higher than Reserve, but rewards may be 0.",
+  "High-conviction Alpha Seat 是 72 周长期高风险参与。本金一经参与不支持赎回，并可能产生部分或全部本金损失；奖励权重高于 Reserve，但奖励可为 0。",
+  "A High-conviction Alpha Seat is a 72-week long-term high-risk participation. Alpha principal is non-redeemable once allocated and may result in partial or total principal loss; reward weight is higher than Reserve, but rewards may be 0.",
 );
 
 const networkFeeNote = copy(
@@ -372,7 +372,7 @@ const reserveTiers = [
   {
     label: copy("Prime Reserve Seat", "Prime Reserve Seat"),
     threshold: 7_200,
-    note: copy("适用于更高额度的长期储备配置。", "For larger long-duration reserve allocations."),
+    note: copy("适用于更高额度的长期储备参与。", "For larger long-duration reserve participations."),
   },
   {
     label: copy("Strategic Reserve Seat", "Strategic Reserve Seat"),
@@ -392,8 +392,8 @@ const appRecords: readonly RawCapitalApp[] = [
     name: "multi-millionaire",
     brand: { kind: "monogram", label: "multi-millionaire", monogram: "MM" },
     summary: copy(
-      "首批高门槛席位，强调稀缺容量、长期配置与高级身份识别。",
-      "High-threshold seats built around scarce capacity, long-duration allocation, and premium capital identity.",
+      "首批高门槛席位，强调稀缺容量、长期参与与高级身份识别。",
+      "High-threshold seats built around scarce capacity, long-duration participation, and premium capital identity.",
     ),
     lead: copy(
       "以 72H 获取 multi-millionaire 的限量 Capital Seat。Reserve 是 Principal-custodied Reserve Seat，Alpha 是奖励权重更高的 High-conviction Alpha Seat。",
@@ -465,7 +465,7 @@ const appRecords: readonly RawCapitalApp[] = [
       ),
       riskDisclosure: alphaRisk,
       confirmations: [
-        copy("72 周长期配置。", "72-week long-term allocation."),
+        copy("72 周长期参与。", "72-week long-term participation."),
         copy("本金不可赎回。", "Principal is non-redeemable."),
         copy("可能损失全部本金。", "Full principal loss is possible."),
         networkFeeNote,
@@ -484,17 +484,17 @@ const appRecords: readonly RawCapitalApp[] = [
     ),
     lead: copy(
       "Reserve 维持更稳健的储备结构，Alpha 则对应 72hours 主场的长期高风险资本承诺。",
-      "Reserve keeps a steadier reserve structure, while Alpha maps to a longer high-risk capital commitment around the 72hours core surface.",
+      "Reserve keeps a steadier reserve structure, while Alpha maps to a longer high-risk capital commitment around the 72hours core entry.",
     ),
     noteBody: copy(
       "该应用是生态主场，对应更完整的参与路径与公开身份展示。",
-      "This app sits on the ecosystem main stage and carries the broadest participation path and public identity surface.",
+      "This app sits on the ecosystem main stage and carries the broadest participation path and public identity page.",
     ),
-    statusLabel: copy("核心场域", "Core surface"),
-    riskBand: copy("生态核心 / 自主风险", "Core surface / discretionary risk"),
+    statusLabel: copy("核心场域", "Core entry"),
+    riskBand: copy("生态核心 / 自主风险", "Core entry / discretionary risk"),
     rewardSourceSummary: copy(
       "奖励来自 AppRewardPool，可接收生态收入路由与活动分配，奖励可为 0。",
-      "Rewards come from AppRewardPool, may receive ecosystem revenue routing and campaign allocations, and may be 0.",
+      "Rewards come from AppRewardPool, may receive ecosystem revenue routing and campaign participations, and may be 0.",
     ),
     surfaceHref: "https://72h.lol",
     surfaceLabel: copy("打开 72hours 主场", "Open 72hours"),
@@ -552,7 +552,7 @@ const appRecords: readonly RawCapitalApp[] = [
       ),
       riskDisclosure: alphaRisk,
       confirmations: [
-        copy("72 周长期配置。", "72-week long-term allocation."),
+        copy("72 周长期参与。", "72-week long-term participation."),
         copy("本金不可赎回。", "Principal is non-redeemable."),
         copy("奖励可为 0。", "Rewards may be 0."),
         networkFeeNote,
@@ -573,18 +573,18 @@ const appRecords: readonly RawCapitalApp[] = [
     },
     summary: copy(
       "把 WAN 的实际使用场景与 Capital Seat 身份绑定，强调操作层使用与公开验证。",
-      "Pairs WAN's operating surface with Capital Seat identity, tying real usage to public verification.",
+      "Pairs WAN's service entry with Capital Seat identity, tying real usage to public verification.",
     ),
     lead: copy(
-      "WAN Reserve 更接近使用层的储备配置，Alpha 则对应更长期、更高风险的 WAN 资本席位。",
+      "WAN Reserve 更接近使用层的储备参与，Alpha 则对应更长期、更高风险的 WAN 资本席位。",
       "WAN Reserve stays closer to an operating reserve profile, while Alpha maps to a longer and higher-risk WAN capital seat.",
     ),
     noteBody: copy(
       "对于已经在 WAN 上使用访问、节点与订阅能力的成员，这是最直接的 Capital 身份入口。",
-      "For members already using WAN for access, node, and subscription workflows, this is the most direct Capital identity entry.",
+      "For members already using WAN for access, node, and subscription paths, this is the most direct Capital identity entry.",
     ),
-    statusLabel: copy("运营场域", "Operating surface"),
-    riskBand: copy("运营场域 / 中等波动", "Operating surface / moderate beta"),
+    statusLabel: copy("运营场域", "Service entry"),
+    riskBand: copy("运营场域 / 中等波动", "Service entry / moderate beta"),
     rewardSourceSummary: copy(
       "奖励来自 AppRewardPool，可接收运营收入路由、订阅资金池与安全接入活动，奖励可为 0。",
       "Rewards come from AppRewardPool, may receive operating revenue routing, subscription vault flows, and access campaigns, and may be 0.",
@@ -608,7 +608,7 @@ const appRecords: readonly RawCapitalApp[] = [
       formalLabel: "Principal-custodied Reserve Seat",
       description: copy(
         "面向 WAN 运营场景的本金优先席位，支持追加与成熟批次赎回。",
-        "Principal-first seats for the WAN operating surface, with top-ups and mature-lot redemption.",
+        "Principal-first seats for the WAN service entry, with top-ups and mature-lot redemption.",
       ),
       minimum72H: 720,
       durationLabel: copy("72 天锁定", "72-day lock-up"),
@@ -645,7 +645,7 @@ const appRecords: readonly RawCapitalApp[] = [
       ),
       riskDisclosure: alphaRisk,
       confirmations: [
-        copy("72 周长期配置。", "72-week long-term allocation."),
+        copy("72 周长期参与。", "72-week long-term participation."),
         copy("本金不可赎回。", "Principal is non-redeemable."),
         copy("可能损失全部本金。", "Full principal loss is possible."),
         networkFeeNote,
@@ -664,7 +664,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
     seatNumber: 7,
     totalSeats: 72,
     titleEn: "WAN Prime Reserve Seat #07 / 72",
-    subtitleZh: "优先储备配置 · Prime 评级 · 已验证资本身份",
+    subtitleZh: "优先储备参与 · Prime 评级 · 已验证资本身份",
     statusLabel: copy("已激活资本身份", "Active Capital Identity"),
     lifecycleLabel: copy("锁定中", "Locked"),
     holder: "Mandate Desk 07",
@@ -677,7 +677,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("72 天锁定", "72-day lock"),
       copy("奖励窗口开启", "Reward window open"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("wan"),
     surfaceLabel: copy("查看 WAN Capital", "View WAN Capital"),
     tone: "primary",
@@ -689,7 +689,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
     seatNumber: 2,
     totalSeats: 9,
     titleEn: "WAN Prime Alpha Seat #2 / 9",
-    subtitleZh: "Alpha 配置 · Prime 评级 · 已验证资本身份",
+    subtitleZh: "Alpha 参与 · Prime 评级 · 已验证资本身份",
     statusLabel: copy("已激活资本身份", "Active Capital Identity"),
     lifecycleLabel: copy("有效中", "Active"),
     holder: "Orbit Wallet",
@@ -702,7 +702,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("72 周承诺", "72-week mandate"),
       copy("公开验证", "Public verification"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("wan"),
     surfaceLabel: copy("查看 WAN Capital", "View WAN Capital"),
     tone: "gold",
@@ -714,7 +714,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
     seatNumber: 18,
     totalSeats: 72,
     titleEn: "72hours Select Reserve Seat #18 / 72",
-    subtitleZh: "优先储备配置 · Historical Capital Identity",
+    subtitleZh: "优先储备参与 · Historical Capital Identity",
     statusLabel: copy("历史资本身份", "Historical Capital Identity"),
     lifecycleLabel: copy("历史", "Historical"),
     holder: "Northbound Office",
@@ -727,7 +727,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("原编号保留", "Original seat retained"),
       copy("可重新激活", "Reactivation eligible"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("72hours"),
     surfaceLabel: copy("查看 72hours Capital", "View 72hours Capital"),
     tone: "muted",
@@ -739,7 +739,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
     seatNumber: 3,
     totalSeats: 9,
     titleEn: "72hours Strategic Alpha Seat #3 / 9",
-    subtitleZh: "Alpha 配置 · Strategic 评级 · 已验证资本身份",
+    subtitleZh: "Alpha 参与 · Strategic 评级 · 已验证资本身份",
     statusLabel: copy("已激活资本身份", "Active Capital Identity"),
     lifecycleLabel: copy("有效中", "Active"),
     holder: "Signal Account",
@@ -752,7 +752,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("72 周承诺", "72-week mandate"),
       copy("7 周结算", "7-week settlement"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("72hours"),
     surfaceLabel: copy("查看 72hours Capital", "View 72hours Capital"),
     tone: "gold",
@@ -764,7 +764,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
     seatNumber: 32,
     totalSeats: 72,
     titleEn: "multi-millionaire Large Reserve Seat #32 / 72",
-    subtitleZh: "优先储备配置 · Large tier · 已验证资本身份",
+    subtitleZh: "优先储备参与 · Large tier · 已验证资本身份",
     statusLabel: copy("已激活资本身份", "Active Capital Identity"),
     lifecycleLabel: copy("成熟可赎回", "Matured"),
     holder: "MM Reserve Office",
@@ -777,7 +777,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("成熟批次", "Matured lot"),
       copy("可从 ReserveVault 赎回", "ReserveVault redeemable"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("multi-millionaire"),
     surfaceLabel: copy("查看 multi-millionaire Capital", "View multi-millionaire Capital"),
     tone: "primary",
@@ -802,7 +802,7 @@ const seatRecords: readonly RawCapitalSeat[] = [
       copy("Mandate Credential", "Mandate credential"),
       copy("身份升级", "Identity upgraded"),
     ],
-    disclosure: copy("公开验证页不展示配置金额与奖励数值。", "Public verification omits allocation size and reward values."),
+    disclosure: copy("公开验证页不展示参与金额与奖励数值。", "Public verification omits participation size and reward values."),
     surfaceHref: getCapitalAppPath("multi-millionaire"),
     surfaceLabel: copy("查看 multi-millionaire Capital", "View multi-millionaire Capital"),
     tone: "gold",
@@ -826,7 +826,7 @@ const portfolioHoldings: readonly RawPortfolioHolding[] = [
     seatKey: "72hours:reserve:18",
     position: copy("原席位已全部赎回，身份保留。", "Original reserve fully redeemed; identity retained."),
     claimableReward: 0,
-    privateNote: copy("重新配置 >= 720 72H 后，可恢复原编号。", "Reallocate >= 720 72H to reactivate the original seat number."),
+    privateNote: copy("重新参与 >= 720 72H 后，可恢复原编号。", "Reactivation requires a future official opening; no real seat can be configured now."),
   },
   {
     seatKey: "multi-millionaire:alpha:1",
@@ -904,8 +904,8 @@ const alphaCycles: readonly RawAlphaCycle[] = [
 
 const credentials: readonly RawCredential[] = [
   {
-    title: "First Allocation",
-    body: copy("完成首个 Capital 配置。", "Completed the first Capital allocation."),
+    title: "First Participation",
+    body: copy("完成首个 Capital 参与。", "Completed the first Capital participation."),
     achievedOn: "2025-12-14",
     tone: "primary",
   },
@@ -941,7 +941,7 @@ const credentials: readonly RawCredential[] = [
   },
   {
     title: "Capital Network I",
-    body: copy("邀请 3 位成员完成配置。", "Invited 3 members to complete allocation."),
+    body: copy("邀请 3 位成员完成参与。", "Invited 3 members to complete participation."),
     achievedOn: "2026-04-18",
     tone: "primary",
   },
@@ -1120,8 +1120,8 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       noteLabel: locale === "en-US" ? "First release" : "首批开放",
       noteTitle: locale === "en-US" ? "243 limited seats across 3 applications." : "3 个应用，共 243 个限量席位。",
       noteBody: locale === "en-US"
-        ? "Phase one keeps seats non-transferable, verification public, and amount disclosure private. Figures on this page are current review figures under the published seat rules."
-        : "第一期席位不可转让、验证公开、金额私有。本页数据为当前核对数值，并遵循已公开席位规则。",
+        ? "Current public data is for review only. Real Capital seat configuration is not open; any future opening must be announced officially."
+        : "当前公开数据仅供核对。真实 Capital 席位暂不可配置；未来如开放，以官方公告为准。",
       chips: [
         "multi-millionaire",
         "72hours",
@@ -1140,7 +1140,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       {
         label: locale === "en-US" ? "Reserve seats" : "Reserve 席位",
         value: `${totalReserveSeats - totalReserveRemaining} / ${totalReserveSeats}`,
-        hint: locale === "en-US" ? `${totalReserveRemaining} still open` : `剩余 ${totalReserveRemaining}`,
+        hint: locale === "en-US" ? `${totalReserveRemaining} shown as remaining; not configurable` : `显示余量，不可配置 ${totalReserveRemaining}`,
       },
       {
         label: locale === "en-US" ? "Alpha seats" : "Alpha 席位",
@@ -1149,7 +1149,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
         tone: "gold",
       },
       {
-        label: locale === "en-US" ? "Review allocation total" : "核对配置总量",
+        label: locale === "en-US" ? "Review participation total" : "核对参与总量",
         value: formatAmount(locale, totalTvl),
       },
       {
@@ -1171,7 +1171,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
             value: "72 / app",
           },
           {
-            label: locale === "en-US" ? "Entry threshold" : "起始门槛",
+            label: locale === "en-US" ? "Reference threshold" : "参考门槛",
             value: formatAmount(locale, 720),
           },
           {
@@ -1205,7 +1205,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
             tone: "gold",
           },
           {
-            label: locale === "en-US" ? "Entry threshold" : "起始门槛",
+            label: locale === "en-US" ? "Reference threshold" : "参考门槛",
             value: locale === "en-US"
               ? "72,000 or 720,000 72H"
               : "72,000 或 720,000 72H",
@@ -1237,7 +1237,7 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
       riskBand: pick(locale, app.riskBand),
       metrics: [
         {
-          label: locale === "en-US" ? "Review allocation total" : "核对配置总量",
+          label: locale === "en-US" ? "Review participation total" : "核对参与总量",
           value: formatAmount(locale, app.tvl72H),
         },
         {
@@ -1262,11 +1262,11 @@ export function getCapitalOverview(locale: Locale): CapitalOverviewView {
     portfolioCallout: {
       kicker: locale === "en-US" ? "My Capital" : "我的 Capital",
       title: locale === "en-US"
-        ? "Inspect active, historical, and completed capital identity in one place."
-        : "在同一页查看 Active、Historical 与 Completed Capital 身份。",
+        ? "Review public and private Capital identity records in one place."
+        : "在同一页查看 Capital 身份记录。",
       body: locale === "en-US"
-        ? "The portfolio view groups identity cards, reserve lots, alpha settlement cycles, credentials, and invite status for review."
-        : "组合页集中展示身份卡、Reserve 批次、Alpha 周期、Credential 与邀请状态。",
+        ? "The portfolio view is read-only now. Purchasing, claiming, and real seat configuration remain closed."
+        : "组合页当前只读。购买、领取与真实席位配置均未开放。",
       actions: [
         {
           label: locale === "en-US" ? "Open My Capital" : "打开我的 Capital",
@@ -1326,7 +1326,7 @@ export function getCapitalAppPage(locale: Locale, slug: CapitalAppSlug): Capital
     },
     overviewMetrics: [
       {
-        label: locale === "en-US" ? "Review allocation total" : "核对配置总量",
+        label: locale === "en-US" ? "Review participation total" : "核对参与总量",
         value: formatAmount(locale, app.tvl72H),
       },
       {
@@ -1361,8 +1361,8 @@ export function getCapitalAppPage(locale: Locale, slug: CapitalAppSlug): Capital
     policyNote: {
       eyebrow: locale === "en-US" ? "Disclosure boundary" : "披露边界",
       title: locale === "en-US"
-        ? "Verification is public. Allocation size, reward, and loss figures stay private."
-        : "验证信息公开，但配置金额、奖励与亏损数值保持私有。",
+        ? "Verification is public. Participation size, reward, and loss figures stay private."
+        : "验证信息公开，但参与金额、奖励与亏损数值保持私有。",
       body: locale === "en-US"
         ? "Capital identity is designed to prove seat ownership, sequence, state, and credential status without turning the verification page into a balance dashboard."
         : "Capital 身份用于证明席位归属、编号顺序、状态与 Credential，不把验证页变成金额看板。",
@@ -1396,7 +1396,7 @@ export function getCapitalPortfolio(locale: Locale): CapitalPortfolioView {
       noteLabel: locale === "en-US" ? "Portfolio state" : "组合状态",
       noteTitle: locale === "en-US" ? "4 seats across 3 applications." : "3 个应用，共 4 个席位。",
       noteBody: locale === "en-US"
-        ? "This page groups private portfolio context with public identity surfaces: reserve lots, alpha cycles, credentials, and invite progress."
+        ? "This page groups private portfolio context with public identity pages: reserve lots, alpha cycles, credentials, and invite progress."
         : "该页面把私有组合信息与公开身份界面并置，集中展示 Reserve 批次、Alpha 周期、Credential 与邀请进度。",
       chips: [
         locale === "en-US" ? "2 active" : "2 个 Active",
@@ -1442,7 +1442,7 @@ export function getCapitalPortfolio(locale: Locale): CapitalPortfolioView {
           value: formatAmount(locale, lot.amount72H),
         },
         {
-          label: locale === "en-US" ? "Allocated" : "配置时间",
+          label: locale === "en-US" ? "Allocated" : "参与时间",
           value: formatDate(locale, lot.allocatedOn),
         },
         {
@@ -1553,8 +1553,8 @@ export function getCapitalVerification(
       noteLabel: locale === "en-US" ? "Public record" : "公开记录",
       noteTitle: seat.title,
       noteBody: locale === "en-US"
-        ? "Allocation amount, reward, and loss figures are intentionally excluded from this page."
-        : "本页有意不展示配置金额、奖励与亏损数值。",
+        ? "Participation amount, reward, and loss figures are intentionally excluded from this page."
+        : "本页有意不展示参与金额、奖励与亏损数值。",
       chips: [
         seat.appName,
         type === "reserve"

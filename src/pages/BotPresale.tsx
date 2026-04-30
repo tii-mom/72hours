@@ -345,11 +345,11 @@ export default function BotPresale() {
     : address ? shortAddress(address) : isEnglish ? "Connect a TON wallet" : "连接 TON 钱包";
   const chainStatusText = presale.chainSnapshot
     ? presale.chainSnapshot.active
-      ? isEnglish ? "Contract active" : "合约已开启"
+      ? isEnglish ? "Contract active" : "合约状态已读取"
       : isEnglish ? "Contract inactive" : "合约未开启"
     : isEnglish ? "Chain status loading" : "链上状态读取中";
   const purchaseStatus = presale.enabled
-    ? isEnglish ? "Purchase gate configured" : "购买开关已配置"
+    ? isEnglish ? "Purchase gate configured" : "购买开关状态已读取"
     : isEnglish ? "Purchases not live" : "真实购买暂未开放";
 
   const connectWallet = async () => {
@@ -428,8 +428,8 @@ export default function BotPresale() {
                       ? "Use the official Mini App and TonConnect only. Transaction details are checked before signing."
                       : "仅通过官方 Mini App 和 TonConnect 进入交易。签名前会核对目标地址与阶段。"
                     : isEnglish
-                      ? "Presale is not open. This page does not create purchase transactions; it only keeps official status, wallet pre-check, and contract links in one place."
-                      : "预售未开放。本页不会创建购买交易，只保留官方状态、钱包预检查和合约核验入口。"}
+                      ? "Purchasing is not open. This page does not create purchase transactions; it only keeps official status, wallet pre-checks, and on-chain evidence in one place."
+                      : "当前不可购买。本页不会创建购买交易，只保留官方状态、钱包预检查和链上证据入口。"}
                 </p>
               </div>
 
@@ -527,7 +527,7 @@ export default function BotPresale() {
                   />
                   <QuickAction
                     icon={<ShieldCheck className="h-4 w-4" />}
-                    label={isEnglish ? "Verify contract" : "安全核验"}
+                    label={isEnglish ? "Verify evidence" : "安全核验"}
                     onClick={() => recordBuyerSignal("contract_check")}
                   />
                   <QuickAction
@@ -583,7 +583,7 @@ export default function BotPresale() {
                 <div className="flex items-center gap-3">
                   <ShieldCheck className="h-5 w-5 text-primary" />
                   <h2 className="text-lg font-black tracking-normal text-foreground">
-                    {isEnglish ? "Official contracts" : "官方合约"}
+                    {isEnglish ? "Official on-chain evidence" : "官方链上证据"}
                   </h2>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-sm border border-line/70">
@@ -615,8 +615,8 @@ export default function BotPresale() {
               {state.status === "error" ? (
                 <div className="rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/86">
                   {isEnglish
-                    ? "Live status is temporarily unavailable. Official contract addresses remain visible."
-                    : "链上状态暂时不可用，官方合约地址仍可核验。"}
+                    ? "Live status is temporarily unavailable. Official on-chain evidence remains visible."
+                    : "链上状态暂时不可用，官方链上证据地址仍可核验。"}
                 </div>
               ) : null}
             </aside>

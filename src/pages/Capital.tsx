@@ -52,11 +52,16 @@ export default function Capital() {
           <div>
             <div className="page-kicker w-fit">{overview.hero.kicker}</div>
             <h1 className="mt-5 max-w-4xl text-[2.55rem] font-black leading-[0.98] tracking-normal text-foreground sm:text-6xl">
-              {isEnglish ? "Choose a Capital seat after the 72H check." : "验资后选择 Capital 席位。"}
+              {isEnglish ? "Review Capital status." : "查看 Capital 状态。"}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
               {overview.hero.lead}
             </p>
+            <div className="mt-4 max-w-3xl rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-7 text-foreground/88">
+              {isEnglish
+                ? "Current status: no 72H purchase, no SeasonClaim claim, and no real Capital seat configuration is open on this site."
+                : "当前状态：本站不可购买 72H，不可领取 SeasonClaim，也不可配置真实 Capital 席位。"}
+            </div>
             <div className="mt-5 flex flex-wrap gap-2">
               {overview.hero.chips.map((chip) => (
                 <span
@@ -71,13 +76,13 @@ export default function Capital() {
 
           <div className="rounded-md border border-line/70 bg-surface/72 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.2)] sm:p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
-              {isEnglish ? "Capital workflow" : "Capital 流程"}
+              {isEnglish ? "Capital status" : "Capital 状态"}
             </div>
             <div className="mt-4 grid gap-2">
               {[
                 { icon: <Wallet className="h-4 w-4" />, label: isEnglish ? "Connect wallet" : "连接钱包" },
-                { icon: <Landmark className="h-4 w-4" />, label: isEnglish ? "Review Reserve" : "核对 Reserve" },
-                { icon: <CircleDollarSign className="h-4 w-4" />, label: isEnglish ? "Understand Alpha risk" : "理解 Alpha 风险" },
+                { icon: <Landmark className="h-4 w-4" />, label: isEnglish ? "Reserve not configurable" : "Reserve 暂不可配置" },
+                { icon: <CircleDollarSign className="h-4 w-4" />, label: isEnglish ? "Alpha closed" : "Alpha 暂不开放" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-sm border border-line/70 bg-background/42 px-3 py-3 text-sm font-semibold text-foreground">
                   <span className="text-primary">{item.icon}</span>
@@ -87,7 +92,7 @@ export default function Capital() {
             </div>
             <div className="mt-4 grid gap-2">
               <Link to="/capital/72hours" className="page-action w-full">
-                {isEnglish ? "Start with 72hours" : "从 72hours 开始"}
+                {isEnglish ? "View 72hours status" : "查看 72hours 状态"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
               <Link to="/capital/me" className="page-action-muted w-full">
@@ -194,7 +199,7 @@ export default function Capital() {
                 </div>
                 <div className="mt-auto flex flex-wrap gap-3">
                   <Link to={app.detailHref} className="page-action w-full sm:w-auto">
-                    {isEnglish ? "Open capital surface" : "进入 Capital 页面"}
+                    {isEnglish ? "Open Capital page" : "进入 Capital 页面"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                   <Link to={app.verifyHref} className="page-action-muted hidden sm:inline-flex">

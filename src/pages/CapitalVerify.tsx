@@ -71,7 +71,7 @@ export default function CapitalVerify() {
               <InfoCallout
                 tone="dark"
                 kicker="72H Capital"
-                title={isEnglish ? "The verification surface failed to load." : "验证页加载失败。"}
+                title={isEnglish ? "The verification page failed to load." : "验证页加载失败。"}
                 body={isEnglish
                   ? "The route is valid, but the current service did not return a public verification record for this seat."
                   : "当前路由有效，但服务没有返回该席位的公开验证记录。"}

@@ -38,7 +38,7 @@ function PortfolioSupplement({
         </div>
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            {isEnglish ? "Available reward record" : "可用奖励记录"}
+            {isEnglish ? "Reward record" : "奖励记录"}
           </p>
           <p className="mt-2 text-sm font-semibold leading-7 text-foreground">
             {claimableReward}
@@ -303,10 +303,10 @@ function CapitalIdentityPortfolio({ walletAddress }: { walletAddress: string }) 
             <div className="flex flex-col gap-6">
               <CapitalSectionHeading
                 eyebrow={isEnglish ? "Action boundary" : "动作边界"}
-                title={isEnglish ? "Redeem and reward requests are review-only until signing opens." : "赎回与奖励请求仅供核对，正式开放前暂不可签名。"}
+                title={isEnglish ? "Redeem and reward actions are closed until signing opens." : "赎回与奖励领取暂未开放，正式开放前不可签名。"}
                 body={isEnglish
                   ? "Portfolio actions can prepare a wallet-aware record for review. Reserve redemption and reward requests cannot be signed or submitted on-chain until the official contract flow is live."
-                  : "组合页动作可生成带钱包上下文的核对记录。Reserve 赎回与奖励请求在正式合约流程开放前不可签名，也不可链上提交。"}
+                  : "组合页动作可生成带钱包上下文的核对记录。Reserve 赎回与奖励领取在正式合约流程开放前不可签名，也不可链上提交。"}
               />
 
               <SpotlightCard className="page-card page-card-lg flex flex-col gap-4 border-line/70 bg-surface/78">
@@ -325,7 +325,7 @@ function CapitalIdentityPortfolio({ walletAddress }: { walletAddress: string }) 
                       });
                     }}
                   >
-                    {isEnglish ? "Request Reserve Redemption" : "请求 Reserve 赎回"}
+                    {isEnglish ? "Reserve redemption closed" : "Reserve 赎回暂未开放"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </button>
                   <button
@@ -341,7 +341,7 @@ function CapitalIdentityPortfolio({ walletAddress }: { walletAddress: string }) 
                       });
                     }}
                   >
-                    {isEnglish ? "Request Reward Record" : "请求奖励记录"}
+                    {isEnglish ? "Rewards closed" : "奖励领取暂未开放"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </button>
                 </div>

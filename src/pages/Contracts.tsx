@@ -123,11 +123,11 @@ export default function Contracts() {
   const isEnglish = locale === "en-US";
 
   const copy = {
-    kicker: isEnglish ? "Official contracts" : "官方合约",
-    title: isEnglish ? "72H V2 is fixed-supply on TON." : "72H V2 已在 TON 固定发行。",
+    kicker: isEnglish ? "On-chain evidence" : "链上证据",
+    title: isEnglish ? "72H V2 on-chain facts." : "72H V2 的链上事实。",
     lead: isEnglish
-      ? "The mainnet Jetton master and tokenomics contracts are deployed, verified, and published with open source evidence."
-      : "主网 Jetton Master 和代币经济学合约已部署、验收并公开源码证据。",
+      ? "This page collects the Green Book on-chain facts: mainnet Jetton master, supply checks, tokenomics contract addresses, and source evidence."
+      : "绿皮书引用的主网 Jetton Master、供应核验、合约地址与源码证据集中在这里。",
     noteLabel: isEnglish ? "Supply verification" : "供应验证",
     noteTitle: isEnglish ? "No mint authority remains." : "不存在剩余增发权限。",
     noteBody: isEnglish
@@ -202,7 +202,7 @@ export default function Contracts() {
           <SpotlightCard className="page-card overflow-hidden border-line/70 bg-surface/72">
             <div className="border-b border-line/70 px-5 py-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
-                {isEnglish ? "Core mainnet contracts" : "核心主网合约"}
+                {isEnglish ? "Core on-chain records" : "核心链上记录"}
               </p>
               <h2 className="mt-3 text-2xl font-black tracking-normal text-foreground">
                 {isEnglish ? "Published addresses" : "已公开地址"}

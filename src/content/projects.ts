@@ -39,8 +39,8 @@ const projectsZh: Project[] = [
   {
     slug: "wan",
     name: "WAN",
-    oneLineValue: "浏览器优先的安全接入控制台，处理访问、会话、节点与订阅。",
-    summary: "Web 是完整控制台；原生端只保留 VPN 服务和 72H 充值。",
+    oneLineValue: "浏览器优先的安全接入入口，处理访问、会话、节点与订阅。",
+    summary: "Web 是完整入口；原生端只保留 VPN 服务和 72H 充值。",
     detailIntro: "适合直接使用的浏览器主控台，Web 是完整入口。",
     category: "new_launch",
     status: "live",
@@ -366,9 +366,9 @@ const projectsEn: Project[] = [
   {
     slug: "wan",
     name: "WAN",
-    oneLineValue: "Browser-led secure access console for sessions, nodes, subscription, and control.",
-    summary: "The web surface is the full control console; native clients stay limited to VPN service and 72H recharge.",
-    detailIntro: "Best for people who want to use the browser console immediately, with a clear native-client boundary.",
+    oneLineValue: "Browser-led secure access entry for sessions, nodes, and subscription.",
+    summary: "The web entry is the full service home; native clients stay limited to VPN service and 72H recharge.",
+    detailIntro: "Best for people who want to use the browser entry immediately, with a clear native-client boundary.",
     category: "new_launch",
     status: "live",
     audienceFit: ["curious_explorer", "community_participant"],
@@ -385,7 +385,7 @@ const projectsEn: Project[] = [
     },
     learnRelation: {
       level: "prep",
-      summary: "Browser console and native-client boundaries stay clear.",
+      summary: "Browser entry and native-client boundaries stay clear.",
     },
     proofAssets: [],
     featured: false,
@@ -396,7 +396,7 @@ const projectsEn: Project[] = [
     brandStripAlt: "WAN brand logo",
     signals: [
       { tone: "new", label: "New launch" },
-      { tone: "guide", label: "Web console" },
+      { tone: "guide", label: "Web entry" },
     ],
   },
   {
@@ -603,7 +603,7 @@ const projectsEn: Project[] = [
   {
     slug: "meme-court",
     name: "Meme Court",
-    oneLineValue: "A lightweight consensus space for content review.",
+    oneLineValue: "A lightweight consensus space for content check.",
     category: "coming_soon",
     status: "coming_soon",
     audienceFit: ["curious_explorer", "community_participant"],
@@ -620,7 +620,7 @@ const projectsEn: Project[] = [
     },
     learnRelation: {
       level: "prep",
-      summary: "Understand the ecosystem before entering review.",
+      summary: "Understand the ecosystem before entering check.",
     },
     proofAssets: [],
     featured: false,

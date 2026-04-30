@@ -7,7 +7,7 @@ const learnPathsZh: LearnPath[] = [
     slug: "vibe-coding-entry",
     title: "学习 72H 类加密应用开发。",
     audience: [
-      "普通用户想成为开发者",
+      "普通用户想做出应用",
       "项目方想理解加密应用从 0 到 1",
     ],
     startingThreshold: "线上报名 / 线下报名 / 应用开发。",
@@ -16,7 +16,7 @@ const learnPathsZh: LearnPath[] = [
         name: "线上报名",
         goal: "通过钱包核对后，在 Telegram 提交学习意向。",
         description: "适合远程确认基础背景、学习方向与可参与时间。",
-        exampleActivities: ["连接钱包", "提交意向", "资格核对"],
+        exampleActivities: ["连接钱包", "提交报名信息", "参与核对"],
         estimatedCommitment: "远程",
       },
       {
@@ -29,9 +29,9 @@ const learnPathsZh: LearnPath[] = [
       {
         name: "学习方向",
         goal: "学习像 72H 这样的加密应用如何开发。",
-        description: "从钱包连接、产品规则、前端实现到社区协作，让普通人成为开发者或项目方。",
+        description: "从钱包连接、产品规则、前端实现到社区协作，帮助普通人理解并做出应用。",
         exampleActivities: ["钱包与 TON", "前端实现", "项目协作"],
-        estimatedCommitment: "开发导向",
+        estimatedCommitment: "产品导向",
       },
     ],
     outcome: [
@@ -54,15 +54,15 @@ const learnPathsEn: LearnPath[] = [
     stages: [
       {
         name: "Online application",
-        goal: "Submit learning intent through Telegram after wallet review.",
+        goal: "Submit a learning application through Telegram after wallet check.",
         description: "Best for remote confirmation of background, learning direction, and available time.",
-        exampleActivities: ["Connect wallet", "Send intent", "Eligibility review"],
+        exampleActivities: ["Connect wallet", "Send request", "Eligibility check"],
         estimatedCommitment: "Remote",
       },
       {
         name: "Offline application",
         goal: "Book an offline learning slot through contact.",
-        description: "Best for unpacking product rules, wallet connection, frontend pages, and release workflows face to face.",
+        description: "Best for unpacking product rules, wallet connection, frontend pages, and release steps face to face.",
         exampleActivities: ["Book time", "Confirm on site", "Project teardown"],
         estimatedCommitment: "On site",
       },

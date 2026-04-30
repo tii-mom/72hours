@@ -258,14 +258,14 @@ function getHomeContent(locale: Locale, siteName: string) {
       external: true,
     },
     {
-      title: isEnglish ? "72H Capital" : "72H Capital",
-      body: isEnglish ? "Seats, identity, verification." : "席位、身份、验证。",
-      href: "/capital",
-      meta: isEnglish ? "Capital" : "资本",
+      title: isEnglish ? "Ecosystem" : "生态应用",
+      body: isEnglish ? "Browse the active 72H app map." : "浏览 72H 当前可用应用地图。",
+      href: "/ecosystem",
+      meta: isEnglish ? "App map" : "应用地图",
     },
     {
       title: isEnglish ? "Green Book" : "绿皮书",
-      body: isEnglish ? "Use, supply, risk boundary." : "用途、供给、风险边界。",
+      body: isEnglish ? "Read use, supply, on-chain facts, and risk boundaries." : "理解用途、供给、链上事实与风险边界。",
       href: "/greenbook",
       meta: isEnglish ? "Public notes" : "公开说明",
     },
@@ -285,7 +285,7 @@ function getHomeContent(locale: Locale, siteName: string) {
     {
       label: isEnglish ? "03 / Ecosystem" : "03 / 生态",
       title: isEnglish ? "Applications carry the story." : "应用承载价值。",
-      body: isEnglish ? "WAN, Distribution, Capital, Green Book." : "WAN、Distribution、Capital、绿皮书。",
+      body: isEnglish ? "WAN, Distribution, ecosystem map, Green Book." : "WAN、Distribution、生态应用地图、绿皮书。"
     },
   ];
 
@@ -300,9 +300,9 @@ function getHomeContent(locale: Locale, siteName: string) {
     },
     featureSignals,
     launch: {
-      kicker: isEnglish ? "Official surfaces" : "官方入口",
+      kicker: isEnglish ? "Official entries" : "官方入口",
       title: isEnglish ? "Use first." : "先进入使用。",
-      lead: isEnglish ? "Choose a live surface and continue there." : "选择一个入口，直接开始。",
+      lead: isEnglish ? "Choose a live entry and continue there." : "选择一个入口，直接开始。",
       entries: launchEntries,
     },
     economy: {

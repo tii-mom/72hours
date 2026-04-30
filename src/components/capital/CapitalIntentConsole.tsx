@@ -71,18 +71,18 @@ export function CapitalIntentConsole({
   return (
     <SpotlightCard className={`page-card page-card-lg flex h-full flex-col gap-5 ${toneClassMap[state.status]}`}>
       <CapitalSectionHeading
-        eyebrow={isEnglish ? "Action status" : "动作状态"}
+        eyebrow={isEnglish ? "Status" : "状态"}
         title={
           state.status === "idle"
             ? isEnglish
-              ? "No active Capital request yet."
-              : "当前还没有活跃 Capital 请求。"
+              ? "No open Capital action yet."
+              : "当前没有开放的 Capital 动作。"
             : state.status === "loading"
               ? isEnglish
                 ? "Preparing the request for review."
                 : "正在生成请求核对记录。"
             : state.status === "ready"
-                ? state.response.actionSummary?.title ?? (isEnglish ? "Request ready for review." : "请求已可核对。")
+                ? state.response.actionSummary?.title ?? (isEnglish ? "Request recorded." : "请求已记录。")
                 : isEnglish
                   ? "This request needs attention."
                   : "该请求需要处理。"
@@ -90,8 +90,8 @@ export function CapitalIntentConsole({
         body={
           state.status === "idle"
             ? isEnglish
-              ? "When you request a seat action, this panel shows the wallet-aware review record. Live contract signing is not open yet."
-              : "当你请求席位动作时，这里会显示带钱包上下文的核对记录。真实合约签名尚未开放。"
+              ? "Real Capital seat configuration is not open. This panel only shows status records; contract signing stays closed."
+              : "真实 Capital 席位配置尚未开放。此处仅显示状态记录，不开放合约签名。"
             : state.status === "loading"
               ? isEnglish
                 ? "The website is preparing the action details for review."
@@ -160,7 +160,7 @@ export function CapitalIntentConsole({
             <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-4">
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 <FileCode2 className="h-3.5 w-3.5" />
-                {isEnglish ? "Transaction details for review" : "交易信息核对"}
+                {isEnglish ? "Transaction preview" : "交易预览"}
               </div>
               {state.response.transactionRequest.scaffold ||
               state.response.transactionRequest.operation ||
@@ -177,7 +177,7 @@ export function CapitalIntentConsole({
                   {state.response.transactionRequest.entrypoint ? (
                     <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
                       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {isEnglish ? "Contract entry" : "合约入口"}
+                        {isEnglish ? "Evidence entry" : "合约入口"}
                       </div>
                       <div className="mt-2">{state.response.transactionRequest.entrypoint}</div>
                     </div>
@@ -198,7 +198,7 @@ export function CapitalIntentConsole({
                       <div className="mt-2">
                         {isEnglish
                           ? "Wallet signing will remain unavailable until the transaction details are finalized."
-                          : "交易信息完成正式确认前，钱包签名暂不可用。"}
+                          : "正式开放前，钱包签名暂不可用。"}
                       </div>
                     </div>
                   ) : null}
@@ -408,10 +408,10 @@ export function CapitalIntentConsole({
               : state.status === "loading"
                 ? isEnglish
                   ? "Request details are being prepared."
-                  : "请求信息正在生成。"
+                  : "状态信息正在生成。"
                 : isEnglish
                   ? "This panel becomes active when you request a Capital action."
-                  : "当你请求 Capital 动作后，这个面板会变成活跃状态。"}
+                  : "Capital 真实动作开放后，这个面板会显示状态。"}
           </div>
         </div>
       )}

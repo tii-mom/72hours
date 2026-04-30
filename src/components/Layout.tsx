@@ -16,7 +16,6 @@ import {
   Menu,
   Send,
   Shield,
-  Wallet,
   X,
 } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -74,21 +73,6 @@ function BrandLogo({ className = "", markClassName = "", showName = true }: { cl
       />
       {showName ? <span className="text-foreground">72hours</span> : null}
     </span>
-  );
-}
-
-function MobileCapitalLink() {
-  const { isEnglish } = useLocale();
-
-  return (
-    <Link
-      to="/capital/me"
-      className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-sm border border-line/70 bg-surface/80 px-2 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:cursor-wait disabled:opacity-60"
-      aria-label={isEnglish ? "Open Capital wallet page" : "打开 Capital 钱包页"}
-    >
-      <Wallet size={14} strokeWidth={1.75} aria-hidden="true" />
-      <span className="truncate">{isEnglish ? "Capital" : "钱包"}</span>
-    </Link>
   );
 }
 
@@ -164,7 +148,7 @@ function getFooterLinkMeta(href: string, isEnglish: boolean) {
   switch (href) {
     case "/ecosystem":
       return {
-        body: isEnglish ? "Apps, tools, and active surfaces." : "应用、工具与可进入界面。",
+        body: isEnglish ? "Apps, tools, and active entries." : "应用、工具与可进入入口。",
         icon: <Globe2 size={17} strokeWidth={1.75} />,
       };
     case "/capital":
@@ -174,7 +158,7 @@ function getFooterLinkMeta(href: string, isEnglish: boolean) {
       };
     case "/contracts":
       return {
-        body: isEnglish ? "Mainnet token and contract evidence." : "主网代币与合约证据。",
+        body: isEnglish ? "Green Book on-chain facts and contract evidence." : "绿皮书里的链上事实与合约证据。",
         icon: <FileJson size={17} strokeWidth={1.75} />,
       };
     case "/join":
@@ -184,7 +168,7 @@ function getFooterLinkMeta(href: string, isEnglish: boolean) {
       };
     case "/greenbook":
       return {
-        body: isEnglish ? "Shared context and operating notes." : "共同语境与使用说明。",
+        body: isEnglish ? "Shared context and public notes." : "共同语境与公开说明。",
         icon: <BookOpen size={17} strokeWidth={1.75} />,
       };
     case "/hours":
@@ -248,7 +232,7 @@ export default function Layout() {
   const { locale, toggleLocale, isEnglish } = useLocale();
   const siteConfig = getSiteConfig(locale);
   const mobileNavItems = siteConfig.navItems.filter((link) =>
-    ["/ecosystem", "/capital", "/contracts", "/greenbook", "/join"].includes(link.href),
+    ["/join", "/ecosystem", "/greenbook"].includes(link.href),
   );
   const drawerNavItems = [
     ...siteConfig.footerGroups.flatMap((group) => group.links),
@@ -444,11 +428,17 @@ export default function Layout() {
           </button>
         </div>
 
-        <div className="mx-auto grid w-full max-w-md grid-cols-[1fr_1fr_minmax(6rem,1.2fr)_2.75rem] gap-2 px-4 pb-2 md:hidden">
-          <ThemeToggle className="min-w-0 px-2" />
-          <LanguageBadge className="min-w-0 px-2" onClick={toggleLocale} />
-          <MobileCapitalLink />
-          <button
+        <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 pb-2 md:hidden">
+          <Link
+            to={siteConfig.primaryJoinRoute}
+            className="group inline-flex min-h-11 min-w-0 flex-1 items-center text-lg font-bold tracking-widest text-foreground"
+            aria-label="72hours"
+          >
+            <BrandLogo markClassName="h-9 w-9 transition-transform group-hover:scale-105" />
+          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <LanguageBadge className="px-2" onClick={toggleLocale} />
+            <button
             type="button"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-line/70 bg-surface/60 p-2 text-foreground transition-colors hover:text-primary active:scale-95"
             onClick={() => setIsOpen(true)}
@@ -456,8 +446,9 @@ export default function Layout() {
             aria-expanded={isOpen}
             aria-controls={drawerId}
           >
-            <Menu size={22} strokeWidth={1.5} />
-          </button>
+              <Menu size={22} strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -552,7 +543,7 @@ export default function Layout() {
           className="fixed inset-x-0 bottom-0 z-50 border-t border-line/75 bg-background/94 px-3 pb-[calc(0.45rem+var(--safe-bottom))] pt-1.5 backdrop-blur-xl md:hidden"
           aria-label={isEnglish ? "Primary mobile navigation" : "移动主导航"}
         >
-          <div className="mx-auto grid max-w-md grid-cols-4 gap-1 rounded-md border border-line/60 bg-surface/36 p-1 shadow-[0_-18px_54px_rgba(0,0,0,0.32)]">
+          <div className="mx-auto grid max-w-md grid-cols-3 gap-1 rounded-md border border-line/60 bg-surface/36 p-1 shadow-[0_-18px_54px_rgba(0,0,0,0.32)]">
             {mobileNavItems.map((link) => {
               const href = localizeHref(link.href, locale);
               const isActive = isNavPathActive(location.pathname, href);
@@ -564,7 +555,7 @@ export default function Layout() {
                   aria-label={link.label}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "group relative flex min-h-[3.15rem] items-center justify-center rounded-sm border px-1 transition-colors",
+                    "group relative flex min-h-[3.35rem] flex-col items-center justify-center gap-0.5 rounded-sm border px-1 transition-colors",
                     isActive
                       ? "border-primary/35 bg-primary/12 text-primary"
                       : "border-transparent text-muted-foreground hover:border-line/70 hover:bg-background/54 hover:text-foreground",
@@ -572,14 +563,17 @@ export default function Layout() {
                 >
                   <span
                     className={cn(
-                      "flex h-7 w-7 items-center justify-center transition-colors",
+                      "flex h-6 w-6 items-center justify-center transition-colors",
                       isActive ? "text-primary" : "text-gold/70 group-hover:text-gold",
                     )}
                     aria-hidden="true"
                   >
                     {getNavIcon(link.href)}
                   </span>
-                  {isActive ? <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary" aria-hidden="true" /> : null}
+                  <span className="max-w-full truncate text-[10px] font-bold tracking-[0.1em]">
+                    {link.label}
+                  </span>
+                  {isActive ? <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" /> : null}
                 </Link>
               );
             })}

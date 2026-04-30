@@ -13,7 +13,7 @@ const glossaryZh = {
     about: "关于 72hours",
     faq: "常见问题",
     contact: "联系",
-    contracts: "合约",
+    contracts: "链上证据",
     legal: "法律说明",
   },
   legalLabels: {
@@ -45,7 +45,7 @@ const glossaryEn = {
     about: "About 72hours",
     faq: "FAQ",
     contact: "Contact",
-    contracts: "Contracts",
+    contracts: "On-chain evidence",
     legal: "Legal",
   },
   legalLabels: {

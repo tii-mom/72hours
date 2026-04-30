@@ -83,7 +83,7 @@ function MissingCapitalApp({ isEnglish }: { isEnglish: boolean }) {
           <InfoCallout
             tone="dark"
             kicker="72H Capital"
-            title={isEnglish ? "This capital surface is unavailable." : "该 Capital 页面暂不可用。"}
+            title={isEnglish ? "This Capital page is unavailable." : "该 Capital 页面暂不可用。"}
             body={isEnglish
               ? "This application is not included in the current public Capital release."
               : "当前公开 Capital 批次中不包含该应用。"}
@@ -135,12 +135,12 @@ export default function CapitalApp() {
               <InfoCallout
                 tone="dark"
                 kicker="72H Capital"
-                title={isEnglish ? "This capital surface failed to load." : "这个 Capital 页面加载失败。"}
+                title={isEnglish ? "This Capital page failed to load." : "这个 Capital 页面加载失败。"}
                 body={isEnglish
                   ? "This application route is valid, but the current service did not return a verifiable Capital record. Seat actions remain closed until the record is available."
                   : "该应用路由有效，但当前服务没有返回可核对的 Capital 记录。在记录可用前，席位动作保持关闭。"}
                 actions={[
-                  { label: isEnglish ? "Retry app surface" : "重新打开页面", href: `/capital/${slug}`, variant: "primary" },
+                  { label: isEnglish ? "Retry Capital page" : "重新打开页面", href: `/capital/${slug}`, variant: "primary" },
                   { label: isEnglish ? "Browse Capital" : "返回 Capital", href: "/capital" },
                 ]}
               />
@@ -189,17 +189,11 @@ export default function CapitalApp() {
             <div className="mt-4 grid gap-2">
               <button
                 type="button"
-                onClick={() =>
-                  requestIntent("reserve.allocate", {
-                    appSlug: app.slug,
-                    seatType: "reserve",
-                    amount: getDefaultSeatAmount72H(app.slug, "reserve"),
-                  })
-                }
-                className="page-action w-full"
+                disabled
+                className="page-action w-full cursor-not-allowed opacity-60"
               >
                 <Landmark className="mr-2 h-4 w-4" />
-                {isEnglish ? "Prepare Reserve request" : "生成 Reserve 请求"}
+                {isEnglish ? "Reserve not open" : "Reserve 暂不开放"}
               </button>
               <button
                 type="button"
@@ -226,7 +220,7 @@ export default function CapitalApp() {
             <SpotlightCard className="page-card page-card-lg border-l-4 !border-l-primary bg-primary/5">
               <CapitalSectionHeading
                 eyebrow={isEnglish ? "Positioning" : "定位"}
-                title={isEnglish ? "What this capital surface emphasizes." : "这个 Capital Surface 的重点。"}
+                title={isEnglish ? "What this Capital page emphasizes." : "这个 Capital 页面 的重点。"}
                 body={isEnglish
                   ? "Each application keeps its own seat velocity, threshold discipline, and AppRewardPool narrative while staying inside the same verification framework."
                   : "每个应用都保留独立的席位释放节奏、门槛纪律与 AppRewardPool 奖励叙事，但验证框架保持一致。"}
@@ -246,16 +240,16 @@ export default function CapitalApp() {
 
             <SpotlightCard className="page-card page-card-lg flex flex-col gap-5 border-line/70 bg-surface/78">
               <CapitalSectionHeading
-                eyebrow={isEnglish ? "Application surface" : "应用入口"}
-                title={isEnglish ? "Open the application or review current seat terms." : "打开应用主场，或核对当前席位条款。"}
+                eyebrow={isEnglish ? "Application entry" : "应用入口"}
+                title={isEnglish ? "Open the application or review current status." : "打开应用主场，或查看当前席位状态。"}
                 body={isEnglish
-                  ? "The application surface stays separate from the seat identity layer. Capital verifies seat ownership while the application remains the operating front door."
+                  ? "The application entry stays separate from the seat identity layer. Capital verifies seat ownership while the application remains the operating front door."
                   : "应用主场与席位身份层保持分离。Capital 负责验证席位归属，应用本身仍是实际操作入口。"}
               />
 
               <div className="rounded-md border border-line/70 bg-background/45 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  {isEnglish ? "Surface action" : "入口动作"}
+                  {isEnglish ? "Entry action" : "入口动作"}
                 </p>
                 <div className="mt-4">
                   <ActionLink
@@ -296,6 +290,8 @@ export default function CapitalApp() {
                 program={app.reserveProgram}
                 locale={locale}
                 primaryAction={{
+                  label: isEnglish ? "Reserve not open" : "Reserve 暂不开放",
+                  disabled: true,
                   onClick: () =>
                     requestIntent("reserve.allocate", {
                       appSlug: app.slug,
@@ -324,10 +320,10 @@ export default function CapitalApp() {
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
               eyebrow={isEnglish ? "Action boundary" : "动作边界"}
-              title={isEnglish ? "Seat requests are prepared for review before signing opens." : "席位请求会先生成核对记录，正式开放前暂不可签名。"}
+              title={isEnglish ? "Seat requests are disabled before signing opens." : "真实席位配置暂未开放，正式开放前不可签名。"}
               body={isEnglish
                 ? "Seat requests can create a wallet-aware action record for verification. TON contract signing and on-chain submission remain closed until the official release."
-                : "席位请求可生成带钱包上下文的动作核对记录。TON 合约签名与链上提交在正式开放前保持关闭。"}
+                : "本页仅展示状态。真实 Capital 席位配置、TON 签名与链上提交在正式开放前保持关闭。"}
             />
 
             <CapitalIntentConsole
@@ -371,7 +367,7 @@ export default function CapitalApp() {
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
               eyebrow={isEnglish ? "Identity review" : "身份核对"}
-              title={isEnglish ? "Each application keeps both a reserve and alpha verification surface." : "每个应用都同时展示 Reserve 与 Alpha 的验证界面。"}
+              title={isEnglish ? "Each application keeps Reserve and Alpha verification pages." : "每个应用都同时展示 Reserve 与 Alpha 验证页。"}
               body={isEnglish
                 ? "Identity cards are English-first on the title line, with Chinese support text underneath, matching the sharing spec."
                 : "身份卡片主标题保持英文，副标题提供中文说明，以符合分享传播规范。"}

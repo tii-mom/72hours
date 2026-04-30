@@ -123,8 +123,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       barePath,
       `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
       isEnglish
-        ? "Official 72H V2 token and contract evidence. This entry redirects to the contracts page."
-        : "72H V2 官方代币与合约证据入口，会跳转到合约页面。",
+        ? "Green Book on-chain facts and contract evidence. This entry redirects to the evidence page."
+        : "绿皮书里的链上事实与合约证据入口，会跳转到链上证据页面。",
       {
         canonicalBarePath: "/contracts",
         robots: "noindex, follow",
@@ -161,8 +161,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.capital}`,
       description: isEnglish
-        ? "Review limited capital seats, reserve and alpha allocations, and the first launch surfaces in 72H Capital."
-        : "查看限量资本席位、Reserve 与 Alpha 配置规则，以及 72H Capital 首批开放应用。",
+        ? "Review 72H Capital status, Reserve/Alpha boundaries, and why real seats are not configurable yet."
+        : "查看 72H Capital 状态、Reserve/Alpha 边界，以及真实席位暂不可配置的说明。",
     },
     "/capital/me": {
       title: `${siteConfig.siteName} | My Capital Identity`,
@@ -173,13 +173,13 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital/multi-millionaire": {
       title: `${siteConfig.siteName} | multi-millionaire Capital`,
       description: isEnglish
-        ? "See the capital seat structure, alpha threshold, and verified identity surfaces for multi-millionaire."
+        ? "See the capital seat structure, alpha threshold, and verification pages for multi-millionaire."
         : "查看 multi-millionaire 的 Capital Seat 结构、Alpha 门槛与身份展示。",
     },
     "/capital/72hours": {
       title: `${siteConfig.siteName} | 72hours Capital`,
       description: isEnglish
-        ? "See reserve and alpha seat rules, tiers, and verified identity surfaces for the 72hours core surface."
+        ? "See reserve and alpha seat rules, tiers, and verification pages for the 72hours core entry."
         : "查看 72hours 主场对应的 Reserve 与 Alpha 席位规则、评级与身份展示。",
     },
     "/capital/wan": {
@@ -191,8 +191,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/contracts": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
       description: isEnglish
-        ? "Official 72H V2 mainnet Jetton master, fixed-supply verification, tokenomics contract addresses, and public source evidence."
-        : "72H V2 官方主网 Jetton Master、固定供应核验、代币经济学合约地址和公开源码证据。",
+        ? "Green Book evidence for the 72H V2 mainnet Jetton master, fixed supply, tokenomics contract addresses, and public source records."
+        : "绿皮书引用的 72H V2 主网 Jetton Master、固定供应核验、代币经济学合约地址和公开源码证据。",
     },
     "/greenbook": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.greenBook}`,

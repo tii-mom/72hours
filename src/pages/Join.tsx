@@ -136,7 +136,7 @@ export default function Join() {
           : "报名核对后进入学习安排。",
         icon: <GraduationCap className="h-4 w-4" />,
         meta: [
-          { label: isEnglish ? "Online" : "线上报名", value: isEnglish ? "Telegram intent review" : "Telegram 提交意向" },
+          { label: isEnglish ? "Online" : "线上报名", value: isEnglish ? "Telegram application check" : "Telegram 提交报名信息" },
           { label: isEnglish ? "Offline" : "线下报名", value: isEnglish ? "Book an in-person slot" : "预约现场学习" },
           { label: isEnglish ? "Learn" : "能学到", value: isEnglish ? "From user to builder" : "从用户到开发者" },
         ],
@@ -191,7 +191,7 @@ export default function Join() {
         href: "/ecosystem",
         nextLabel: isEnglish ? "Browse active apps" : "浏览可用应用",
         telegramLabel: isEnglish ? "Online build room" : "线上共创",
-        risk: isEnglish ? "Admission remains manually confirmed." : "最终入场仍由人工确认。",
+        risk: isEnglish ? "Admission remains manually confirmed." : "最终入场以人工确认为准。",
         icon: <Sparkles className="h-4 w-4" />,
         meta: [
           { label: isEnglish ? "Proof" : "验资", value: format72H(ONLINE_THRESHOLD) },
@@ -238,7 +238,7 @@ export default function Join() {
         `门槛：${format72H(selectedPath.threshold)}`,
         riskLine,
         addressLine,
-        `72H 合约：${TOKEN_CONTRACT}`,
+        `72H 链上证据：${TOKEN_CONTRACT}`,
       ].join("\n"),
     );
   }, [address, selectedPath]);
@@ -251,7 +251,7 @@ export default function Join() {
         "我想参与 72H Founder Dinner 竞拍",
         `起拍价：${format72H(AUCTION_START)}`,
         `最低加价：${format72H(AUCTION_STEP)}`,
-        `验资门槛：${format72H(AUCTION_PROOF_THRESHOLD)}`,
+        `核对门槛：${format72H(AUCTION_PROOF_THRESHOLD)}`,
         `截止：${AUCTION_DEADLINE}`,
         addressLine,
       ].join("\n"),
@@ -299,8 +299,8 @@ export default function Join() {
         status: "manual_review",
         threshold,
         message: isEnglish
-          ? "On-chain balance check is temporarily unavailable. Send intent for manual review."
-          : "链上验资暂不可用，可发送意向进入人工核对。",
+          ? "On-chain balance check is temporarily unavailable. Send request for manual check."
+          : "链上验资暂不可用，可发送意向进入人工确认。",
       });
       return "manual_review";
     }
@@ -329,7 +329,7 @@ export default function Join() {
       <section className="page-section-tight pt-4 sm:pt-10">
         <div className="page-container page-container-wide">
           <div className="mb-6 flex items-center justify-between gap-3">
-            <div className="page-kicker w-fit">{isEnglish ? "Participation console" : "参与控制台"}</div>
+            <div className="page-kicker w-fit">{isEnglish ? "Official entry" : "官方入口"}</div>
             <div className="hidden items-center gap-2 rounded-sm border border-line/70 bg-surface/58 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:flex">
               <BadgeCheck className="h-3.5 w-3.5 text-primary" />
               72H / TON
@@ -340,17 +340,59 @@ export default function Join() {
             <div className="flex min-w-0 flex-col gap-5">
               <div className="max-w-4xl">
                 <h1 className="text-[2.65rem] font-black leading-[0.98] tracking-normal text-foreground sm:text-6xl lg:text-7xl">
-                  {isEnglish ? "Use 72H to enter." : "用 72H 进入。"}
+                  {isEnglish ? "Enter 72hours." : "进入 72hours。"}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
                   {isEnglish
-                    ? "Choose a learning application, capital seat, or collaboration path after wallet-aware eligibility review."
-                    : "连接钱包完成资格核对，再选择学习报名、投资席位或协作入口。"}
+                    ? "Start from the official app map, community, or Green Book. Some deeper paths may ask for wallet-aware eligibility check later."
+                    : "从官方应用地图、社区或绿皮书开始。更深层的学习、协作或席位入口，后续可能需要钱包参与核对。"}
                 </p>
                 <div className="mt-4 max-w-3xl rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-7 text-foreground/88">
                   {isEnglish
-                    ? "This page records participation intent and eligibility checks. It is not a token presale or SeasonClaim page."
-                    : "本页用于参与意向与资格核对，不是代币预售页，也不是 SeasonClaim 领取页。"}
+                    ? "This is the public entry page for the 72H ecosystem. 72H cannot be purchased here, SeasonClaim cannot be claimed here, and real Capital seats cannot be configured here."
+                    : "这里是 72H 生态的对外入口页。当前不可购买 72H，不可领取 SeasonClaim，也不可配置真实 Capital 席位。"}
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {[
+                    {
+                      href: "/ecosystem",
+                      label: isEnglish ? "Open app map" : "打开应用地图",
+                      body: isEnglish ? "Find live 72H entries." : "查看当前可用的 72H 界面。",
+                    },
+                    {
+                      href: "/greenbook",
+                      label: isEnglish ? "Read Green Book" : "阅读绿皮书",
+                      body: isEnglish ? "Understand rules, on-chain facts, and boundaries." : "理解规则、链上事实与风险边界。",
+                    },
+                    {
+                      href: "https://t.me/the_72h",
+                      label: isEnglish ? "Join community" : "加入社区",
+                      body: isEnglish ? "Follow updates and ask questions." : "获取更新并提问。",
+                      external: true,
+                    },
+                  ].map((entry) => {
+                    const className = "group flex min-h-28 flex-col justify-between rounded-sm border border-line/70 bg-background/42 p-4 text-left transition-colors hover:border-primary/30 hover:bg-surface/74";
+                    const content = (
+                      <>
+                        <div>
+                          <div className="text-base font-black text-foreground">{entry.label}</div>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{entry.body}</p>
+                        </div>
+                        <ArrowRight className="mt-4 h-4 w-4 text-gold transition-transform group-hover:translate-x-1" />
+                      </>
+                    );
+
+                    return entry.external ? (
+                      <a key={entry.href} href={entry.href} target="_blank" rel="noreferrer" className={className}>
+                        {content}
+                      </a>
+                    ) : (
+                      <Link key={entry.href} to={entry.href} className={className}>
+                        {content}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -435,7 +477,7 @@ export default function Join() {
                           {verification.status === "checking"
                             ? isEnglish ? "Checking" : "正在验资"
                             : verification.status === "manual_review"
-                              ? isEnglish ? "Manual review" : "人工核对"
+                              ? isEnglish ? "Manual check" : "人工确认"
                               : isEnglish ? "Balance proof" : "验资结果"}
                         </div>
                         <div className="mt-2">
@@ -461,8 +503,8 @@ export default function Join() {
                         ? isEnglish ? "Checking" : "正在验资"
                         : address
                           ? isLearningPath
-                            ? isEnglish ? "Verify application" : "核对报名资格"
-                            : isEnglish ? "Verify entry" : "验资进入"
+                            ? isEnglish ? "Verify application" : "确认报名条件"
+                            : isEnglish ? "Verify entry" : "核对后进入"
                           : isLearningPath
                             ? isEnglish ? "Connect and apply" : "连接钱包并报名"
                             : isEnglish ? "Connect wallet" : "连接钱包"}
@@ -472,8 +514,8 @@ export default function Join() {
                     {canOpenTelegram ? (
                       <a href={telegramHref} target="_blank" rel="noreferrer" className="premium-button-muted w-full">
                         {verification.status === "manual_review"
-                          ? isEnglish ? "Send for review" : "发送人工核对"
-                          : isEnglish ? "Send intent" : "发送参与意向"}
+                          ? isEnglish ? "Send for review" : "发送人工确认"
+                          : isEnglish ? "Send request" : "发送参与信息"}
                       </a>
                     ) : null}
 
@@ -516,7 +558,7 @@ export default function Join() {
               {isChecking
                 ? isEnglish ? "Checking" : "正在验资"
                 : address
-                  ? isEnglish ? "Verify and bid" : "验资并竞拍"
+                  ? isEnglish ? "Verify and bid" : "核对并竞拍"
                   : isEnglish ? "Connect wallet" : "连接钱包"}
             </button>
             {submitted === "auction" && address ? (
