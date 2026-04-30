@@ -420,7 +420,7 @@ export default function BotPresale() {
             <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
               <div>
                 <h1 className="text-4xl font-black leading-[1.02] tracking-normal text-foreground sm:text-5xl">
-                  {isEnglish ? "72H Presale" : "72H 预售"}
+                  {isEnglish ? "72H Presale Status / Waitlist" : "72H 预售状态 / 等候名单"}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {presale.enabled
@@ -428,8 +428,8 @@ export default function BotPresale() {
                       ? "Use the official Mini App and TonConnect only. Transaction details are checked before signing."
                       : "仅通过官方 Mini App 和 TonConnect 进入交易。签名前会核对目标地址与阶段。"
                     : isEnglish
-                      ? "Purchases are not live yet. This page keeps the official status, wallet pre-check, and contract links in one place."
-                      : "真实购买暂未开放。本页只保留官方状态、钱包预检查和合约核验入口。"}
+                      ? "Presale is not open. This page does not create purchase transactions; it only keeps official status, wallet pre-check, and contract links in one place."
+                      : "预售未开放。本页不会创建购买交易，只保留官方状态、钱包预检查和合约核验入口。"}
                 </p>
               </div>
 
@@ -491,8 +491,8 @@ export default function BotPresale() {
             {!presale.enabled ? (
               <div className="mt-4 rounded-sm border border-gold/25 bg-gold/8 px-4 py-3 text-sm leading-6 text-foreground/88">
                 {isEnglish
-                  ? "Opening this page will not create or sign a transaction while the presale flag is off."
-                  : "预售开关关闭期间，本页不会创建或签名交易。"}
+                  ? "Presale is not open. This page will not create or sign a transaction while the presale flag is off."
+                  : "预售未开放。预售开关关闭期间，本页不会创建或签名交易。"}
               </div>
             ) : null}
           </div>
@@ -517,7 +517,7 @@ export default function BotPresale() {
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <QuickAction
                     icon={<CircleDollarSign className="h-4 w-4" />}
-                    label={isEnglish ? "I want to buy" : "我想购买"}
+                    label={isEnglish ? "Notify me when official purchase opens" : "正式开放时通知我"}
                     onClick={() => recordBuyerSignal("buy_interest")}
                   />
                   <QuickAction
@@ -546,8 +546,13 @@ export default function BotPresale() {
 
               <div className="rounded-md border border-line/70 bg-surface/72 p-5 sm:p-6">
                 <h2 className="text-xl font-black tracking-normal text-foreground">
-                  {isEnglish ? "Stage prices" : "阶段价格"}
+                  {isEnglish ? "Planned stage rules" : "计划阶段规则"}
                 </h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {isEnglish
+                    ? "Not currently purchasable. These are planned rules for official review only."
+                    : "当前不可购买。以下仅为官方核对用的计划规则。"}
+                </p>
                 <div className="mt-5 overflow-hidden rounded-sm border border-line/70">
                   {presale.stageRules.map((item) => (
                     <StagePriceRow

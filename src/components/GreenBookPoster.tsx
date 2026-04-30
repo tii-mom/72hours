@@ -7,8 +7,8 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
   const { locale: contextLocale } = useLocale();
   const locale = localeProp ?? contextLocale;
   const content = getGreenBookContent(locale);
-  const { hero, quickFacts, share } = content;
-  const featuredBullets = share.bullets.slice(0, 3);
+  const { quickFacts, share } = content;
+  const featuredBullets = share.bullets.slice(0, 4);
 
   return (
     <article
@@ -37,12 +37,9 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
             <p className="text-[10px] font-bold uppercase tracking-[0.42em] text-primary/75">
               {locale === "en-US" ? "72H GREEN BOOK" : "72H 绿皮书"}
             </p>
-            <h3 className="text-[clamp(3rem,13vw,5.4rem)] font-bold leading-[0.88] tracking-[-0.08em]">
+            <h3 className="text-[clamp(2.35rem,10vw,4.3rem)] font-bold leading-[0.92] tracking-normal">
               <span className="block text-foreground drop-shadow-[0_0_16px_rgba(124,255,102,0.12)]">
-                72H
-              </span>
-              <span className="block text-primary drop-shadow-[0_0_16px_rgba(124,255,102,0.28)]">
-                {locale === "en-US" ? "Green Book" : "绿皮书"}
+                {share.title}
               </span>
             </h3>
             <p className="max-w-[28ch] text-[14px] leading-relaxed text-white/74 sm:max-w-[30ch] sm:text-[15px]">
@@ -51,13 +48,10 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
           </section>
 
           <section className="grid grid-cols-2 gap-2.5">
-            {quickFacts.map((fact, index) => (
+            {quickFacts.map((fact) => (
               <div
                 key={fact.label}
-                className={cn(
-                  "rounded-[22px] border border-white/8 bg-white/4 px-3 py-3",
-                  index === 2 && "col-span-2"
-                )}
+                className="rounded-[22px] border border-white/8 bg-white/4 px-3 py-3"
               >
                 <p className="text-[10px] font-bold tracking-[0.12em] text-white/45">
                   {fact.label}
@@ -65,7 +59,7 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
                 <p
                   className={cn(
                     "mt-1.5 font-semibold leading-tight text-foreground",
-                    fact.label === (locale === "en-US" ? "Total supply" : "总量")
+                    fact.value.includes("100,000,000,000")
                       ? "break-all text-[11px] sm:text-[13px]"
                       : "break-words text-[13px] sm:text-[14px]"
                   )}
@@ -80,10 +74,10 @@ export function GreenBookPoster({ className, locale: localeProp }: { className?:
             {featuredBullets.map((bullet) => (
               <div
                 key={bullet}
-                className="flex gap-3 rounded-[22px] border border-white/8 bg-black/24 px-3.5 py-3"
+                className="flex gap-3 rounded-[20px] border border-white/8 bg-black/24 px-3.5 py-2.5"
               >
                 <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary shadow-[0_0_12px_rgba(124,255,102,0.8)]" />
-                <span className="text-[13px] leading-relaxed text-white/82 sm:text-[14px]">{bullet}</span>
+                <span className="text-[12px] leading-relaxed text-white/82 sm:text-[13px]">{bullet}</span>
               </div>
             ))}
           </section>

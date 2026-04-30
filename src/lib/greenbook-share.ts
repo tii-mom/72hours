@@ -410,7 +410,7 @@ function drawSimpleShareCard(
   locale: Locale
 ) {
   const { share, quickFacts } = content;
-  const bullets = share.bullets.slice(0, 3);
+  const bullets = share.bullets.slice(0, 4);
 
   ctx.save();
   ctx.fillStyle = "rgba(3, 8, 4, 0.82)";
@@ -440,12 +440,16 @@ function drawSimpleShareCard(
   ctx.fillText(localized(locale, "72H 绿皮书", "72H GREEN BOOK"), x + 28, y + 118);
 
   ctx.fillStyle = "#f4fff4";
-  ctx.font = `700 150px ${TITLE_FONT}`;
-  ctx.fillText("72H", x + 28, y + 152);
+  ctx.font = `700 94px ${TITLE_FONT}`;
+  drawWrappedText(ctx, share.title, x + 28, y + 148, width - 56, locale, {
+    font: `700 94px ${TITLE_FONT}`,
+    fillStyle: "#f4fff4",
+    lineHeight: 106,
+  });
 
   ctx.fillStyle = "#7cff66";
-  ctx.font = `700 102px ${TITLE_FONT}`;
-  ctx.fillText(localized(locale, "绿皮书", "Green Book"), x + 28, y + 278);
+  ctx.font = `700 42px ${TITLE_FONT}`;
+  ctx.fillText("72H Green Book", x + 28, y + 330);
   ctx.restore();
 
   drawWrappedText(ctx, share.subtitle, x + 28, y + 404, width - 56, locale, {
@@ -459,7 +463,7 @@ function drawSimpleShareCard(
   quickFacts.forEach((fact, index) => {
     const factX = x + 28 + (index % 2) * (factWidth + 16);
     const rowY = factY + Math.floor(index / 2) * 118;
-    const actualWidth = index === 2 ? width - 56 : factWidth;
+    const actualWidth = factWidth;
 
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.04)";
@@ -529,7 +533,11 @@ function drawHighlightsCard(
   content: GreenBookPosterContent,
   locale: Locale
 ) {
-  const { useCases } = content;
+  const highlights = content.share.bullets.map((bullet, index) => ({
+    kicker: String(index + 1).padStart(2, "0"),
+    title: bullet,
+    body: content.quickFacts[index]?.body ?? content.share.subtitle,
+  }));
   const cardHeight = 438;
 
   ctx.save();
@@ -540,7 +548,7 @@ function drawHighlightsCard(
   strokeRoundedRect(ctx, x, y, width, cardHeight, 36);
   ctx.restore();
 
-  drawLabel(ctx, x + 24, y + 24, localized(locale, "三大使用场景", "USE CASES"), {
+  drawLabel(ctx, x + 24, y + 24, localized(locale, "传播要点", "SHARE POINTS"), {
     fillStyle: "rgba(124, 255, 102, 0.12)",
     strokeStyle: "rgba(124, 255, 102, 0.26)",
     textStyle: "#c9ffb8",
@@ -550,17 +558,17 @@ function drawHighlightsCard(
   ctx.save();
   ctx.fillStyle = "#f4fff4";
   ctx.font = `700 42px ${TITLE_FONT}`;
-  ctx.fillText(localized(locale, "三大使用场景", "Three use scenarios"), x + 24, y + 88);
+  ctx.fillText(localized(locale, "短版传播点", "Short share points"), x + 24, y + 88);
   ctx.fillStyle = "rgba(236, 255, 237, 0.64)";
   ctx.font = `500 24px ${TITLE_FONT}`;
-  ctx.fillText(localized(locale, "使用 / 参与 / 学习", "Use / Participate / Learn"), x + 286, y + 96);
+  ctx.fillText(content.share.subtitle, x + 286, y + 96);
   ctx.restore();
 
   const rowTop = y + 146;
   const rowHeight = 88;
   const rowGap = 12;
 
-  useCases.forEach((item, index) => {
+  highlights.slice(0, 3).forEach((item, index) => {
     const rowY = rowTop + index * (rowHeight + rowGap);
 
     ctx.save();
@@ -621,19 +629,20 @@ function drawSupplyCard(
   content: GreenBookPosterContent,
   locale: Locale
 ) {
-  const { supply } = content;
-  const segments = supply.buckets.map((bucket) => ({
-    ...bucket,
-    color:
-      bucket.label === "Shadow Supply"
-        ? "rgba(124, 255, 102, 0.9)"
-        : bucket.label === "Sale Pool"
-          ? "rgba(179, 255, 132, 0.92)"
-          : bucket.label === "House Vault"
-            ? "rgba(109, 255, 155, 0.9)"
-            : bucket.label === "LP Reserve"
-              ? "rgba(224, 255, 122, 0.88)"
-              : "rgba(95, 255, 179, 0.84)",
+  const { economyTable } = content;
+  const segmentColors = [
+    "rgba(124, 255, 102, 0.9)",
+    "rgba(179, 255, 132, 0.92)",
+    "rgba(109, 255, 155, 0.9)",
+    "rgba(224, 255, 122, 0.88)",
+    "rgba(95, 255, 179, 0.84)",
+    "rgba(156, 255, 207, 0.78)",
+  ] as const;
+  const segments = economyTable.allocations.map((bucket, index) => ({
+    label: bucket.name,
+    value: bucket.amount,
+    share: Number.parseFloat(bucket.share),
+    color: segmentColors[index] ?? "rgba(95, 255, 179, 0.84)",
   }));
 
   const cardHeight = 624;
@@ -667,11 +676,11 @@ function drawSupplyCard(
 
   ctx.fillStyle = "rgba(236, 255, 237, 0.72)";
   ctx.font = `500 24px ${TITLE_FONT}`;
-  ctx.fillText(supply.note, x + 24, y + 140);
+  ctx.fillText(economyTable.summary, x + 24, y + 140);
 
   ctx.fillStyle = "#7cff66";
   ctx.font = `700 76px ${MONO_FONT}`;
-  ctx.fillText(supply.totalSupply, x + 24, y + 188);
+  ctx.fillText("100,000,000,000", x + 24, y + 188);
   ctx.restore();
 
   const barX = x + 24;

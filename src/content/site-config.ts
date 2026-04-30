@@ -55,8 +55,8 @@ function buildSiteConfig(locale: Locale): SiteConfig {
     hero: {
       title: isEnglish ? "72H on TON." : "72H 在 TON 上。",
       subtitle: isEnglish
-        ? "Life is short. Wealth can solve it — restart in 72 hours."
-        : "人生苦短，暴富可解—72小时重启人生。",
+        ? "Open the official 72H ecosystem entries in 72 hours."
+        : "72小时，进入官方 72H 生态入口。",
       proofSignals: isEnglish
         ? ["TON Chain", "Fixed Supply", "Rich Apps", "New Model"]
         : ["TON链", "固定发行", "丰富应用", "创新经济模型"],

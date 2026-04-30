@@ -245,27 +245,27 @@ function getHomeContent(locale: Locale, siteName: string) {
   const launchEntries: readonly LaunchEntry[] = [
     {
       title: "WAN",
-      body: isEnglish ? "Secure access console for sessions, nodes, and subscription." : "安全接入控制台，处理会话、节点与订阅。",
+      body: isEnglish ? "Access, sessions, nodes." : "接入、会话、节点。",
       href: "https://wan.lat",
       meta: isEnglish ? "Live app" : "在线应用",
       external: true,
     },
     {
       title: "Distribution",
-      body: isEnglish ? "Traceable distribution for links, images, and bot entries." : "链接、图片和 Bot 入口的可追踪分发。",
+      body: isEnglish ? "Track links, images, bots." : "追踪链接、图片、Bot。",
       href: "https://distribution.72h.lol/distribution/",
       meta: isEnglish ? "Ecosystem app" : "生态应用",
       external: true,
     },
     {
       title: isEnglish ? "72H Capital" : "72H Capital",
-      body: isEnglish ? "Capital seats, identity surfaces, and verification." : "资本席位、身份界面与公开验证。",
+      body: isEnglish ? "Seats, identity, verification." : "席位、身份、验证。",
       href: "/capital",
       meta: isEnglish ? "Capital" : "资本",
     },
     {
       title: isEnglish ? "Green Book" : "绿皮书",
-      body: isEnglish ? "Token use, supply logic, participation, and risk boundary." : "用途、供给逻辑、参与方式与风险边界。",
+      body: isEnglish ? "Use, supply, risk boundary." : "用途、供给、风险边界。",
       href: "/greenbook",
       meta: isEnglish ? "Public notes" : "公开说明",
     },
@@ -275,17 +275,17 @@ function getHomeContent(locale: Locale, siteName: string) {
     {
       label: isEnglish ? "01 / Utility" : "01 / 用途",
       title: isEnglish ? "Use creates demand." : "使用创造需求。",
-      body: isEnglish ? "72H connects apps, access, learning, and identity." : "72H 连接应用、接入、学习与身份。",
+      body: isEnglish ? "Apps, access, learning, identity." : "应用、接入、学习、身份。",
     },
     {
       label: isEnglish ? "02 / Scarcity" : "02 / 稀缺",
-      title: isEnglish ? "Fixed supply keeps the rule simple." : "固定发行让规则保持清晰。",
-      body: isEnglish ? "No governance theater. Utility, access, and participation stay visible." : "不做治理叙事，保留用途、接入和参与。",
+      title: isEnglish ? "Fixed supply." : "固定发行。",
+      body: isEnglish ? "Simple rule, visible boundary." : "规则简单，边界可见。",
     },
     {
       label: isEnglish ? "03 / Ecosystem" : "03 / 生态",
       title: isEnglish ? "Applications carry the story." : "应用承载价值。",
-      body: isEnglish ? "WAN, Distribution, Capital, and Green Book form the first public surface." : "WAN、Distribution、Capital 与绿皮书构成首批公开界面。",
+      body: isEnglish ? "WAN, Distribution, Capital, Green Book." : "WAN、Distribution、Capital、绿皮书。",
     },
   ];
 
@@ -293,22 +293,22 @@ function getHomeContent(locale: Locale, siteName: string) {
     hero: {
       title: siteName,
       lead: isEnglish
-        ? "Life is short. Wealth can solve it — restart in 72 hours."
-        : "人生苦短，暴富可解—72小时重启人生。",
-      primaryCtaLabel: isEnglish ? "Browse Ecosystem" : "浏览生态应用",
+        ? "Open official entries in 72 hours."
+        : "72小时，进入可用应用。",
+      primaryCtaLabel: isEnglish ? "Open official entries" : "打开官方入口",
       secondaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
     },
     featureSignals,
     launch: {
-      kicker: isEnglish ? "Live surfaces" : "可进入",
-      title: isEnglish ? "Apps before explanation." : "应用先于叙事。",
-      lead: isEnglish ? "The first public layer is already usable." : "首批公开界面已经可用。",
+      kicker: isEnglish ? "Official surfaces" : "官方入口",
+      title: isEnglish ? "Use first." : "先进入使用。",
+      lead: isEnglish ? "Choose a live surface and continue there." : "选择一个入口，直接开始。",
       entries: launchEntries,
     },
     economy: {
       kicker: isEnglish ? "72H model" : "72H 模型",
-      title: isEnglish ? "Fixed supply. Real usage. Public boundary." : "固定发行。真实使用。公开边界。",
-      lead: isEnglish ? "72H is not an abstract banner; it is the utility layer across apps and identity." : "72H 不是抽象口号，而是应用与身份之间的用途层。",
+      title: isEnglish ? "Fixed supply. Real usage." : "固定发行。真实使用。",
+      lead: isEnglish ? "Rules stay short so the apps stay clear." : "规则尽量短，入口保持清晰。",
       entries: economyEntries,
     },
   };
@@ -435,14 +435,14 @@ export default function Home() {
         </div>
         <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-background/5 via-background/10 to-background/90" />
 
-        <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-5 pb-8 pt-5 sm:px-8 sm:pb-12 lg:px-16 lg:py-16">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)] lg:items-end">
-            <div className="flex max-w-4xl flex-col gap-5 sm:gap-6">
-              <h1 className="text-[clamp(3.4rem,13vw,7rem)] font-black leading-[0.88] tracking-normal text-foreground">
+        <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-5 pb-6 pt-5 sm:px-8 sm:pb-12 lg:px-16 lg:py-16">
+          <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)] lg:items-end">
+            <div className="flex max-w-4xl flex-col gap-4 sm:gap-6">
+              <h1 className="text-[clamp(3.7rem,16vw,7rem)] font-black leading-[0.86] tracking-normal text-foreground">
                 {content.hero.title}
               </h1>
 
-              <p className="max-w-3xl text-[18px] leading-8 text-muted-foreground sm:text-2xl sm:leading-9">
+              <p className="max-w-[18rem] text-[18px] leading-7 text-muted-foreground sm:max-w-3xl sm:text-2xl sm:leading-9">
                 {content.hero.lead}
               </p>
 
@@ -462,18 +462,18 @@ export default function Home() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line/70 bg-line/60 sm:grid-cols-4">
+              <div className="grid grid-cols-4 gap-px overflow-hidden rounded-md border border-line/70 bg-line/60">
                 {content.featureSignals.map((signal) => (
-                  <div key={signal.order} className="bg-background/58 px-4 py-3 backdrop-blur-sm">
-                    <div className="font-mono text-[10px] text-gold/80">{signal.order}</div>
-                    <div className="mt-2 text-xs font-semibold text-muted-foreground">{signal.label}</div>
-                    <div className="mt-1 text-base font-black text-foreground">{signal.value}</div>
+                  <div key={signal.order} className="bg-background/58 px-2.5 py-3 backdrop-blur-sm sm:px-4">
+                    <div className="font-mono text-[9px] text-gold/80 sm:text-[10px]">{signal.order}</div>
+                    <div className="mt-2 truncate text-[10px] font-semibold text-muted-foreground sm:text-xs">{signal.label}</div>
+                    <div className="mt-1 text-sm font-black text-foreground sm:text-base">{signal.value}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="lg:pt-6">
+            <div className="hidden lg:block lg:pt-6">
               <FeaturePanel signals={content.featureSignals} isEnglish={isEnglish} />
             </div>
           </div>

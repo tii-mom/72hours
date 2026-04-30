@@ -28,7 +28,7 @@ export function InfoPageHero({
   titleClassName = "",
 }: InfoPageHeroProps) {
   return (
-    <section className={cn("page-hero border-b border-line/70 overflow-hidden", className)}>
+    <section className={cn("page-hero hidden border-b border-line/70 overflow-hidden md:block", className)}>
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.08)_0,transparent_42%),linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_42%)]" />
       <div className="page-container page-container-narrow relative z-10 flex flex-col gap-6 sm:gap-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.82fr)] lg:items-end">
