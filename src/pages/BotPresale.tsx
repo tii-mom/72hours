@@ -653,8 +653,8 @@ export default function BotPresale() {
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
                   {isEnglish
-                    ? "This phase is for reservations and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. Funds movement, wallet actions, private transfers, and quota commitments are not handled here."
-                    : "当前阶段仅开放预约与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，社群分享任务复核通过后才可能 +2。本页不处理资金动作、钱包动作、私下转账或额度承诺。"}
+                    ? "Reservation is not purchase. This phase is for reservation records and raffle-code accumulation only: reserve +1, valid invited reservation +1, approved community sharing task +2. Funds movement, wallet actions, private transfers, and quota commitments are not handled here."
+                    : "预约不是购买。当前阶段仅开放预约记录与抽奖码累计：完成预约 +1，邀请新用户完成预约 +1，社群分享任务复核通过后才可能 +2。本页不处理资金动作、钱包动作、私下转账或额度承诺。"}
                 </p>
               </div>
             </div>
@@ -814,8 +814,8 @@ export default function BotPresale() {
                   </label>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-xs leading-5 text-muted-foreground">
                     {isEnglish
-                      ? `Current phase: early reservation only. The interest range is not quota, eligibility, price, or a funding commitment. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task can add +2 only after review. Funds movement, wallet actions, and asset-receipt steps are not accepted here.`
-                      : `当前阶段：仅早期预约。关注区间不代表额度、资格、价格或资金承诺。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核通过后才可能 +2。本页不处理资金动作、钱包动作或资产接收步骤。`}
+                      ? `Current phase: early reservation only; reservation is not purchase. The interest range is not quota, eligibility, price, or a funding commitment. Submit once for +1 raffle code; valid invited reservations add +1 each; the group/community sharing task can add +2 only after review. Funds movement, wallet actions, and asset-receipt steps are not accepted here.`
+                      : `当前阶段：仅早期预约；预约不是购买。关注区间不代表额度、资格、价格或资金承诺。提交成功 +1 个抽奖码；每个有效邀请预约 +1；群/社群分享任务审核通过后才可能 +2。本页不处理资金动作、钱包动作或资产接收步骤。`}
                   </div>
                   <button
                     type="submit"

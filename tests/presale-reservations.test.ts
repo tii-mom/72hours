@@ -252,6 +252,15 @@ test("sales admin lists waitlist reservations with a dedicated read-only secret 
     env,
   });
   assert.equal(listed.status, 200);
+
+  const listedWithBearer = await onSalesAdminGet({
+    request: new Request("https://72h.example/api/telegram/sales-admin", {
+      headers: { authorization: "Bearer readonly-secret" },
+    }),
+    env,
+  });
+  assert.equal(listedWithBearer.status, 200);
+
   const listedPayload = await listed.json() as any;
   assert.equal(listedPayload.ok, true);
   assert.equal(listedPayload.presaleMode.mode, "waitlist");

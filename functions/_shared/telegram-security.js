@@ -3,6 +3,7 @@ const LEGACY_BOT_SECRET_HEADER = "x-telegram-bot-secret";
 const TELEGRAM_INIT_DATA_HEADER = "x-telegram-init-data";
 const SALES_ADMIN_READONLY_SECRET_HEADER = "x-72h-sales-admin-readonly-secret";
 const TELEGRAM_INIT_DATA_AUTH_PREFIX = "tma ";
+const BEARER_AUTH_PREFIX = "bearer ";
 
 function readSecret(value) {
   return typeof value === "string" && value.trim() ? value.trim() : "";
@@ -74,9 +75,16 @@ export function getSalesAdminReadOnlySecret(env) {
   return readSecret(env.H72H_SALES_ADMIN_READONLY_SECRET);
 }
 
+function readBearerToken(request) {
+  const auth = readSecret(request.headers.get("authorization"));
+  if (!auth.toLowerCase().startsWith(BEARER_AUTH_PREFIX)) return "";
+  return auth.slice(BEARER_AUTH_PREFIX.length).trim();
+}
+
 export function verifySalesAdminReadOnlySecret(request, env) {
   const received =
     readSecret(request.headers.get(SALES_ADMIN_READONLY_SECRET_HEADER)) ||
+    readBearerToken(request) ||
     readSecret(request.headers.get(TELEGRAM_WEBHOOK_SECRET_HEADER)) ||
     readSecret(request.headers.get(LEGACY_BOT_SECRET_HEADER));
 
