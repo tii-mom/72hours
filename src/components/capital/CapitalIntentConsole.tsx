@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, FileCode2, Radio, Wallet } from "lucide-react";
+import { ArrowRight, BadgeCheck, FileCode2, Radio, ShieldCheck, Wallet } from "lucide-react";
 import { SpotlightCard } from "../SpotlightCard";
 import type { Locale } from "../../lib/locale";
 import {
@@ -71,18 +71,18 @@ export function CapitalIntentConsole({
   return (
     <SpotlightCard className={`page-card page-card-lg flex h-full flex-col gap-5 ${toneClassMap[state.status]}`}>
       <CapitalSectionHeading
-        eyebrow={isEnglish ? "Action status" : "动作状态"}
+        eyebrow={isEnglish ? "Status" : "状态"}
         title={
           state.status === "idle"
             ? isEnglish
-              ? "No active Capital request yet."
-              : "当前还没有活跃 Capital 请求。"
+              ? "No open Capital action yet."
+              : "当前没有开放的 Capital 动作。"
             : state.status === "loading"
               ? isEnglish
                 ? "Preparing the request for review."
                 : "正在生成请求核对记录。"
             : state.status === "ready"
-                ? state.response.actionSummary?.title ?? (isEnglish ? "Request ready for review." : "请求已可核对。")
+                ? state.response.actionSummary?.title ?? (isEnglish ? "Request recorded." : "请求已记录。")
                 : isEnglish
                   ? "This request needs attention."
                   : "该请求需要处理。"
@@ -90,8 +90,8 @@ export function CapitalIntentConsole({
         body={
           state.status === "idle"
             ? isEnglish
-              ? "When you request a seat action, this panel shows the wallet-aware review record. Live contract signing is not open yet."
-              : "当你请求席位动作时，这里会显示带钱包上下文的核对记录。真实合约签名尚未开放。"
+              ? "Capital seat configuration will open only through the official release. This panel currently shows status records only."
+              : "真实 Capital 席位配置尚未开放。此处仅显示状态记录，不开放合约签名。"
             : state.status === "loading"
               ? isEnglish
                 ? "The website is preparing the action details for review."
@@ -110,7 +110,7 @@ export function CapitalIntentConsole({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {isEnglish ? "Request id" : "请求编号"}
+                {isEnglish ? "Record ID" : "记录编号"}
               </div>
               <div className="mt-2 text-sm font-semibold text-foreground">{state.response.intentId}</div>
             </div>
@@ -130,10 +130,10 @@ export function CapitalIntentConsole({
             </div>
             <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {isEnglish ? "Network / gas" : "网络 / Gas"}
+                {isEnglish ? "Safety status" : "安全状态"}
               </div>
               <div className="mt-2 text-sm font-semibold text-foreground">
-                {state.response.networkMeta?.networkName ?? state.response.network} / {state.response.gasPolicy}
+                {isEnglish ? "Official review only · wallet signing closed" : "仅供官方核对 · 钱包签名未开放"}
               </div>
             </div>
           </div>
@@ -157,11 +157,11 @@ export function CapitalIntentConsole({
           </div>
 
           {state.response.transactionRequest?.messages?.length ? (
-            <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-4">
-              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <details className="rounded-sm border border-line/70 bg-background/42 px-4 py-4">
+              <summary className="flex cursor-pointer list-none items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 <FileCode2 className="h-3.5 w-3.5" />
-                {isEnglish ? "Transaction details for review" : "交易信息核对"}
-              </div>
+                {isEnglish ? "Advanced transaction details" : "高级链上详情"}
+              </summary>
               {state.response.transactionRequest.scaffold ||
               state.response.transactionRequest.operation ||
               state.response.transactionRequest.entrypoint ? (
@@ -169,7 +169,7 @@ export function CapitalIntentConsole({
                   {state.response.transactionRequest.operation ? (
                     <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
                       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {isEnglish ? "Operation" : "操作"}
+                        {isEnglish ? "Action type" : "动作类型"}
                       </div>
                       <div className="mt-2">{state.response.transactionRequest.operation}</div>
                     </div>
@@ -177,7 +177,7 @@ export function CapitalIntentConsole({
                   {state.response.transactionRequest.entrypoint ? (
                     <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
                       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {isEnglish ? "Contract entry" : "合约入口"}
+                        {isEnglish ? "On-chain entry" : "链上入口"}
                       </div>
                       <div className="mt-2">{state.response.transactionRequest.entrypoint}</div>
                     </div>
@@ -190,22 +190,16 @@ export function CapitalIntentConsole({
                       <div className="mt-2">{state.response.transactionRequest.payloadEncoding}</div>
                     </div>
                   ) : null}
-                  {state.response.transactionRequest.scaffold ? (
+                  {state.response.transactionRequest.scaffold?.productionReady === false ? (
                     <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86 sm:col-span-2">
                       <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {isEnglish ? "Not ready for signing" : "暂不可签名"}
+                        {isEnglish ? "Signing status" : "签名状态"}
                       </div>
                       <div className="mt-2">
-                        {state.response.transactionRequest.scaffold.version} /{" "}
-                        {state.response.transactionRequest.scaffold.encoding}
+                        {isEnglish
+                          ? "Wallet signing will remain unavailable until the transaction details are finalized."
+                          : "正式开放前，钱包签名暂不可用。"}
                       </div>
-                      {state.response.transactionRequest.scaffold.notes?.length ? (
-                        <div className="mt-2 space-y-1">
-                          {state.response.transactionRequest.scaffold.notes.map((note) => (
-                            <div key={note}>{note}</div>
-                          ))}
-                        </div>
-                      ) : null}
                     </div>
                   ) : null}
                 </div>
@@ -220,7 +214,7 @@ export function CapitalIntentConsole({
                   </div>
                 ))}
               </div>
-            </div>
+            </details>
           ) : null}
 
           {state.response.walletRequirements || state.response.storage ? (
@@ -237,9 +231,9 @@ export function CapitalIntentConsole({
               {state.response.storage ? (
                 <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-sm leading-7 text-foreground/86">
                   <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {isEnglish ? "Request record" : "请求记录"}
+                    {isEnglish ? "Status record" : "状态记录"}
                   </div>
-                  <div className="mt-2">{state.response.storage.mode}</div>
+                  <div className="mt-2">{isEnglish ? "Recorded for status tracking" : "已记录用于状态追踪"}</div>
                   <div>
                     {isEnglish ? "Recent requests" : "最近请求"}: {state.response.storage.recentCount}
                   </div>
@@ -274,10 +268,16 @@ export function CapitalIntentConsole({
 
               {executionState.status === "success" ? (
                 <div className="rounded-sm border border-primary/20 bg-primary/8 px-4 py-3 text-sm leading-7 text-foreground/88">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                    {isEnglish ? "Wallet submission result" : "钱包提交结果"}
+                  <div className="flex items-center gap-2 font-semibold text-primary">
+                    <ShieldCheck className="h-4 w-4" />
+                    {isEnglish ? "Submitted to wallet. Waiting for on-chain confirmation." : "已提交到钱包，等待链上确认。"}
                   </div>
-                  <div className="mt-2 break-all">{executionState.boc}</div>
+                  <details className="mt-3">
+                    <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                      {isEnglish ? "Advanced on-chain details" : "高级链上详情"}
+                    </summary>
+                    <div className="mt-2 break-all font-mono text-xs">{executionState.boc}</div>
+                  </details>
                 </div>
               ) : null}
 
@@ -294,7 +294,7 @@ export function CapitalIntentConsole({
               <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {isEnglish ? "Request tracking" : "请求追踪"}
+                    {isEnglish ? "Action status" : "动作状态"}
                   </div>
                   {onRefresh ? (
                     <button
@@ -351,47 +351,53 @@ export function CapitalIntentConsole({
 
                   <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      {isEnglish ? "Lifecycle" : "生命周期"}
+                      {isEnglish ? "Current state" : "当前状态"}
                     </div>
                     <div className="mt-2">
                       {trackingState.response?.terminal
                         ? isEnglish
-                          ? "Terminal"
-                          : "已终态"
+                          ? "Completed or closed"
+                          : "已完成或已关闭"
                         : isEnglish
-                          ? "Open"
-                          : "处理中"}
+                          ? "Waiting for confirmation"
+                          : "等待确认"}
                     </div>
                   </div>
 
-                  <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      {isEnglish ? "Explorer" : "浏览器链接"}
+                  <details className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86 sm:col-span-2">
+                    <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                      {isEnglish ? "Advanced on-chain details" : "高级链上详情"}
+                    </summary>
+                    <div className="mt-3 grid gap-3">
+                      <div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          {isEnglish ? "Explorer" : "浏览器链接"}
+                        </div>
+                        <div className="mt-2 break-all">
+                          {trackingState.response?.submission?.explorerUrl ? (
+                            <a
+                              href={trackingState.response.submission.explorerUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary underline decoration-primary/30 underline-offset-4"
+                            >
+                              {trackingState.response.submission.explorerUrl}
+                            </a>
+                          ) : (
+                            "—"
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          {isEnglish ? "BOC" : "BOC"}
+                        </div>
+                        <div className="mt-2 break-all font-mono text-xs">
+                          {trackingState.response?.submission?.boc ?? "—"}
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-2 break-all">
-                      {trackingState.response?.submission?.explorerUrl ? (
-                        <a
-                          href={trackingState.response.submission.explorerUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary underline decoration-primary/30 underline-offset-4"
-                        >
-                          {trackingState.response.submission.explorerUrl}
-                        </a>
-                      ) : (
-                        "—"
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="rounded-sm border border-line/70 bg-surface/72 px-4 py-3 text-sm leading-7 text-foreground/86">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      {isEnglish ? "BOC" : "BOC"}
-                    </div>
-                    <div className="mt-2 break-all">
-                      {trackingState.response?.submission?.boc ?? "—"}
-                    </div>
-                  </div>
+                  </details>
                 </div>
 
                 {trackingState.message ? (
@@ -414,10 +420,10 @@ export function CapitalIntentConsole({
               : state.status === "loading"
                 ? isEnglish
                   ? "Request details are being prepared."
-                  : "请求信息正在生成。"
+                  : "状态信息正在生成。"
                 : isEnglish
                   ? "This panel becomes active when you request a Capital action."
-                  : "当你请求 Capital 动作后，这个面板会变成活跃状态。"}
+                  : "Capital 真实动作开放后，这个面板会显示状态。"}
           </div>
         </div>
       )}

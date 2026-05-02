@@ -61,7 +61,7 @@ const legalDocsZh: Array<
     sections: [
       {
         heading: "站点定位",
-        body: "72hours 官网用于呈现官方入口、生态应用、绿皮书、72H 用途、学习内容和公开联系信息。本站不是托管账户、收益后台或保证性结算界面。",
+        body: "72hours 官网用于呈现官方入口、生态应用、绿皮书、72H 用途、学习报名和公开联系信息。本站不是托管账户、收益后台或保证性结算界面。",
       },
       {
         heading: "官方入口与验证",
@@ -96,7 +96,7 @@ const legalDocsZh: Array<
     sections: [
       {
         heading: "非投资建议",
-        body: "站内关于 72H、生态应用、学习内容、公开活动和参与方式的内容仅用于信息说明与入口导航，不构成投资建议、财务建议、证券推介、税务建议或法律意见。",
+        body: "站内关于 72H、生态应用、学习报名、公开活动和参与方式的内容仅用于信息说明与入口导航，不构成投资建议、财务建议、证券推介、税务建议或法律意见。",
       },
       {
         heading: "非收益承诺",
@@ -178,7 +178,7 @@ const legalDocsEn: Array<
     sections: [
       {
         heading: "Site positioning",
-        body: "The 72hours site explains official entries, ecosystem apps, Green Book, 72H Use, learning content, and public contact channels. It is an information and navigation surface, not a custody account, return dashboard, or guaranteed settlement interface.",
+        body: "The 72hours site explains official entries, ecosystem apps, Green Book, 72H Use, learning content, and public contact channels. It is an information and navigation entry, not a custody account, return dashboard, purchase page, claim page, or guaranteed settlement interface.",
       },
       {
         heading: "Official entry and verification",

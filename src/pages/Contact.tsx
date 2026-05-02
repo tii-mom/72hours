@@ -47,7 +47,7 @@ export default function Contact() {
       body: xChannel?.suitableFor.join(" / ") ?? (isEnglish ? "Public updates / Quick context" : "公开动态 / 快速了解"),
       expectation:
         xChannel?.expectationAfterJoining ?? (isEnglish ? ["Public updates", "Extra context"] : ["公开更新", "补充上下文"]),
-      href: xChannel?.url ?? "https://x.com/taichi2077",
+      href: xChannel?.url ?? "https://x.com/72hour_s",
       cta: xChannel?.ctaLabel ?? (isEnglish ? "Follow" : "关注"),
       note: xChannel?.officialVerificationNote ?? (isEnglish ? "X is for public observation." : "X 用于公开观察。"),
     },

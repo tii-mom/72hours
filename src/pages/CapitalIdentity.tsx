@@ -1,4 +1,5 @@
 import { ArrowRight, Wallet } from "lucide-react";
+import { useTonAddress } from "@tonconnect/ui-react";
 import { InfoCallout } from "../components/InfoCallout";
 import { InfoPageHero } from "../components/InfoPageHero";
 import { LocalizedLink as Link } from "../components/LocalizedLink";
@@ -15,12 +16,12 @@ import { useCapitalPortfolio } from "../lib/use-capital-data";
 
 function PortfolioSupplement({
   position,
-  claimableYield,
+  claimableReward,
   privateNote,
   isEnglish,
 }: {
   position: string;
-  claimableYield: string;
+  claimableReward: string;
   privateNote: string;
   isEnglish: boolean;
 }) {
@@ -37,10 +38,10 @@ function PortfolioSupplement({
         </div>
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            {isEnglish ? "Claimable yield" : "可领取收益"}
+            {isEnglish ? "Reward record" : "奖励记录"}
           </p>
           <p className="mt-2 text-sm font-semibold leading-7 text-foreground">
-            {claimableYield}
+            {claimableReward}
           </p>
         </div>
       </div>
@@ -85,10 +86,66 @@ const credentialToneClasses = {
   muted: "border-line/70 bg-surface/70",
 } as const;
 
+function CapitalIdentityConnectPrompt({ isEnglish, locale }: { isEnglish: boolean; locale: "zh-CN" | "en-US" }) {
+  return (
+    <div className="page-shell pt-20 sm:pt-24">
+      <InfoPageHero
+        kicker="72H Capital"
+        icon={<Wallet size={30} />}
+        title={isEnglish ? "Connect a wallet to open My Capital." : "连接钱包后打开我的 Capital。"}
+        lead={
+          isEnglish
+            ? "My Capital is wallet-scoped. The page does not request portfolio data until a TON wallet is connected."
+            : "我的 Capital 按钱包身份展示。连接 TON 钱包前，本页不会请求组合数据。"
+        }
+        noteLabel={isEnglish ? "Wallet required" : "需要钱包"}
+        noteTitle={isEnglish ? "Portfolio requests stay closed before connection." : "连接前不会发起组合请求。"}
+        noteBody={
+          isEnglish
+            ? "Use the wallet panel below to connect TonConnect, then this route will load the private portfolio view for that address."
+            : "请通过下方钱包面板连接 TonConnect，随后本路由会按该地址加载私有组合视图。"
+        }
+        chips={[
+          <span
+            key="tonconnect"
+            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+          >
+            TonConnect
+          </span>,
+          <span
+            key="no-api"
+            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+          >
+            {isEnglish ? "No API request before wallet" : "连接前不请求 API"}
+          </span>,
+        ]}
+      />
+
+      <section className="page-section-tight">
+        <div className="page-container page-container-narrow">
+          <CapitalWalletPanel locale={locale} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function CapitalIdentity() {
   const { locale } = useLocale();
   const isEnglish = locale === "en-US";
-  const portfolioState = useCapitalPortfolio(locale);
+  const walletAddress = useTonAddress(true);
+
+  if (!walletAddress) {
+    return <CapitalIdentityConnectPrompt isEnglish={isEnglish} locale={locale} />;
+  }
+
+  return <CapitalIdentityPortfolio walletAddress={walletAddress} />;
+}
+
+function CapitalIdentityPortfolio({ walletAddress }: { walletAddress: string }) {
+  const { locale } = useLocale();
+  const isEnglish = locale === "en-US";
+  const portfolioState = useCapitalPortfolio(locale, walletAddress);
   const {
     intentState,
     executionState,
@@ -113,8 +170,8 @@ export default function CapitalIdentity() {
                 kicker="72H Capital"
                 title={isEnglish ? "Portfolio is unavailable." : "组合页当前不可用。"}
                 body={isEnglish
-                  ? "The current service did not return a verifiable portfolio record. Redeem, yield, and signing actions remain closed until the record is available."
-                  : "当前服务没有返回可核对的组合记录。在记录可用前，赎回、收益领取与签名动作保持关闭。"}
+                  ? "The current service did not return a verifiable portfolio record. Redeem, reward, and signing actions remain closed until the record is available."
+                  : "当前服务没有返回可核对的组合记录。在记录可用前，赎回、奖励领取与签名动作保持关闭。"}
                 actions={[
                   { label: isEnglish ? "Retry portfolio" : "重新打开组合页", href: "/capital/me", variant: "primary" },
                   { label: isEnglish ? "Browse Capital" : "返回 Capital", href: "/capital" },
@@ -130,9 +187,9 @@ export default function CapitalIdentity() {
   }
 
   const reserveHolding = portfolio.holdings.find((holding) => parseCapitalSeatKey(holding.key)?.seatType === "reserve");
-  const yieldHolding = portfolio.holdings.find((holding) => Boolean(parseCapitalSeatKey(holding.key)));
+  const rewardHolding = portfolio.holdings.find((holding) => Boolean(parseCapitalSeatKey(holding.key)));
   const reserveSeat = reserveHolding ? parseCapitalSeatKey(reserveHolding.key) : undefined;
-  const yieldSeat = yieldHolding ? parseCapitalSeatKey(yieldHolding.key) : undefined;
+  const rewardSeat = rewardHolding ? parseCapitalSeatKey(rewardHolding.key) : undefined;
 
   return (
     <div className="page-shell pt-20 sm:pt-24">
@@ -163,8 +220,8 @@ export default function CapitalIdentity() {
               eyebrow={isEnglish ? "My seats" : "我的席位"}
               title={isEnglish ? "Active, historical, and completed identity stay in the same portfolio view." : "Active、Historical 与 Completed 身份集中在同一组合页。"}
               body={isEnglish
-                ? "Public identity cards remain shareable, while the private layer below each card carries position and yield context."
-                : "公开身份卡保持可分享，而卡片下方的私有层则补充持仓与收益信息。"}
+                ? "Public identity cards remain shareable, while the private layer below each card carries position and reward context."
+                : "公开身份卡保持可分享，而卡片下方的私有层则补充持仓与奖励信息。"}
             />
 
             <div className="grid gap-8 xl:grid-cols-2">
@@ -173,7 +230,7 @@ export default function CapitalIdentity() {
                   <CapitalIdentityCard identity={holding} locale={locale} />
                   <PortfolioSupplement
                     position={holding.position}
-                    claimableYield={holding.claimableYield}
+                    claimableReward={holding.claimableReward}
                     privateNote={holding.privateNote}
                     isEnglish={isEnglish}
                   />
@@ -214,8 +271,8 @@ export default function CapitalIdentity() {
                 eyebrow={isEnglish ? "Credentials" : "Credential"}
                 title={isEnglish ? "Credentials describe identity progress, not financial promises." : "Credential 用于描述身份进度，而不是金融承诺。"}
                 body={isEnglish
-                  ? "The current portfolio keeps allocation, mandate, completion, and network credentials visible without tying them to guaranteed returns."
-                  : "当前组合页展示 Allocation、Mandate、Completed 与 Network Credential，但不会把它们绑定为收益承诺。"}
+                  ? "The current portfolio keeps allocation, mandate, completion, and network credentials visible without presenting rewards as certain."
+                  : "当前组合页展示 Allocation、Mandate、Completed 与 Network Credential，但不会把它们表达为确定奖励。"}
               />
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -246,10 +303,10 @@ export default function CapitalIdentity() {
             <div className="flex flex-col gap-6">
               <CapitalSectionHeading
                 eyebrow={isEnglish ? "Action boundary" : "动作边界"}
-                title={isEnglish ? "Redeem and yield requests are review-only until signing opens." : "赎回与收益请求仅供核对，正式开放前暂不可签名。"}
+                title={isEnglish ? "Redeem and reward actions are closed until signing opens." : "赎回与奖励领取暂未开放，正式开放前不可签名。"}
                 body={isEnglish
-                  ? "Portfolio actions can prepare a wallet-aware record for review. Reserve redemption and yield claim cannot be signed or submitted on-chain until the official contract flow is live."
-                  : "组合页动作可生成带钱包上下文的核对记录。Reserve 赎回与收益领取在正式合约流程开放前不可签名，也不可链上提交。"}
+                  ? "Portfolio actions can prepare a wallet-aware record for review. Reserve redemption and reward requests cannot be signed or submitted on-chain until the official contract flow is live."
+                  : "组合页动作可生成带钱包上下文的核对记录。Reserve 赎回与奖励领取在正式合约流程开放前不可签名，也不可链上提交。"}
               />
 
               <SpotlightCard className="page-card page-card-lg flex flex-col gap-4 border-line/70 bg-surface/78">
@@ -268,23 +325,23 @@ export default function CapitalIdentity() {
                       });
                     }}
                   >
-                    {isEnglish ? "Request Reserve Redemption" : "请求 Reserve 赎回"}
+                    {isEnglish ? "Reserve redemption closed" : "Reserve 赎回暂未开放"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     className="page-action-muted"
-                    disabled={!yieldSeat}
+                    disabled={!rewardSeat}
                     onClick={() => {
-                      if (!yieldSeat) return;
-                      void requestIntent("yield.claim", {
-                        appSlug: yieldSeat.appSlug,
-                        seatType: yieldSeat.seatType,
-                        seatNumber: yieldSeat.seatNumber,
+                      if (!rewardSeat) return;
+                      void requestIntent("reward.claim", {
+                        appSlug: rewardSeat.appSlug,
+                        seatType: rewardSeat.seatType,
+                        seatNumber: rewardSeat.seatNumber,
                       });
                     }}
                   >
-                    {isEnglish ? "Request Yield Claim" : "请求收益领取"}
+                    {isEnglish ? "Rewards closed" : "奖励领取暂未开放"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </button>
                 </div>
@@ -293,15 +350,15 @@ export default function CapitalIdentity() {
                     {reserveSeat
                       ? `${reserveSeat.appSlug} / Reserve / #${reserveSeat.seatNumber}`
                       : isEnglish
-                        ? "No Reserve seat is available in the current portfolio sample."
-                        : "当前组合样例中没有可用的 Reserve 席位。"}
+                        ? "No Reserve seat is available in the current portfolio."
+                        : "当前组合中没有可用的 Reserve 席位。"}
                   </div>
                   <div className="rounded-sm border border-line/70 bg-background/42 px-4 py-3 text-sm leading-7 text-muted-foreground">
-                    {yieldSeat
-                      ? `${yieldSeat.appSlug} / ${yieldSeat.seatType} / #${yieldSeat.seatNumber}`
+                    {rewardSeat
+                      ? `${rewardSeat.appSlug} / ${rewardSeat.seatType} / #${rewardSeat.seatNumber}`
                       : isEnglish
-                        ? "No claimable seat is available in the current portfolio sample."
-                        : "当前组合样例中没有可发起收益领取的席位。"}
+                        ? "No reward-record seat is available in the current portfolio."
+                        : "当前组合中没有可发起奖励记录请求的席位。"}
                   </div>
                 </div>
               </SpotlightCard>

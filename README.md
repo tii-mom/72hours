@@ -82,6 +82,7 @@ npm run lint
 
 ## Notes
 
+- New Codex threads should start with `docs/CODEX_CONTEXT.md` and avoid loading generated evidence snapshots unless the task requires exact audit or launch evidence.
 - Chinese is the default public path space, for example `/greenbook`
 - English lives under `/en/*`, for example `/en/greenbook`
 - Legacy `?lang=` URLs are normalized into canonical locale paths at runtime

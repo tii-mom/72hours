@@ -24,7 +24,7 @@ export default function Legal() {
   if (!doc) {
     return (
       <div className="page-shell pt-20 sm:pt-24">
-        <section className="page-hero border-b border-line/70 overflow-hidden">
+        <section className="page-hero hidden border-b border-line/70 overflow-hidden md:block">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.08)_0,transparent_42%),linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_42%)]" />
           <div className="page-container page-container-narrow relative z-10">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.82fr)] lg:items-end">

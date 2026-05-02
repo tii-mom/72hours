@@ -1,29 +1,32 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
 import Layout from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollProgress } from "./components/Effects";
+import { PageLoader } from "./components/PageLoader";
 import { LocaleProvider, useLocale } from "./lib/locale";
 import { ThemeProvider, getThemeColor, useTheme } from "./lib/theme";
 import { resolveRouteMeta } from "./content/route-meta";
 import { stripLocalePrefix } from "./lib/routes";
+import CapitalRouteBoundary from "./components/CapitalRouteBoundary";
+import Ecosystem from "./pages/Ecosystem";
+import CapitalVerify from "./pages/CapitalVerify";
+import Learn from "./pages/Learn";
+import Hours from "./pages/Hours";
+import About from "./pages/About";
+import Faq from "./pages/Faq";
+import Contact from "./pages/Contact";
+import Legal from "./pages/Legal";
+import Contracts from "./pages/Contracts";
+import NotFound from "./pages/NotFound";
 
-const CapitalRouteBoundary = React.lazy(() => import("./components/CapitalRouteBoundary"));
-const Home = React.lazy(() => import("./pages/Home"));
-const Ecosystem = React.lazy(() => import("./pages/Ecosystem"));
 const Capital = React.lazy(() => import("./pages/Capital"));
 const CapitalApp = React.lazy(() => import("./pages/CapitalApp"));
 const CapitalIdentity = React.lazy(() => import("./pages/CapitalIdentity"));
-const CapitalVerify = React.lazy(() => import("./pages/CapitalVerify"));
+const BotPresale = React.lazy(() => import("./pages/BotPresale"));
 const GreenBook = React.lazy(() => import("./pages/GreenBook"));
-const Learn = React.lazy(() => import("./pages/Learn"));
-const Hours = React.lazy(() => import("./pages/Hours"));
-const About = React.lazy(() => import("./pages/About"));
 const Join = React.lazy(() => import("./pages/Join"));
-const Faq = React.lazy(() => import("./pages/Faq"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const Legal = React.lazy(() => import("./pages/Legal"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
+const TonConnectRouteBoundary = React.lazy(() => import("./components/TonConnectRouteBoundary"));
 
 function setMeta(attribute: "name" | "property", key: string, content: string) {
   const selector = `meta[${attribute}="${key}"]`;
@@ -128,22 +131,33 @@ function withCapitalBoundary(element: React.ReactNode) {
   return <CapitalRouteBoundary>{element}</CapitalRouteBoundary>;
 }
 
+function withLazyRoute(element: React.ReactNode) {
+  return <Suspense fallback={<PageLoader />}>{element}</Suspense>;
+}
+
+function withWalletRoute(element: React.ReactNode) {
+  return withLazyRoute(<TonConnectRouteBoundary>{element}</TonConnectRouteBoundary>);
+}
+
 function AppRoutes() {
   const sharedRoutes = (
     <>
-      <Route index element={<Home />} />
+      <Route index element={<Navigate to="join" replace />} />
       <Route path="ecosystem" element={<Ecosystem />} />
-      <Route path="capital" element={withCapitalBoundary(<Capital />)} />
-      <Route path="capital/me" element={withCapitalBoundary(<CapitalIdentity />)} />
-      <Route path="capital/:slug" element={withCapitalBoundary(<CapitalApp />)} />
+      <Route path="capital" element={withCapitalBoundary(withWalletRoute(<Capital />))} />
+      <Route path="capital/me" element={withCapitalBoundary(withWalletRoute(<CapitalIdentity />))} />
+      <Route path="capital/:slug" element={withCapitalBoundary(withWalletRoute(<CapitalApp />))} />
       <Route path="capital/:slug/:type/:seatNumber" element={withCapitalBoundary(<CapitalVerify />)} />
-      <Route path="greenbook" element={<GreenBook />} />
-      <Route path="join" element={<Join />} />
+      <Route path="bot/presale" element={withLazyRoute(<BotPresale />)} />
+      <Route path="greenbook" element={withLazyRoute(<GreenBook />)} />
+      <Route path="join" element={withWalletRoute(<Join />)} />
       <Route path="learn" element={<Learn />} />
       <Route path="hours" element={<Hours />} />
       <Route path="about" element={<About />} />
       <Route path="faq" element={<Faq />} />
       <Route path="contact" element={<Contact />} />
+      <Route path="contracts" element={<Contracts />} />
+      <Route path="token" element={<Navigate to="contracts" replace />} />
       <Route path="legal/:slug" element={<Legal />} />
       <Route path="*" element={<NotFound />} />
     </>
@@ -164,7 +178,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AppRoutes />
       </BrowserRouter>
     </ErrorBoundary>

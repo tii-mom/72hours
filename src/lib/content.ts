@@ -63,7 +63,7 @@ const AUDIENCE_LABELS: Record<AudienceTag, string> = {
 const PARTICIPATION_LABELS: Record<ParticipationMode, string> = {
   join_community: "先加入社区",
   try_now: "立即尝试",
-  apply_waitlist: "申请候补",
+  apply_waitlist: "申请预约",
   follow_updates: "先关注更新",
   deeper_participation: "更深参与",
 };
@@ -79,7 +79,7 @@ const AUDIENCE_LABELS_EN: Record<AudienceTag, string> = {
 const PARTICIPATION_LABELS_EN: Record<ParticipationMode, string> = {
   join_community: "Join community first",
   try_now: "Try now",
-  apply_waitlist: "Apply for waitlist",
+  apply_waitlist: "Apply for reservation",
   follow_updates: "Follow updates",
   deeper_participation: "Deeper participation",
 };

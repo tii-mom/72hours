@@ -1,0 +1,651 @@
+import { assertBotOnlyReservationMode } from "../../_shared/presale-mode.js";
+import { DEFAULT_72H_JETTON_MASTER, DEFAULT_PRESALE_VAULT_ADDRESS } from "../../_shared/presale-runtime.js";
+import { getSalesKvBinding, getSalesRecord, getSalesStorageStatus, putSalesRecord, recordSalesEvent } from "../../_shared/sales-storage.js";
+import { readTelegramMiniAppInitData, verifyTelegramMiniAppInitData, verifyTelegramWebhookSecret } from "../../_shared/telegram-security.js";
+
+const RESERVATION_OPEN_AT = "2026-05-05T09:00:00.000Z";
+const RESERVATION_REWARD_72H = "72";
+const LOTTERY_POOL_72H = "10000000";
+const CONTRACT_EVIDENCE_STATUS = "deployed_inactive_not_purchase";
+const LOTTERY_PAYOUT_MODE = "official_wallet_transfer_no_new_contract";
+const LOTTERY_FUNDING_STATUS = "awaiting_private_wallet_funding_tx";
+const WAITLIST_MODE = "warmup_waitlist_only";
+const RATE_LIMIT_TTL_SECONDS = 60;
+const BASE_RESERVATION_LOTTERY_CODES = 1;
+const REFERRAL_LOTTERY_CODES = 1;
+const COMMUNITY_SHARE_LOTTERY_CODES = 2;
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "cache-control": "no-store",
+      "content-type": "application/json; charset=utf-8",
+    },
+  });
+}
+
+function cleanString(value, maxLength = 160) {
+  return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, maxLength) : undefined;
+}
+
+function normalizeInviteCode(value) {
+  const cleaned = cleanString(value, 80);
+  if (!cleaned) return undefined;
+  const withoutPrefix = cleaned
+    .replace(/^https?:\/\/t\.me\/[^?]+\?(?:startapp|start)=/i, "")
+    .replace(/^(?:startapp=|start=)/i, "")
+    .replace(/^ref[_:-]/i, "")
+    .replace(/^@/, "")
+    .trim()
+    .toLowerCase();
+  const code = withoutPrefix.match(/[a-z0-9_.-]{2,64}/)?.[0];
+  return code || undefined;
+}
+
+function createInviteCode(user) {
+  return normalizeInviteCode(`u${user?.id}`) || normalizeInviteCode(String(user?.id));
+}
+
+function createInviteAlias(user) {
+  return normalizeInviteCode(user?.username);
+}
+
+function createInviteLink(env, inviteCode) {
+  if (!inviteCode) return undefined;
+  const botUsername = cleanString(env.H72H_TELEGRAM_BOT_USERNAME, 64) || "the72hbot";
+  return `https://t.me/${botUsername.replace(/^@/, "")}?startapp=ref_${encodeURIComponent(inviteCode)}`;
+}
+
+function getLotteryCodeCount(ledger = []) {
+  return ledger.reduce((sum, item) => sum + (Number(item.codes) || 0), 0);
+}
+
+function hasLotteryLedgerEntry(record, reason, relatedTelegramUserId) {
+  return (record?.lotteryCodeLedger || []).some((item) => (
+    item.reason === reason && (!relatedTelegramUserId || item.relatedTelegramUserId === relatedTelegramUserId)
+  ));
+}
+
+function cleanWallet(value) {
+  const wallet = cleanString(value, 96);
+  if (!wallet) return undefined;
+  if (!/^[A-Za-z0-9_\-:]{24,96}$/.test(wallet)) return undefined;
+  return wallet;
+}
+
+function walletDedupeKey(walletAddress) {
+  return walletAddress ? walletAddress.toLowerCase() : undefined;
+}
+
+function createEligibilityFields({ walletKey, riskFlags = [] } = {}) {
+  const hasWallet = Boolean(walletKey);
+  const hasHighRisk = riskFlags.includes("duplicate_wallet_attempt") || riskFlags.includes("blocked");
+  return {
+    riskScore: riskFlags.length,
+    riskLevel: hasHighRisk ? "high" : riskFlags.length ? "medium" : "low",
+    riskFlags,
+    reviewStatus: hasHighRisk ? "pending_manual_review" : hasWallet ? "auto_pass" : "pending_review",
+    reviewReason: hasWallet ? undefined : "wallet_required_before_draw_or_payout",
+    walletVerificationStatus: hasWallet ? "verified_unique" : "missing",
+    telegramVerificationStatus: "init_data_verified",
+    drawReviewStatus: hasWallet && !hasHighRisk ? "eligible" : "held",
+    payoutReviewStatus: hasWallet && !hasHighRisk ? "not_started" : "wallet_required",
+    lotteryEligible: hasWallet && !hasHighRisk,
+    lotteryStatus: hasWallet && !hasHighRisk ? "eligible_pending_draw" : "ineligible_pending_wallet",
+  };
+}
+
+function addRiskFlag(record, flag) {
+  const riskFlags = Array.from(new Set([...(record.riskFlags || []), flag].filter(Boolean)));
+  return {
+    ...record,
+    ...createEligibilityFields({ walletKey: record.walletDedupeKey || walletDedupeKey(record.walletAddress), riskFlags }),
+  };
+}
+
+function createShareTasks(existing = {}, now) {
+  return {
+    ...existing,
+    communityShareOnce: "self_attested",
+    source: existing.source || "telegram_miniapp",
+    reviewStatus: existing.reviewStatus || "pending_manual_review",
+    selfAttestedAt: existing.selfAttestedAt || now,
+  };
+}
+
+function cleanDesiredAllocation(value) {
+  const raw = typeof value === "number" ? String(value) : cleanString(value, 32);
+  if (!raw) return undefined;
+  const normalized = raw.replace(/,/g, "");
+  if (!/^\d+(?:\.\d{1,4})?$/.test(normalized)) return undefined;
+  if (Number(normalized) <= 0) return undefined;
+  return normalized;
+}
+
+function classifyUserSegment(desiredAllocation72H, user) {
+  const amount = Number(desiredAllocation72H);
+  if (Number.isFinite(amount) && amount >= 7200000) return "priority_whale";
+  if (Number.isFinite(amount) && amount >= 720000) return "priority_core";
+  if (user?.is_premium) return "telegram_premium";
+  return "warmup_waitlist";
+}
+
+function cleanCommunityTasks(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {
+      joinedTelegram: false,
+      followedX: false,
+      sharedInvite: false,
+      status: "not_started",
+    };
+  }
+  const tasks = {
+    joinedTelegram: value.joinedTelegram === true,
+    followedX: value.followedX === true,
+    sharedInvite: value.sharedInvite === true,
+  };
+  const completedCount = Object.values(tasks).filter(Boolean).length;
+  return {
+    ...tasks,
+    status: completedCount === 0 ? "not_started" : completedCount === 3 ? "completed" : "in_progress",
+  };
+}
+
+function cleanTelegramUser(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || !value.id) return undefined;
+  return {
+    id: String(value.id),
+    username: cleanString(value.username, 64),
+    first_name: cleanString(value.first_name, 64),
+    last_name: cleanString(value.last_name, 64),
+    language_code: cleanString(value.language_code, 16),
+    is_premium: value.is_premium === true,
+  };
+}
+
+async function authenticate(request, env, payload) {
+  const initData = readTelegramMiniAppInitData(request);
+  if (initData) {
+    const auth = await verifyTelegramMiniAppInitData(initData, env);
+    if (auth.ok) {
+      return {
+        ok: true,
+        actorType: "telegram_init_data",
+        authDate: auth.authDate,
+        startParam: auth.startParam,
+        user: cleanTelegramUser(auth.user),
+      };
+    }
+    return { ok: false, error: auth.error };
+  }
+
+  if (verifyTelegramWebhookSecret(request, env)) {
+    const user = cleanTelegramUser(payload?.telegramUser);
+    if (!user) return { ok: false, error: "telegram_user_required_for_secret_auth" };
+    return { ok: true, actorType: "telegram_secret", user };
+  }
+
+  return { ok: false, error: "telegram_init_data_or_secret_required" };
+}
+
+async function hitRateLimit(env, telegramUserId) {
+  const kv = getSalesKvBinding(env);
+  if (!kv) return { ok: false, error: "sales_storage_unavailable" };
+
+  const key = `reservation:rate:${telegramUserId}`;
+  const existing = await kv.get(key);
+  if (existing) {
+    return { ok: false, error: "rate_limited" };
+  }
+
+  await kv.put(key, "1", { expirationTtl: RATE_LIMIT_TTL_SECONDS });
+  return { ok: true };
+}
+
+function publicReservation(record) {
+  if (!record) return undefined;
+  return {
+    id: record.id,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+    status: record.status,
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    walletAddress: record.walletAddress,
+    desiredAllocation72H: record.desiredAllocation72H,
+    referral: record.referral,
+    source: record.source,
+    channelSource: record.channelSource,
+    waitlistMode: record.waitlistMode,
+    presaleMode: record.presaleMode,
+    requestedPresaleMode: record.requestedPresaleMode,
+    botOnly: record.botOnly,
+    purchaseEnabled: record.purchaseEnabled,
+    whitelistStatus: record.whitelistStatus,
+    saleReminderOptIn: record.saleReminderOptIn,
+    userSegment: record.userSegment,
+    communityTasks: record.communityTasks,
+    inviteCode: record.inviteCode,
+    inviteAlias: record.inviteAlias,
+    inviteLink: record.inviteLink,
+    referredByTelegramUserId: record.referredByTelegramUserId,
+    referralCode: record.referralCode,
+    validReferralCount: record.validReferralCount,
+    lotteryCodeCount: record.lotteryCodeCount,
+    lotteryCodeLedger: record.lotteryCodeLedger,
+    lotteryEligible: record.lotteryEligible,
+    lotteryStatus: record.lotteryStatus,
+    walletDedupeStatus: record.walletDedupeStatus,
+    rewardStatus: record.rewardStatus,
+    rewardTxHash: record.rewardTxHash,
+    rewardAwardedAt: record.rewardAwardedAt,
+    reservationReward72H: record.reservationReward72H,
+    lotteryPool72H: record.lotteryPool72H,
+    saleOpensAt: record.saleOpensAt,
+    contractEvidence: record.contractEvidence,
+    lotteryEvidence: record.lotteryEvidence,
+    riskScore: record.riskScore,
+    riskLevel: record.riskLevel,
+    riskFlags: record.riskFlags,
+    reviewStatus: record.reviewStatus,
+    reviewReason: record.reviewReason,
+    walletVerificationStatus: record.walletVerificationStatus,
+    telegramVerificationStatus: record.telegramVerificationStatus,
+    drawReviewStatus: record.drawReviewStatus,
+    payoutReviewStatus: record.payoutReviewStatus,
+    pendingReferralCount: record.pendingReferralCount,
+    rejectedReferralCount: record.rejectedReferralCount,
+    shareTasks: record.shareTasks,
+  };
+}
+
+async function writeReservationRecord(env, record, metadata = {}) {
+  const baseMetadata = {
+    type: "reservation",
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    status: record.status,
+    whitelistStatus: record.whitelistStatus,
+    lotteryStatus: record.lotteryStatus,
+    rewardStatus: record.rewardStatus,
+    presaleMode: record.presaleMode,
+    channelSource: record.channelSource,
+    lotteryCodeCount: record.lotteryCodeCount,
+    createdAt: record.createdAt,
+    ...metadata,
+  };
+  const write = await putSalesRecord(env, `reservation:user:${record.telegramUserId}`, record, baseMetadata);
+  if (!write.ok) return write;
+  if (record.indexKey) {
+    await putSalesRecord(env, record.indexKey, record, { ...baseMetadata, type: "reservation_index" });
+  }
+  return write;
+}
+
+async function resolveInviter(env, referralCode, selfTelegramUserId) {
+  const normalized = normalizeInviteCode(referralCode);
+  if (!normalized) return undefined;
+  const directUserId = normalized.replace(/^u/, "");
+  const candidateKeys = [
+    `reservation:invite:${normalized}`,
+    /^\d+$/.test(directUserId) ? `reservation:user:${directUserId}` : undefined,
+  ].filter(Boolean);
+
+  for (const key of candidateKeys) {
+    const read = await getSalesRecord(env, key);
+    if (!read.ok || !read.record) continue;
+    const reservationId = read.record.reservationId;
+    const userId = read.record.telegramUserId || (key.startsWith("reservation:user:") ? key.split(":").pop() : undefined);
+    if (!userId || String(userId) === String(selfTelegramUserId)) continue;
+    const inviterRead = await getSalesRecord(env, `reservation:user:${userId}`);
+    if (inviterRead.ok && inviterRead.record) {
+      return { code: normalized, record: inviterRead.record, reservationId };
+    }
+  }
+  return { code: normalized };
+}
+
+async function recordReferralProgress(env, inviterRecord, invitedRecord, now) {
+  if (!inviterRecord) return;
+  const alreadyValid = hasLotteryLedgerEntry(inviterRecord, "valid_referral", invitedRecord.telegramUserId);
+  const alreadyPending = hasLotteryLedgerEntry(inviterRecord, "pending_referral", invitedRecord.telegramUserId);
+  if (alreadyValid || alreadyPending) return;
+
+  const invitedEffective = invitedRecord.walletVerificationStatus === "verified_unique"
+    && invitedRecord.reviewStatus !== "pending_review"
+    && invitedRecord.riskLevel !== "high"
+    && invitedRecord.riskLevel !== "blocked";
+  const reason = invitedEffective ? "valid_referral" : "pending_referral";
+  const ledger = [...(inviterRecord.lotteryCodeLedger || []), {
+    reason,
+    codes: invitedEffective ? REFERRAL_LOTTERY_CODES : 0,
+    relatedTelegramUserId: invitedRecord.telegramUserId,
+    relatedReservationId: invitedRecord.id,
+    createdAt: now,
+    reviewStatus: invitedEffective ? "auto_pass" : "pending_manual_review",
+    note: invitedEffective
+      ? "Invited user completed an effective reservation with a unique wallet."
+      : "Invited user reserved but referral reward is pending wallet/review eligibility.",
+  }];
+  const updated = {
+    ...inviterRecord,
+    updatedAt: now,
+    validReferralCount: (Number(inviterRecord.validReferralCount) || 0) + (invitedEffective ? 1 : 0),
+    pendingReferralCount: (Number(inviterRecord.pendingReferralCount) || 0) + (invitedEffective ? 0 : 1),
+    lotteryCodeLedger: ledger,
+    lotteryCodeCount: getLotteryCodeCount(ledger),
+  };
+  await writeReservationRecord(env, updated, { type: invitedEffective ? "reservation_referral_awarded" : "reservation_referral_pending" });
+}
+async function handleCommunityShare({ auth, env, modeGate, storage }) {
+  const now = new Date().toISOString();
+  const read = await getSalesRecord(env, `reservation:user:${auth.user.id}`);
+  if (!read.ok) return json({ ok: false, error: read.error, storage }, 503);
+  if (!read.record) return json({ ok: false, error: "reservation_required_before_share_task", storage }, 404);
+
+  const alreadyCompleted = hasLotteryLedgerEntry(read.record, "community_share");
+  const ledger = alreadyCompleted ? read.record.lotteryCodeLedger || [] : [...(read.record.lotteryCodeLedger || []), {
+    reason: "community_share",
+    codes: COMMUNITY_SHARE_LOTTERY_CODES,
+    createdAt: now,
+    source: "telegram_miniapp",
+    reviewStatus: "pending_manual_review",
+    selfAttested: true,
+    note: "User self-attested group/community share task complete; one-time off-chain task pending review.",
+  }];
+  const communityTasks = cleanCommunityTasks({ ...(read.record.communityTasks || {}), sharedInvite: true });
+  const record = addRiskFlag({
+    ...read.record,
+    updatedAt: now,
+    communityTasks,
+    shareTasks: createShareTasks(read.record.shareTasks, now),
+    lotteryCodeLedger: ledger,
+    lotteryCodeCount: getLotteryCodeCount(ledger),
+  }, "share_self_attested");
+  const write = await writeReservationRecord(env, record, { type: "reservation_community_share" });
+  if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
+
+  await recordSalesEvent(env, {
+    signalType: alreadyCompleted ? "community_share_duplicate" : "community_share_completed",
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    reservationId: record.id,
+    lotteryCodeCount: record.lotteryCodeCount,
+    lotteryCodeDelta: alreadyCompleted ? 0 : COMMUNITY_SHARE_LOTTERY_CODES,
+    presaleEnabled: false,
+  });
+
+  return json({
+    ok: true,
+    duplicate: alreadyCompleted,
+    storage,
+    presaleMode: modeGate.presaleMode,
+    reservation: publicReservation(record),
+  });
+}
+
+export async function onRequestGet({ request, env }) {
+  const auth = await authenticate(request, env, undefined);
+  if (!auth.ok) return json({ ok: false, error: auth.error }, 401);
+
+  const key = `reservation:user:${auth.user.id}`;
+  const read = await getSalesRecord(env, key);
+  if (!read.ok) return json({ ok: false, error: read.error, storage: getSalesStorageStatus(env) }, 503);
+  const modeGate = assertBotOnlyReservationMode(env);
+
+  return json({
+    ok: true,
+    storage: getSalesStorageStatus(env),
+    presaleMode: modeGate.presaleMode,
+    reservation: publicReservation(read.record),
+    saleOpensAt: RESERVATION_OPEN_AT,
+    lotteryPool72H: LOTTERY_POOL_72H,
+    reservationReward72H: RESERVATION_REWARD_72H,
+  });
+}
+
+export async function onRequestPost({ request, env }) {
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ ok: false, error: "invalid_json" }, 400);
+  }
+
+  const auth = await authenticate(request, env, payload);
+  if (!auth.ok) return json({ ok: false, error: auth.error }, 401);
+
+  const modeGate = assertBotOnlyReservationMode(env);
+  if (!modeGate.ok) {
+    return json({ ok: false, error: modeGate.error, presaleMode: modeGate.presaleMode }, 403);
+  }
+
+  const storage = getSalesStorageStatus(env);
+  if (payload?.action === "community_share_completed") {
+    return handleCommunityShare({ auth, env, modeGate, storage });
+  }
+
+  const desiredAllocation72H = cleanDesiredAllocation(payload?.desiredAllocation72H ?? payload?.desiredAllocation);
+  if (!desiredAllocation72H) {
+    return json({ ok: false, error: "desired_allocation_required" }, 400);
+  }
+
+  const walletAddress = cleanWallet(payload?.walletAddress);
+  const walletKey = walletDedupeKey(walletAddress);
+  const key = `reservation:user:${auth.user.id}`;
+  const existing = await getSalesRecord(env, key);
+  if (!existing.ok) return json({ ok: false, error: existing.error, storage }, 503);
+  if (existing.record) {
+    return json({
+      ok: true,
+      duplicate: true,
+      storage,
+      presaleMode: modeGate.presaleMode,
+      reservation: publicReservation(existing.record),
+      message: "reservation_already_exists",
+    });
+  }
+
+  if (walletKey) {
+    const walletRead = await getSalesRecord(env, `reservation:wallet:${walletKey}`);
+    if (!walletRead.ok) return json({ ok: false, error: walletRead.error, storage }, 503);
+    if (walletRead.record?.telegramUserId && walletRead.record.telegramUserId !== auth.user.id) {
+      return json({
+        ok: false,
+        error: "wallet_already_reserved",
+        storage,
+        presaleMode: modeGate.presaleMode,
+        walletDedupeStatus: "duplicate_wallet_rejected",
+        walletVerificationStatus: "duplicate_rejected",
+        riskFlags: ["duplicate_wallet_attempt"],
+        reviewStatus: "pending_manual_review",
+      }, 409);
+    }
+  }
+
+  const rate = await hitRateLimit(env, auth.user.id);
+  if (!rate.ok) {
+    return json({ ok: false, error: rate.error, storage }, rate.error === "rate_limited" ? 429 : 503);
+  }
+
+  const now = new Date().toISOString();
+  const id = `rsv_${crypto.randomUUID()}`;
+  const source = cleanString(payload?.source, 80) || auth.startParam || "miniapp";
+  const channelSource = cleanString(payload?.channelSource, 80) || source;
+  const referral = cleanString(payload?.referral, 120) || normalizeInviteCode(auth.startParam);
+  const sourceReferralCandidate = ["miniapp", "miniapp_waitlist"].includes(source) ? undefined : source;
+  const referralCode = normalizeInviteCode(referral) || normalizeInviteCode(sourceReferralCandidate);
+  const inviteCode = createInviteCode(auth.user);
+  const inviteAlias = createInviteAlias(auth.user);
+  const inviteLink = createInviteLink(env, inviteCode);
+  const resolvedInviter = await resolveInviter(env, referralCode, auth.user.id);
+  const baseLotteryLedger = [{
+    reason: "reservation_success",
+    codes: BASE_RESERVATION_LOTTERY_CODES,
+    createdAt: now,
+    note: "User completed one valid off-chain whitelist reservation.",
+  }];
+  const communityTasks = cleanCommunityTasks(payload?.communityTasks);
+  if (communityTasks.sharedInvite) {
+    baseLotteryLedger.push({
+      reason: "community_share",
+      codes: COMMUNITY_SHARE_LOTTERY_CODES,
+      createdAt: now,
+      source: "telegram_miniapp",
+      reviewStatus: "pending_manual_review",
+      selfAttested: true,
+      note: "User self-attested group/community share task complete; one-time off-chain task pending review.",
+    });
+  }
+  const indexKey = `reservation:${now}:${id}`;
+  const initialRiskFlags = communityTasks.sharedInvite ? ["share_self_attested"] : [];
+  const eligibility = createEligibilityFields({ walletKey, riskFlags: initialRiskFlags });
+  const record = {
+    id,
+    version: 3,
+    createdAt: now,
+    updatedAt: now,
+    status: modeGate.presaleMode.mode === "warmup" ? "warmup_registered" : "waitlist_registered",
+    saleOpensAt: RESERVATION_OPEN_AT,
+    waitlistMode: WAITLIST_MODE,
+    presaleMode: modeGate.presaleMode.mode,
+    requestedPresaleMode: modeGate.presaleMode.requestedMode,
+    botOnly: true,
+    purchaseEnabled: false,
+    telegramUserId: auth.user.id,
+    username: auth.user.username,
+    telegramUser: auth.user,
+    walletAddress,
+    walletDedupeKey: walletKey,
+    walletDedupeStatus: walletKey ? "unique_wallet_reserved" : "wallet_not_provided",
+    walletVerificationStatus: eligibility.walletVerificationStatus,
+    desiredAllocation72H,
+    referral,
+    source,
+    channelSource,
+    whitelistStatus: "registered_pending_review",
+    saleReminderOptIn: payload?.saleReminderOptIn !== false,
+    userSegment: classifyUserSegment(desiredAllocation72H, auth.user),
+    communityTasks,
+    shareTasks: communityTasks.sharedInvite ? createShareTasks({}, now) : { communityShareOnce: "not_started" },
+    inviteCode,
+    inviteAlias,
+    inviteLink,
+    referralCode: resolvedInviter?.code || referralCode,
+    referredByTelegramUserId: resolvedInviter?.record?.telegramUserId,
+    validReferralCount: 0,
+    pendingReferralCount: 0,
+    rejectedReferralCount: 0,
+    lotteryCodeLedger: baseLotteryLedger,
+    lotteryCodeCount: getLotteryCodeCount(baseLotteryLedger),
+    lotteryEligible: eligibility.lotteryEligible,
+    lotteryStatus: eligibility.lotteryStatus,
+    riskScore: eligibility.riskScore,
+    riskLevel: eligibility.riskLevel,
+    riskFlags: eligibility.riskFlags,
+    reviewStatus: eligibility.reviewStatus,
+    reviewReason: eligibility.reviewReason,
+    telegramVerificationStatus: auth.actorType === "telegram_init_data" ? "init_data_verified" : "secret_imported",
+    drawReviewStatus: eligibility.drawReviewStatus,
+    payoutReviewStatus: eligibility.payoutReviewStatus,
+    rewardStatus: "not_awarded",
+    rewardTxHash: undefined,
+    rewardAwardedAt: undefined,
+    reservationReward72H: RESERVATION_REWARD_72H,
+    lotteryPool72H: LOTTERY_POOL_72H,
+    contractEvidence: {
+      status: CONTRACT_EVIDENCE_STATUS,
+      presaleVaultAddress: cleanString(payload?.presaleVaultAddress, 96) || DEFAULT_PRESALE_VAULT_ADDRESS,
+      jettonMasterAddress: cleanString(payload?.jettonMasterAddress, 96) || DEFAULT_72H_JETTON_MASTER,
+      saleOpensAt: RESERVATION_OPEN_AT,
+      note: "Off-chain reservation evidence only; not a purchase, payment, signature, or on-chain quota.",
+    },
+    lotteryEvidence: {
+      pool72H: LOTTERY_POOL_72H,
+      fundingStatus: LOTTERY_FUNDING_STATUS,
+      fundingSource: "private_wallet",
+      payoutMode: LOTTERY_PAYOUT_MODE,
+      noNewContract: true,
+      fundingTxHash: cleanString(payload?.lotteryFundingTxHash, 128),
+      prizeWalletAddress: cleanWallet(payload?.prizeWalletAddress),
+      note: "Lottery rewards are paid by official 72H wallet transfers after winners are finalized; this is not a self-claim smart contract.",
+    },
+    actorType: auth.actorType,
+    authDate: auth.authDate,
+    indexKey,
+  };
+
+  const write = await writeReservationRecord(env, record);
+  if (!write.ok) return json({ ok: false, error: write.error, storage }, 503);
+
+  if (walletKey) {
+    await putSalesRecord(env, `reservation:wallet:${walletKey}`, {
+      reservationId: id,
+      telegramUserId: record.telegramUserId,
+      walletAddress,
+      status: record.status,
+      createdAt: record.createdAt,
+    }, {
+      type: "reservation_wallet_index",
+      telegramUserId: record.telegramUserId,
+      walletAddress,
+      createdAt: record.createdAt,
+    });
+  }
+
+  if (inviteCode) {
+    await putSalesRecord(env, `reservation:invite:${inviteCode}`, {
+      reservationId: id,
+      telegramUserId: record.telegramUserId,
+      username: record.username,
+      inviteCode,
+      inviteAlias: record.inviteAlias,
+      createdAt: record.createdAt,
+    }, {
+      type: "reservation_invite_index",
+      telegramUserId: record.telegramUserId,
+      username: record.username,
+      inviteCode,
+      inviteAlias: record.inviteAlias,
+      createdAt: record.createdAt,
+    });
+  }
+
+
+  await recordSalesEvent(env, {
+    signalType: "reservation_created",
+    telegramUserId: record.telegramUserId,
+    username: record.username,
+    walletAddress: record.walletAddress,
+    walletDedupeStatus: record.walletDedupeStatus,
+    desiredAllocation72H: record.desiredAllocation72H,
+    source: record.source,
+    channelSource: record.channelSource,
+    referral: record.referral,
+    userSegment: record.userSegment,
+    whitelistStatus: record.whitelistStatus,
+    lotteryEligible: record.lotteryEligible,
+    lotteryStatus: record.lotteryStatus,
+    rewardStatus: record.rewardStatus,
+    saleReminderOptIn: record.saleReminderOptIn,
+    communityTaskStatus: record.communityTasks.status,
+    inviteCode: record.inviteCode,
+    inviteAlias: record.inviteAlias,
+    referralCode: record.referralCode,
+    referredByTelegramUserId: record.referredByTelegramUserId,
+    lotteryCodeCount: record.lotteryCodeCount,
+    presaleMode: record.presaleMode,
+    presaleEnabled: false,
+  });
+
+  await recordReferralProgress(env, resolvedInviter?.record, record, now);
+
+  return json({
+    ok: true,
+    duplicate: false,
+    storage,
+    presaleMode: modeGate.presaleMode,
+    reservation: publicReservation(record),
+  }, 201);
+}

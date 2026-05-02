@@ -11,3 +11,7 @@ coverage/
 # Local QA screenshots
 /home-check.png
 /home-preview.png
+
+# Generated evidence snapshots; keep a curated README/index instead of bulk artifacts.
+docs/spec/capital-production-artifacts/evidence/*
+!docs/spec/capital-production-artifacts/evidence/README.md

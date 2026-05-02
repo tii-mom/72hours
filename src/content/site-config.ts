@@ -1,6 +1,7 @@
 import type { HomeHighlight, SiteConfig } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
 import { getGlossary } from "./glossary";
+import { officialLinks } from "./official-links";
 
 function buildSiteConfig(locale: Locale): SiteConfig {
   const glossary = getGlossary(locale);
@@ -8,28 +9,27 @@ function buildSiteConfig(locale: Locale): SiteConfig {
 
   return {
     siteName: glossary.brandName,
-    siteUrl: "https://72hours.72h.lol",
+    siteUrl: "https://72h.lol",
     language: locale,
-    primaryCtaLabel: isEnglish ? "Browse Ecosystem" : "浏览生态应用",
+    primaryCtaLabel: isEnglish ? "Enter" : "进入",
     secondaryCtaLabel: isEnglish ? "Join Community" : "加入社区",
-    primaryJoinRoute: "/ecosystem",
+    primaryJoinRoute: "/join",
     navItems: [
-      { label: glossary.pageLabels.home, href: "/" },
+      { label: isEnglish ? "Enter" : "进入", href: "/join" },
       { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
-      { label: glossary.pageLabels.capital, href: "/capital" },
       { label: glossary.pageLabels.greenBook, href: "/greenbook" },
-      { label: glossary.pageLabels.join, href: "/join" },
     ],
     footerGroups: [
       {
         id: "enter",
         title: isEnglish ? "Enter" : "进入",
         links: [
-          { label: "Telegram", href: "https://t.me/the_72h" },
-          { label: "X", href: "https://x.com/taichi2077" },
+          { label: "Telegram", href: officialLinks.telegramCommunity },
+          { label: "X", href: officialLinks.x },
+          { label: isEnglish ? "Enter" : "进入", href: "/join" },
           { label: glossary.pageLabels.ecosystem, href: "/ecosystem" },
-          { label: glossary.pageLabels.capital, href: "/capital" },
-          { label: glossary.pageLabels.join, href: "/join" },
+          { label: glossary.pageLabels.greenBook, href: "/greenbook" },
+          { label: glossary.pageLabels.contracts, href: "/contracts" },
         ],
       },
       {
@@ -54,8 +54,8 @@ function buildSiteConfig(locale: Locale): SiteConfig {
     hero: {
       title: isEnglish ? "72H on TON." : "72H 在 TON 上。",
       subtitle: isEnglish
-        ? "Life is short. Wealth can solve it — restart in 72 hours."
-        : "人生苦短，暴富可解—72小时重启人生。",
+        ? "Open the official 72H ecosystem entries in 72 hours."
+        : "72小时，进入官方 72H 生态入口。",
       proofSignals: isEnglish
         ? ["TON Chain", "Fixed Supply", "Rich Apps", "New Model"]
         : ["TON链", "固定发行", "丰富应用", "创新经济模型"],
@@ -78,12 +78,12 @@ const homeHighlightsZh: readonly HomeHighlight[] = [
     body: "状态、参与、入口。",
     cta: "浏览生态应用",
     href: "/ecosystem",
-    iconLabel: "Terminal",
+    iconLabel: "Official",
   },
   {
-    title: "2. 学习路径",
-    body: "项目概览与参与。",
-    cta: "了解学习路径",
+    title: "2. 学习报名",
+    body: "线上报名、线下报名。",
+    cta: "查看学习报名",
     href: "/learn",
     iconLabel: "V",
   },
@@ -102,12 +102,12 @@ const homeHighlightsEn: readonly HomeHighlight[] = [
     body: "Status, participation, next step.",
     cta: "Browse ecosystem",
     href: "/ecosystem",
-    iconLabel: "Terminal",
+    iconLabel: "Official",
   },
   {
-    title: "2. Learning path",
-    body: "Project overview and participation.",
-    cta: "Learn the path",
+    title: "2. Learning application",
+    body: "Online and offline applications.",
+    cta: "View application",
     href: "/learn",
     iconLabel: "V",
   },

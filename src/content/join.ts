@@ -2,29 +2,29 @@ import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
 const joinContentZh = {
-  title: "社区、公开动态与补充说明。",
-  subtitle: "Telegram 是主社区入口，X 对应公开动态，微信提供补充说明。",
-  whyTitle: "社区入口",
-  whyBody: "Telegram、X 与微信构成当前的官方联系层。",
+  title: "进入 72hours。",
+  subtitle: "从公开应用地图、社区和绿皮书开始。本页是导航入口，不开放购买、领取或真实席位动作。",
+  whyTitle: "公开入口",
+  whyBody: "72H 官网先帮助用户找到应用、社区、绿皮书与边界说明。",
   joinedTitle: "进入后可见",
-  joinedBody: "社区讨论、公开动态和补充说明共同构成当前联系层。",
-  contactTitle: "联系入口",
-  contactBody: "Telegram、X 和微信说明页。",
+  joinedBody: "当前可见的是应用地图、社区入口、公开说明和未开放动作的边界。",
+  contactTitle: "官方渠道",
+  contactBody: "Telegram、X 与联系页用于公开更新和人工说明。",
   verifyTitle: "核对方式",
-  verifyBody: "本站、Telegram、X 和绿皮书共同提供公开核对信息。",
+  verifyBody: "以本站、绿皮书、链上证据和已标记官方渠道为准。",
 };
 
 const joinContentEn = {
-  title: "Community, public updates, and supplementary notes.",
-  subtitle: "Telegram is the main community entry. X covers public updates, and WeChat is supplementary.",
-  whyTitle: "Community entry",
-  whyBody: "Telegram, X, and WeChat make up the current contact layer.",
-  joinedTitle: "What you see inside",
-  joinedBody: "Community discussion, public updates, and supplementary notes make up the current contact layer.",
-  contactTitle: "Contact entry",
-  contactBody: "Telegram, X, and WeChat notes.",
+  title: "Enter 72hours.",
+  subtitle: "Start from the public app map, community, and Green Book. This page is navigation only; purchase, claim, and real seat actions will open only after an official announcement.",
+  whyTitle: "Public entry",
+  whyBody: "The 72H site helps users find apps, community, Green Book, and boundary notes first.",
+  joinedTitle: "What opens next",
+  joinedBody: "The current layer shows the app map, community entry, public notes, and closed-action boundaries.",
+  contactTitle: "Official channels",
+  contactBody: "Telegram, X, and the contact page handle public updates and human notes.",
   verifyTitle: "How to verify",
-  verifyBody: "This site, Telegram, X, and Green Book provide public verification context.",
+  verifyBody: "Use this site, Green Book, on-chain evidence, and marked official channels as the reference layer.",
 };
 
 export const joinContent = joinContentZh;

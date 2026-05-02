@@ -21,5 +21,7 @@
 /en/legal/terms /en/legal/terms/index.html 200
 /legal/disclaimer /legal/disclaimer/index.html 200
 /en/legal/disclaimer /en/legal/disclaimer/index.html 200
+/capital/* /index.html 200
+/en/capital/* /en/index.html 200
 /en/* /en/404.html 404
 /* /404.html 404

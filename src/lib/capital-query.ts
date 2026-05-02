@@ -5,7 +5,7 @@ import type {
   CapitalVerificationView,
 } from "../content/capital";
 import type { Locale } from "./locale";
-import type { CapitalAppSlug, CapitalSeatType } from "72h-capital-shared";
+import type { CapitalAppSlug, CapitalSeatType } from "./capital-contract-types";
 
 export type CapitalRuntimeMode = "preview" | "api";
 
@@ -25,6 +25,7 @@ export interface CapitalAppPageQuery {
 
 export interface CapitalPortfolioQuery {
   locale: Locale;
+  walletAddress: string;
 }
 
 export interface CapitalVerificationQuery {
@@ -36,7 +37,7 @@ export interface CapitalVerificationQuery {
 
 export type CapitalOverviewQueryKey = readonly ["capital", "overview", Locale];
 export type CapitalAppPageQueryKey = readonly ["capital", "app", Locale, CapitalAppSlug];
-export type CapitalPortfolioQueryKey = readonly ["capital", "portfolio", Locale];
+export type CapitalPortfolioQueryKey = readonly ["capital", "portfolio", Locale, string];
 export type CapitalVerificationQueryKey = readonly [
   "capital",
   "verification",
@@ -68,7 +69,7 @@ export function getCapitalAppPageQueryKey(query: CapitalAppPageQuery): CapitalAp
 }
 
 export function getCapitalPortfolioQueryKey(query: CapitalPortfolioQuery): CapitalPortfolioQueryKey {
-  return ["capital", "portfolio", query.locale];
+  return ["capital", "portfolio", query.locale, requireWalletAddress(query.walletAddress)];
 }
 
 export function getCapitalVerificationQueryKey(
@@ -86,7 +87,11 @@ export function getCapitalAppPageApiPath(query: CapitalAppPageQuery) {
 }
 
 export function getCapitalPortfolioApiPath(query: CapitalPortfolioQuery) {
-  return withLocale("/me", query.locale);
+  const search = new URLSearchParams({
+    locale: query.locale,
+    wallet: requireWalletAddress(query.walletAddress),
+  });
+  return `/me?${search.toString()}`;
 }
 
 export function getCapitalVerificationApiPath(query: CapitalVerificationQuery) {
@@ -108,8 +113,8 @@ export function getCapitalAlphaAllocateIntentApiPath() {
   return "/alpha/allocate-intent";
 }
 
-export function getCapitalYieldClaimIntentApiPath() {
-  return "/yield/claim-intent";
+export function getCapitalRewardClaimIntentApiPath() {
+  return "/reward/claim-intent";
 }
 
 export function getCapitalIntentApiPath(intentId: string) {
@@ -118,4 +123,12 @@ export function getCapitalIntentApiPath(intentId: string) {
 
 export function getCapitalIntentSubmissionApiPath(intentId: string) {
   return `${getCapitalIntentApiPath(intentId)}/submission`;
+}
+
+function requireWalletAddress(walletAddress: string) {
+  const trimmed = walletAddress.trim();
+  if (!trimmed) {
+    throw new Error("Capital portfolio route requires a walletAddress.");
+  }
+  return trimmed;
 }

@@ -1,4 +1,4 @@
-import type { Project } from "../lib/content-types";
+import type { Project, ProjectAppCategory, ProjectChain, ProjectDevelopmentStage } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
 
@@ -39,8 +39,8 @@ const projectsZh: Project[] = [
   {
     slug: "wan",
     name: "WAN",
-    oneLineValue: "浏览器优先的安全接入控制台，处理访问、会话、节点与订阅。",
-    summary: "Web 是完整控制台；原生端只保留 VPN 服务和 72H 充值。",
+    oneLineValue: "浏览器优先的安全接入入口，处理访问、会话、节点与订阅。",
+    summary: "Web 是完整入口；原生端只保留 VPN 服务和 72H 充值。",
     detailIntro: "适合直接使用的浏览器主控台，Web 是完整入口。",
     category: "new_launch",
     status: "live",
@@ -192,7 +192,7 @@ const projectsZh: Project[] = [
     participationMode: ["join_community", "follow_updates", "deeper_participation"],
     externalLink: {
       label: "进入",
-      url: "https://72hours.72h.lol",
+      url: "https://72h.lol",
       type: "app",
       isOfficial: true,
     },
@@ -216,13 +216,13 @@ const projectsZh: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "面向 multi-millionaire 的资本席位配置与身份展示入口。",
-    summary: "第一批开放应用之一，主要承接 multi-millionaire 的 Reserve / Alpha 资本席位入口。",
-    detailIntro: "适合查看门槛、剩余席位与验证身份界面的用户。",
+    oneLineValue: "multi-millionaire 预约说明与身份规则参考，真实锁仓和奖励领取只会在官方公告后开放。",
+    summary: "当前仅保留候补与规则说明，不开放真实链上锁仓、席位配置或奖励领取。",
+    detailIntro: "适合先阅读规则、风险边界和未来开放条件。",
     category: "main_entry",
     status: "community_pilot",
     audienceFit: ["curious_explorer", "community_participant", "deeper_learner"],
-    participationMode: ["try_now", "follow_updates", "deeper_participation"],
+    participationMode: ["follow_updates", "join_community"],
     externalLink: {
       label: "进入",
       url: "/capital/multi-millionaire",
@@ -231,19 +231,19 @@ const projectsZh: Project[] = [
     },
     hoursRelation: {
       level: "supported",
-      summary: "把资本席位、身份与配置集中到正式入口。",
+      summary: "仅作为规则参考和候补入口，不开放配置。",
     },
     learnRelation: {
-      level: "advanced",
-      summary: "先理解门槛、周期与风险说明，再决定是否进入。",
+      level: "prep",
+      summary: "先理解规则、边界与未开放状态。",
     },
     proofAssets: [],
     featured: false,
     priority: 7,
     iconKey: "shield",
     signals: [
-      { tone: "core", label: "资本席位" },
-      { tone: "guide", label: "资本入口" },
+      { tone: "guide", label: "候补" },
+      { tone: "guide", label: "未开放" },
     ],
   },
   {
@@ -366,9 +366,9 @@ const projectsEn: Project[] = [
   {
     slug: "wan",
     name: "WAN",
-    oneLineValue: "Browser-led secure access console for sessions, nodes, subscription, and control.",
-    summary: "The web surface is the full control console; native clients stay limited to VPN service and 72H recharge.",
-    detailIntro: "Best for people who want to use the browser console immediately, with a clear native-client boundary.",
+    oneLineValue: "Browser-led secure access entry for sessions, nodes, and subscription.",
+    summary: "The web entry is the full service home; native clients stay limited to VPN service and 72H recharge.",
+    detailIntro: "Best for people who want to use the browser entry immediately, with a clear native-client boundary.",
     category: "new_launch",
     status: "live",
     audienceFit: ["curious_explorer", "community_participant"],
@@ -385,7 +385,7 @@ const projectsEn: Project[] = [
     },
     learnRelation: {
       level: "prep",
-      summary: "Browser console and native-client boundaries stay clear.",
+      summary: "Browser entry and native-client boundaries stay clear.",
     },
     proofAssets: [],
     featured: false,
@@ -396,7 +396,7 @@ const projectsEn: Project[] = [
     brandStripAlt: "WAN brand logo",
     signals: [
       { tone: "new", label: "New launch" },
-      { tone: "guide", label: "Web console" },
+      { tone: "guide", label: "Web entry" },
     ],
   },
   {
@@ -519,7 +519,7 @@ const projectsEn: Project[] = [
     participationMode: ["join_community", "follow_updates", "deeper_participation"],
     externalLink: {
       label: "Enter",
-      url: "https://72hours.72h.lol",
+      url: "https://72h.lol",
       type: "app",
       isOfficial: true,
     },
@@ -543,13 +543,13 @@ const projectsEn: Project[] = [
   {
     slug: "multi-millionaire",
     name: "multi-millionaire",
-    oneLineValue: "Capital-facing entry for multi-millionaire seat configuration and verified identity.",
-    summary: "One of the first launch applications, holding the Reserve / Alpha capital seat entry for multi-millionaire.",
-    detailIntro: "Thresholds, remaining seats, and verified identity are shown together.",
+    oneLineValue: "Reservation and identity-rule reference for multi-millionaire; real lock-up and reward claims open only after an official announcement.",
+    summary: "Currently a reservation and rule reference only; real on-chain lock-up, seat actions, and reward claiming will open only after an official announcement.",
+    detailIntro: "Use this to read rules, risk boundaries, and future opening conditions first.",
     category: "main_entry",
     status: "community_pilot",
     audienceFit: ["curious_explorer", "community_participant", "deeper_learner"],
-    participationMode: ["try_now", "follow_updates", "deeper_participation"],
+    participationMode: ["follow_updates", "join_community"],
     externalLink: {
       label: "Enter",
       url: "/capital/multi-millionaire",
@@ -558,19 +558,19 @@ const projectsEn: Project[] = [
     },
     hoursRelation: {
       level: "supported",
-      summary: "Brings capital seats, identity, and configuration into one official entry.",
+      summary: "Rule reference and reservation only; configuration remains closed.",
     },
     learnRelation: {
-      level: "advanced",
-      summary: "Review thresholds, cycle, and risk notes before entering.",
+      level: "prep",
+      summary: "Review rules, boundaries, and closed status first.",
     },
     proofAssets: [],
     featured: false,
     priority: 7,
     iconKey: "shield",
     signals: [
-      { tone: "core", label: "Capital seat" },
-      { tone: "guide", label: "Capital entry" },
+      { tone: "guide", label: "Waitlist" },
+      { tone: "guide", label: "Not open" },
     ],
   },
   {
@@ -603,7 +603,7 @@ const projectsEn: Project[] = [
   {
     slug: "meme-court",
     name: "Meme Court",
-    oneLineValue: "A lightweight consensus space for content review.",
+    oneLineValue: "A lightweight consensus space for content check.",
     category: "coming_soon",
     status: "coming_soon",
     audienceFit: ["curious_explorer", "community_participant"],
@@ -620,7 +620,7 @@ const projectsEn: Project[] = [
     },
     learnRelation: {
       level: "prep",
-      summary: "Understand the ecosystem before entering review.",
+      summary: "Understand the ecosystem before entering check.",
     },
     proofAssets: [],
     featured: false,
@@ -658,6 +658,97 @@ const projectsEn: Project[] = [
 
 export const projects = projectsZh;
 
+const projectDiscoveryMeta: Record<
+  string,
+  {
+    appCategories: ProjectAppCategory[];
+    chains: ProjectChain[];
+    developmentStage: ProjectDevelopmentStage;
+    isInvestable?: boolean;
+    heroImageSrc?: string;
+    heroImageAlt?: string;
+  }
+> = {
+  distribution: {
+    chains: ["TON"],
+    appCategories: ["tool", "social"],
+    developmentStage: "live",
+  },
+  wan: {
+    chains: ["TON"],
+    appCategories: ["tool"],
+    developmentStage: "new",
+    isInvestable: true,
+  },
+  sigma: {
+    chains: ["TON"],
+    appCategories: ["tool"],
+    developmentStage: "building",
+  },
+  "proof-card-builder": {
+    chains: ["TON"],
+    appCategories: ["tool", "content"],
+    developmentStage: "building",
+  },
+  "sticker-meme-studio": {
+    chains: ["TON"],
+    appCategories: ["content"],
+    developmentStage: "building",
+  },
+  "daily-pulse-vote": {
+    chains: ["TON"],
+    appCategories: ["social"],
+    developmentStage: "building",
+  },
+  "72hours-control-room": {
+    chains: ["TON"],
+    appCategories: ["social"],
+    developmentStage: "investable",
+    isInvestable: true,
+  },
+  "multi-millionaire": {
+    chains: ["TON"],
+    appCategories: ["capital"],
+    developmentStage: "building",
+    isInvestable: false,
+  },
+  "coop-raid-room": {
+    chains: ["TON"],
+    appCategories: ["game", "social"],
+    developmentStage: "building",
+  },
+  "meme-court": {
+    chains: ["TON"],
+    appCategories: ["game", "content"],
+    developmentStage: "building",
+  },
+  "chain-relay-canvas": {
+    chains: ["TON"],
+    appCategories: ["tool", "content"],
+    developmentStage: "building",
+  },
+};
+
+function withDiscoveryMeta(projectList: Project[]) {
+  return projectList.map((project) => {
+    const meta = projectDiscoveryMeta[project.slug];
+
+    if (!meta) {
+      return {
+        chains: ["TON"] as ProjectChain[],
+        appCategories: ["tool"] as ProjectAppCategory[],
+        developmentStage: project.status === "live" ? "live" as const : "building" as const,
+        ...project,
+      };
+    }
+
+    return {
+      ...project,
+      ...meta,
+    };
+  });
+}
+
 export function getProjects(locale: Locale) {
-  return localized(locale, projectsZh, projectsEn);
+  return withDiscoveryMeta(localized(locale, projectsZh, projectsEn));
 }

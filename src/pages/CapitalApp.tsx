@@ -1,7 +1,6 @@
-import { ArrowRight, ExternalLink, Fingerprint } from "lucide-react";
+import { AlertTriangle, ArrowRight, ExternalLink, Fingerprint, Landmark, Wallet } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { InfoCallout } from "../components/InfoCallout";
-import { InfoPageHero } from "../components/InfoPageHero";
 import { LocalizedLink as Link } from "../components/LocalizedLink";
 import { PageLoader } from "../components/PageLoader";
 import { SpotlightCard } from "../components/SpotlightCard";
@@ -84,7 +83,7 @@ function MissingCapitalApp({ isEnglish }: { isEnglish: boolean }) {
           <InfoCallout
             tone="dark"
             kicker="72H Capital"
-            title={isEnglish ? "This capital surface is unavailable." : "该 Capital 页面暂不可用。"}
+            title={isEnglish ? "This Capital page is unavailable." : "该 Capital 页面暂不可用。"}
             body={isEnglish
               ? "This application is not included in the current public Capital release."
               : "当前公开 Capital 批次中不包含该应用。"}
@@ -136,12 +135,12 @@ export default function CapitalApp() {
               <InfoCallout
                 tone="dark"
                 kicker="72H Capital"
-                title={isEnglish ? "This capital surface failed to load." : "这个 Capital 页面加载失败。"}
+                title={isEnglish ? "This Capital page failed to load." : "这个 Capital 页面加载失败。"}
                 body={isEnglish
                   ? "This application route is valid, but the current service did not return a verifiable Capital record. Seat actions remain closed until the record is available."
                   : "该应用路由有效，但当前服务没有返回可核对的 Capital 记录。在记录可用前，席位动作保持关闭。"}
                 actions={[
-                  { label: isEnglish ? "Retry app surface" : "重新打开页面", href: `/capital/${slug}`, variant: "primary" },
+                  { label: isEnglish ? "Retry Capital page" : "重新打开页面", href: `/capital/${slug}`, variant: "primary" },
                   { label: isEnglish ? "Browse Capital" : "返回 Capital", href: "/capital" },
                 ]}
               />
@@ -156,23 +155,62 @@ export default function CapitalApp() {
 
   return (
     <div className="page-shell pt-20 sm:pt-24">
-      <InfoPageHero
-        kicker={app.hero.kicker}
-        icon={<Fingerprint size={30} />}
-        title={app.hero.title}
-        lead={app.hero.lead}
-        noteLabel={app.hero.noteLabel}
-        noteTitle={app.hero.noteTitle}
-        noteBody={app.hero.noteBody}
-        chips={app.hero.chips.map((chip) => (
-          <span
-            key={chip}
-            className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
-          >
-            {chip}
-          </span>
-        ))}
-      />
+      <section className="page-section-tight border-b border-line/70 pt-4 sm:pt-10">
+        <div className="page-container page-container-wide grid gap-5 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-end">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm border border-primary/25 bg-primary/10 text-primary">
+                <Fingerprint size={24} />
+              </div>
+              <div className="page-kicker w-fit">{app.hero.kicker}</div>
+            </div>
+            <h1 className="mt-5 max-w-4xl text-[2.55rem] font-black leading-[0.98] tracking-normal text-foreground sm:text-6xl">
+              {app.name} {isEnglish ? "reference page" : "参考页"}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+              {app.hero.lead}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {app.hero.chips.map((chip) => (
+                <span
+                  key={chip}
+                  className="inline-flex items-center rounded-sm border border-line/70 bg-background/30 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-md border border-line/70 bg-surface/72 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.2)] sm:p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
+              {isEnglish ? "Current boundary" : "当前边界"}
+            </div>
+            <div className="mt-4 grid gap-2">
+              <button
+                type="button"
+                disabled
+                className="page-action w-full cursor-not-allowed opacity-60"
+              >
+                <Landmark className="mr-2 h-4 w-4" />
+                {isEnglish ? "No seat setup" : "无席位配置"}
+              </button>
+              <button
+                type="button"
+                disabled
+                className="page-action-muted w-full cursor-not-allowed opacity-60"
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                {isEnglish ? "No on-chain action" : "无链上动作"}
+              </button>
+              <Link to="/ecosystem" className="page-action-muted w-full">
+                <Wallet className="mr-2 h-4 w-4" />
+                {isEnglish ? "Back to ecosystem" : "返回生态应用"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="page-section-tight">
         <div className="page-container page-container-wide flex flex-col gap-12 sm:gap-16">
@@ -182,10 +220,10 @@ export default function CapitalApp() {
             <SpotlightCard className="page-card page-card-lg border-l-4 !border-l-primary bg-primary/5">
               <CapitalSectionHeading
                 eyebrow={isEnglish ? "Positioning" : "定位"}
-                title={isEnglish ? "What this capital surface emphasizes." : "这个 Capital Surface 的重点。"}
+                title={isEnglish ? "What this reference page emphasizes." : "这个参考页的重点。"}
                 body={isEnglish
-                  ? "Each application keeps its own seat velocity, threshold discipline, and yield-source narrative while staying inside the same verification framework."
-                  : "每个应用都保留独立的席位释放节奏、门槛纪律与收益来源叙事，但验证框架保持一致。"}
+                  ? "This page summarizes historical/illustrative Capital rules and keeps every wallet, setup, and claim action closed for ordinary visitors."
+                  : "本页只汇总历史/示例性的 Capital 规则；普通访客不可在这里配置席位、连接动作或领取奖励。"}
               />
 
               <div className="mt-6 grid gap-3">
@@ -202,16 +240,16 @@ export default function CapitalApp() {
 
             <SpotlightCard className="page-card page-card-lg flex flex-col gap-5 border-line/70 bg-surface/78">
               <CapitalSectionHeading
-                eyebrow={isEnglish ? "Application surface" : "应用入口"}
-                title={isEnglish ? "Open the application or review current seat terms." : "打开应用主场，或核对当前席位条款。"}
+                eyebrow={isEnglish ? "Application entry" : "应用入口"}
+                title={isEnglish ? "Open the application or read the boundary." : "打开应用主场，或阅读边界说明。"}
                 body={isEnglish
-                  ? "The application surface stays separate from the seat identity layer. Capital verifies seat ownership while the application remains the operating front door."
-                  : "应用主场与席位身份层保持分离。Capital 负责验证席位归属，应用本身仍是实际操作入口。"}
+                  ? "The application entry stays separate from the seat identity layer. Capital remains a read-only reference layer on the public site; use the application entry for non-Capital product usage."
+                  : "应用主场与席位身份层保持分离。官网上的 Capital 仅为只读参考层；非 Capital 的实际产品使用请从应用入口进入。"}
               />
 
               <div className="rounded-md border border-line/70 bg-background/45 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  {isEnglish ? "Surface action" : "入口动作"}
+                  {isEnglish ? "Entry action" : "入口动作"}
                 </p>
                 <div className="mt-4">
                   <ActionLink
@@ -238,13 +276,18 @@ export default function CapitalApp() {
             </SpotlightCard>
           </div>
 
+          <details className="rounded-md border border-line/70 bg-surface/42 p-4 sm:p-5">
+            <summary className="cursor-pointer text-base font-black text-foreground sm:text-lg">
+              {isEnglish ? "Advanced Capital rule reference (closed by default)" : "Capital 进阶规则参考（默认折叠）"}
+            </summary>
+            <div className="mt-6 flex flex-col gap-12 sm:gap-16">
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
-              eyebrow={isEnglish ? "Seat modules" : "席位模块"}
-              title={isEnglish ? "Reserve and Alpha stay separated by rules, not by branding." : "Reserve 与 Alpha 的差异来自规则，而不是视觉切换。"}
+              eyebrow={isEnglish ? "Advanced reference" : "进阶参考"}
+              title={isEnglish ? "Reserve and Alpha details are folded by default." : "Reserve 与 Alpha 细节默认折叠。"}
               body={isEnglish
-                ? "The seat cards keep the same premium frame while changing threshold, duration, redemption boundary, and confirmation language."
-                : "两个席位卡片保持同一套高级框架，只在门槛、周期、赎回边界与确认语言上切换。"}
+                ? "These details are kept for reviewers who need rule context; they are not an offer, purchase page, or setup flow."
+                : "这些细节仅供需要核对规则的人阅读；不是购买页、报价页或配置流程。"}
             />
 
             <div className="grid gap-6 xl:grid-cols-2">
@@ -252,6 +295,8 @@ export default function CapitalApp() {
                 program={app.reserveProgram}
                 locale={locale}
                 primaryAction={{
+                  label: isEnglish ? "Reserve not open" : "Reserve 暂不开放",
+                  disabled: true,
                   onClick: () =>
                     requestIntent("reserve.allocate", {
                       appSlug: app.slug,
@@ -264,6 +309,8 @@ export default function CapitalApp() {
                 program={app.alphaProgram}
                 locale={locale}
                 primaryAction={{
+                  label: isEnglish ? "Alpha closed for v1" : "Alpha v1 暂不开放",
+                  disabled: true,
                   onClick: () =>
                     requestIntent("alpha.allocate", {
                       appSlug: app.slug,
@@ -278,10 +325,10 @@ export default function CapitalApp() {
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
               eyebrow={isEnglish ? "Action boundary" : "动作边界"}
-              title={isEnglish ? "Seat requests are prepared for review before signing opens." : "席位请求会先生成核对记录，正式开放前暂不可签名。"}
+              title={isEnglish ? "Capital seat actions open only after the official signing window." : "Capital 席位动作将在官方签名窗口开放后启用。"}
               body={isEnglish
-                ? "Claim requests can create a wallet-aware action record for verification. TON contract signing and on-chain submission remain closed until the official release."
-                : "Claim 请求可生成带钱包上下文的动作核对记录。TON 合约签名与链上提交在正式开放前保持关闭。"}
+                ? "This page is currently for status review. TON contract signing and on-chain submission will only open after the official release."
+                : "本页当前用于状态核对。Capital 席位配置、TON 签名与链上提交只会在官方开放后启用。"}
             />
 
             <CapitalIntentConsole
@@ -325,7 +372,7 @@ export default function CapitalApp() {
           <div className="flex flex-col gap-6">
             <CapitalSectionHeading
               eyebrow={isEnglish ? "Identity review" : "身份核对"}
-              title={isEnglish ? "Each application keeps both a reserve and alpha verification surface." : "每个应用都同时展示 Reserve 与 Alpha 的验证界面。"}
+              title={isEnglish ? "Each application keeps Reserve and Alpha verification pages." : "每个应用都同时展示 Reserve 与 Alpha 验证页。"}
               body={isEnglish
                 ? "Identity cards are English-first on the title line, with Chinese support text underneath, matching the sharing spec."
                 : "身份卡片主标题保持英文，副标题提供中文说明，以符合分享传播规范。"}
@@ -351,11 +398,13 @@ export default function CapitalApp() {
                 variant: "primary",
               },
               {
-                label: isEnglish ? "Open My Capital" : "打开我的 Capital",
-                href: "/capital/me",
+                label: isEnglish ? "Back to ecosystem" : "返回生态应用",
+                href: "/ecosystem",
               },
             ]}
           />
+            </div>
+          </details>
         </div>
       </section>
     </div>

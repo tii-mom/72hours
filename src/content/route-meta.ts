@@ -15,6 +15,7 @@ const STATIC_BARE_PATHS = [
   "/capital",
   "/capital/me",
   ...CAPITAL_APP_PATHS,
+  "/contracts",
   "/greenbook",
   "/join",
   "/learn",
@@ -24,8 +25,9 @@ const STATIC_BARE_PATHS = [
   "/contact",
   ...LEGAL_SLUGS.map((slug) => `/legal/${slug}` as const),
 ] as const;
+const STATIC_HTML_BARE_PATHS = [...STATIC_BARE_PATHS, "/token", "/bot/presale"] as const;
 
-export type StaticBarePath = (typeof STATIC_BARE_PATHS)[number];
+export type StaticBarePath = (typeof STATIC_HTML_BARE_PATHS)[number];
 
 export interface ResolvedRouteMeta {
   locale: Locale;
@@ -70,7 +72,7 @@ function buildResolvedMeta(
     alternateZhUrl: new URL(alternateZhPath, siteConfig.siteUrl).href,
     alternateEnUrl: new URL(alternateEnPath, siteConfig.siteUrl).href,
     xDefaultUrl: new URL(alternateZhPath, siteConfig.siteUrl).href,
-    ogImageUrl: new URL(locale === "en-US" ? "/og-cover-en.png" : "/og-cover-zh.png", siteConfig.siteUrl).href,
+    ogImageUrl: new URL("/og-cover.png", siteConfig.siteUrl).href,
     ogLocale: locale === "en-US" ? "en_US" : "zh_CN",
     siteName: siteConfig.siteName,
     robots: options.robots ?? "index, follow",
@@ -98,8 +100,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       barePath,
       `${siteConfig.siteName} | ${appLabel} ${seatLabel} #${seatNumber}`,
       isEnglish
-        ? "Verified capital identity page. Public seat details only. No amount or yield data is disclosed."
-        : "资本身份验证页，仅公开席位信息，不展示金额或收益数据。",
+        ? "Verified capital identity page. Public seat details only. No amount or reward data is disclosed."
+        : "资本身份验证页，仅公开席位信息，不展示金额或奖励数据。",
       {
         robots: "noindex, nofollow",
       }
@@ -113,6 +115,35 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     if (doc) {
       return buildResolvedMeta(locale, barePath, `${siteConfig.siteName} | ${doc.title}`, doc.summary);
     }
+  }
+
+  if (barePath === "/token") {
+    return buildResolvedMeta(
+      locale,
+      barePath,
+      `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
+      isEnglish
+        ? "Green Book on-chain facts and contract evidence. This entry redirects to the evidence page."
+        : "绿皮书里的链上事实与合约证据入口，会跳转到链上证据页面。",
+      {
+        canonicalBarePath: "/contracts",
+        robots: "noindex, follow",
+      }
+    );
+  }
+
+  if (barePath === "/bot/presale") {
+    return buildResolvedMeta(
+      locale,
+      barePath,
+      `${siteConfig.siteName} | 72H Early Reservation Bot`,
+      isEnglish
+        ? "Telegram Mini App for 72H early reservation, official update reminders, raffle-code review, and human follow-up."
+        : "72H 早期预约 Telegram Mini App 入口，用于预约登记、官方更新提醒、抽奖码复核与人工跟进。",
+      {
+        robots: "noindex, nofollow",
+      }
+    );
   }
 
   const metaByPath: Record<string, { title: string; description: string }> = {
@@ -130,8 +161,8 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.capital}`,
       description: isEnglish
-        ? "Review limited capital seats, reserve and alpha allocations, and the first launch surfaces in 72H Capital."
-        : "查看限量资本席位、Reserve 与 Alpha 配置规则，以及 72H Capital 首批开放应用。",
+        ? "Review 72H Capital status, Reserve/Alpha boundaries, and why real seats are not configurable yet."
+        : "查看 72H Capital 状态、Reserve/Alpha 边界，以及真实席位暂不可配置的说明。",
     },
     "/capital/me": {
       title: `${siteConfig.siteName} | My Capital Identity`,
@@ -142,13 +173,13 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/capital/multi-millionaire": {
       title: `${siteConfig.siteName} | multi-millionaire Capital`,
       description: isEnglish
-        ? "See the capital seat structure, alpha threshold, and verified identity surfaces for multi-millionaire."
-        : "查看 multi-millionaire 的 Capital Seat 结构、Alpha 门槛与身份展示。",
+        ? "Read the multi-millionaire reservation and Capital rule boundary. Real lock-up, seat actions, and reward claiming will open only after an official announcement."
+        : "查看 multi-millionaire 候补与 Capital 规则边界；真实锁仓、席位配置和奖励领取均未开放。",
     },
     "/capital/72hours": {
       title: `${siteConfig.siteName} | 72hours Capital`,
       description: isEnglish
-        ? "See reserve and alpha seat rules, tiers, and verified identity surfaces for the 72hours core surface."
+        ? "See reserve and alpha seat rules, tiers, and verification pages for the 72hours core entry."
         : "查看 72hours 主场对应的 Reserve 与 Alpha 席位规则、评级与身份展示。",
     },
     "/capital/wan": {
@@ -156,6 +187,12 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
       description: isEnglish
         ? "Review WAN capital seats, reserve and alpha allocation terms, and verified identity pages."
         : "查看 WAN 的 Capital Seat、Reserve 与 Alpha 配置条款及验证页面。",
+    },
+    "/contracts": {
+      title: `${siteConfig.siteName} | ${glossary.pageLabels.contracts}`,
+      description: isEnglish
+        ? "Green Book evidence for the 72H V2 mainnet Jetton master, fixed supply, tokenomics contract addresses, and public source records."
+        : "绿皮书引用的 72H V2 主网 Jetton Master、固定供应核验、代币经济学合约地址和公开源码证据。",
     },
     "/greenbook": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.greenBook}`,
@@ -171,7 +208,9 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
     "/learn": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.learn}`,
       description:
-        isEnglish ? "Learning path for the 72hours project." : "72hours 项目的学习路径。",
+        isEnglish
+          ? "Read the optional learning note for understanding 72H use, product context, and community collaboration."
+          : "查看补充学习说明，用于理解 72H 用途、产品语境与社区协作。",
     },
     "/hours": {
       title: `${siteConfig.siteName} | ${glossary.pageLabels.use72H}`,
@@ -219,7 +258,7 @@ export function resolveRouteMeta(locale: Locale, barePath: string): ResolvedRout
 
 export function getStaticPageEntries() {
   return (["zh-CN", "en-US"] as const).flatMap((locale) =>
-    STATIC_BARE_PATHS.map((barePath) => ({
+    STATIC_HTML_BARE_PATHS.map((barePath) => ({
       locale,
       barePath,
       pathname: localizePath(barePath, locale),

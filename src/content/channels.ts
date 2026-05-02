@@ -1,12 +1,13 @@
 import type { Channel } from "../lib/content-types";
 import type { Locale } from "../lib/locale";
 import { localized } from "../lib/locale";
+import { officialLinkNote, officialLinks } from "./official-links";
 
 const channelsZh: Channel[] = [
   {
     type: "telegram",
     label: "Telegram",
-    url: "https://t.me/the_72h",
+    url: officialLinks.telegramCommunity,
     suitableFor: [
       "主社区",
       "官方说明",
@@ -15,7 +16,7 @@ const channelsZh: Channel[] = [
       "社区讨论",
       "项目更新",
     ],
-    officialVerificationNote: "Telegram 是当前社区入口。",
+    officialVerificationNote: `Telegram 是当前社区入口。${officialLinkNote.zh}`,
     isPrimary: true,
     priority: 1,
     ctaLabel: "进入",
@@ -24,7 +25,7 @@ const channelsZh: Channel[] = [
   {
     type: "x",
     label: "X",
-    url: "https://x.com/taichi2077",
+    url: officialLinks.x,
     suitableFor: [
       "公开动态",
       "快速了解",
@@ -33,7 +34,7 @@ const channelsZh: Channel[] = [
       "公开更新",
       "补充上下文",
     ],
-    officialVerificationNote: "X 适合观察公开动态。",
+    officialVerificationNote: `X 适合观察公开动态。${officialLinkNote.zh}`,
     isPrimary: false,
     priority: 2,
     ctaLabel: "关注",
@@ -63,10 +64,10 @@ const channelsEn: Channel[] = [
   {
     type: "telegram",
     label: "Telegram",
-    url: "https://t.me/the_72h",
+    url: officialLinks.telegramCommunity,
     suitableFor: ["Main context", "Official notes"],
     expectationAfterJoining: ["Community discussion", "Project updates"],
-    officialVerificationNote: "Telegram is the current community entry.",
+    officialVerificationNote: `Telegram is the current community entry. ${officialLinkNote.en}`,
     isPrimary: true,
     priority: 1,
     ctaLabel: "Enter",
@@ -75,10 +76,10 @@ const channelsEn: Channel[] = [
   {
     type: "x",
     label: "X",
-    url: "https://x.com/taichi2077",
+    url: officialLinks.x,
     suitableFor: ["Quick look", "Public updates"],
     expectationAfterJoining: ["Public updates", "Extra context"],
-    officialVerificationNote: "X is for observing public updates.",
+    officialVerificationNote: `X is for observing public updates. ${officialLinkNote.en}`,
     isPrimary: false,
     priority: 2,
     ctaLabel: "Follow",

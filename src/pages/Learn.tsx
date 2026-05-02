@@ -1,11 +1,10 @@
-import { BookOpen, Eye, GitMerge, RefreshCw } from "lucide-react";
-import { InfoCallout } from "../components/InfoCallout";
+import { BookOpen, Code2, MapPinned, MonitorSmartphone } from "lucide-react";
 import { InfoPageHero } from "../components/InfoPageHero";
 import { SpotlightCard } from "../components/SpotlightCard";
 import { getLearnPaths } from "../content/learn-paths";
 import { useLocale } from "../lib/locale";
 
-const phaseIcons = [Eye, RefreshCw, GitMerge] as const;
+const phaseIcons = [MonitorSmartphone, MapPinned, Code2] as const;
 
 export default function Learn() {
   const { locale } = useLocale();
@@ -16,7 +15,7 @@ export default function Learn() {
   return (
     <div className="page-shell pt-20 sm:pt-24">
       <InfoPageHero
-        kicker={isEnglish ? "Learning path" : "学习路径"}
+        kicker={isEnglish ? "Learning application" : "学习报名"}
         icon={<BookOpen size={30} />}
         title={learnPath.title.split("\n").map((line, index) => (
           <span key={`${line}-${index}`}>
@@ -25,9 +24,9 @@ export default function Learn() {
           </span>
         ))}
         lead={learnPath.startingThreshold}
-        noteLabel={isEnglish ? "Learning guide" : "学习说明"}
+        noteLabel={isEnglish ? "Entry" : "入口"}
         noteTitle={learnPath.entryMethod}
-        noteBody={learnPath.proofOrExpectation ?? learnPath.startingThreshold}
+        noteBody={isEnglish ? "Build with 72H." : "学习 72H 类应用开发。"}
         chips={learnPath.outcome.map((item) => (
           <span
             key={item}
@@ -43,11 +42,11 @@ export default function Learn() {
           <div className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr] items-start">
             <SpotlightCard className="page-card page-card-lg border-l-4 !border-l-primary bg-primary/5 flex flex-col gap-5 sm:gap-6">
               <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.24em] text-primary/70">
-                {isEnglish ? "Who it fits" : "适合谁"}
+                {isEnglish ? "Learning application" : "学习报名"}
               </p>
               <div className="flex flex-col gap-3">
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                  {isEnglish ? "Understand the project and build with it." : "理解项目与动手协作。"}
+                {isEnglish ? "Apply first, then enter the right learning room." : "先报名核对，再进入合适的学习安排。"}
                 </h2>
                 <p className="page-lead text-base sm:text-lg">
                   {learnPath.audience.join(isEnglish ? " / " : "；")}
@@ -62,21 +61,19 @@ export default function Learn() {
 
             <div className="flex flex-col gap-4 border-t border-line/70 pt-6">
               <div className="flex items-center gap-3">
-                <Eye className="text-primary" size={24} />
+                <BookOpen className="text-primary" size={24} />
                 <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-                  {isEnglish ? "Three phases" : "三段进展"}
+                  {isEnglish ? "Applications and focus" : "报名方式与学习方向"}
                 </h2>
               </div>
-              <div className="grid gap-0 overflow-hidden rounded-md border border-line/70 bg-surface/18">
+              <div className="grid gap-3">
                 {learnPath.stages.map((stage, index) => {
-                  const Icon = phaseIcons[index] ?? Eye;
+                  const Icon = phaseIcons[index] ?? BookOpen;
 
                   return (
                     <div
                       key={stage.name}
-                      className={`grid gap-4 p-5 sm:p-6 lg:p-7 md:grid-cols-[100px_1fr_180px] items-start ${
-                        index !== learnPath.stages.length - 1 ? "border-b border-line/70" : ""
-                      } ${index === 0 ? "bg-background/20" : "bg-background/12"}`}
+                      className="grid gap-4 rounded-md border border-line/70 bg-[linear-gradient(135deg,rgba(34,197,94,0.07),rgba(7,14,10,0.42)_48%,rgba(185,157,87,0.06))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-6 lg:p-7 md:grid-cols-[96px_1fr_180px] items-start"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 sm:w-12 sm:h-12 bg-primary/10 text-primary flex items-center justify-center rounded-sm">
@@ -93,13 +90,10 @@ export default function Learn() {
                         <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed">
                           {stage.goal}
                         </p>
-                        <p className="text-sm sm:text-base text-muted-foreground font-light leading-relaxed">
-                          {stage.description}
-                        </p>
                       </div>
                       <div className="flex flex-col gap-2 md:justify-self-end">
                         <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/60">
-                          {isEnglish ? "Commitment" : "投入"}
+                          {isEnglish ? "Mode" : "方式"}
                         </span>
                         <span className="inline-flex items-center rounded-sm border border-line/70 bg-background/25 px-3 py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground w-fit">
                           {stage.estimatedCommitment ?? (isEnglish ? "Learn more" : "了解")}
@@ -124,20 +118,6 @@ export default function Learn() {
             </div>
           </div>
 
-          <InfoCallout
-            tone="dark"
-            kicker={isEnglish ? "Learning" : "学习"}
-            title={isEnglish ? "Learning and collaboration stay connected." : "学习与协作相互连接。"}
-            body={
-              isEnglish
-                ? "Green Book gives the shared context, and community work keeps it practical."
-                : "绿皮书提供共同语境，社区协作让它落到实际行动。"
-            }
-            actions={[
-              { label: isEnglish ? "Join community" : "加入社区", href: "/join", variant: "primary" },
-              { label: isEnglish ? "Read Green Book" : "看绿皮书", href: "/greenbook" },
-            ]}
-          />
         </div>
       </section>
     </div>

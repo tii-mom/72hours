@@ -8,11 +8,12 @@ const glossaryZh = {
     capital: "资本",
     greenBook: "绿皮书",
     join: "参与入口",
-    learn: "学习路径",
+    learn: "学习报名",
     use72H: "72H 用途",
     about: "关于 72hours",
     faq: "常见问题",
     contact: "联系",
+    contracts: "链上证据",
     legal: "法律说明",
   },
   legalLabels: {
@@ -44,6 +45,7 @@ const glossaryEn = {
     about: "About 72hours",
     faq: "FAQ",
     contact: "Contact",
+    contracts: "On-chain evidence",
     legal: "Legal",
   },
   legalLabels: {

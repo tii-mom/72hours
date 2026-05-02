@@ -15,7 +15,9 @@ async function checkHome(browserType, device, tag) {
   const context = await browser.newContext({ ...device });
   const page = await context.newPage();
 
-  await page.goto(`${BASE_URL}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+  await page.waitForSelector("h1", { timeout: 15000 });
   await safeScreenshot(page, `/tmp/${tag}-home-zh.png`);
 
   const menuButton = page.getByRole("button", { name: /Open navigation menu|打开导航菜单/i }).first();
@@ -29,13 +31,14 @@ async function checkHome(browserType, device, tag) {
     const langButton = page.getByRole("button", { name: /Switch to English|Switch to Chinese/i }).last();
     if (await langButton.isVisible().catch(() => false)) {
       await langButton.evaluate((element) => element.click());
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
       await page.waitForTimeout(500);
       await safeScreenshot(page, `/tmp/${tag}-menu-en.png`);
     }
   }
 
-  await page.goto(`${BASE_URL}/en`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE_URL}/en`, { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
   await page.waitForSelector("h1", { timeout: 15000 });
   await safeScreenshot(page, `/tmp/${tag}-home-en.png`);
   const h1Count = await page.locator("h1").count();
@@ -50,7 +53,9 @@ async function checkGreenBookShare(browserType, device, tag) {
   const context = await browser.newContext({ ...device, acceptDownloads: true });
   const page = await context.newPage();
 
-  await page.goto(`${BASE_URL}/en/greenbook`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE_URL}/en/greenbook`, { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+  await page.waitForSelector("h1", { timeout: 15000 });
   await safeScreenshot(page, `/tmp/${tag}-greenbook-en.png`);
 
   const saveCard = page.getByRole("button", { name: /Save card/i });
