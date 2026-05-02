@@ -12,56 +12,56 @@ import { SpotlightCard } from "../components/SpotlightCard";
 import { useLocale } from "../lib/locale";
 
 const githubUrl = "https://github.com/tii-mom/72h-capital-contracts";
-const publicJsonUrl = "/contracts/72h-v2-mainnet.json";
-const metadataUrl = "https://gateway.pinata.cloud/ipfs/QmZkjBvKmHhsh56bPbbnwgPL8844eP5Btke6edbRGjPZNw";
+const publicJsonUrl = "/contracts/72h-v3-mainnet.json";
+const metadataUrl = "https://gateway.pinata.cloud/ipfs/QmSzB37bf7BWRLhssq3RxaEdHQgLWb1RqdwGDkaGidFSmC";
 const logoUrl = "https://gateway.pinata.cloud/ipfs/QmNzFgWkVCxuJJBym1hoDq5tG4PwFBT8mUMMXdPefb23S4";
 
 const coreContracts = [
   {
-    label: "V2 Jetton Master",
-    value: "EQBGIzEDvvKObStrcVb6i5Z1-8uYZYtUrYzF2rFZU7xUAXVg",
+    label: "V3 Jetton Master",
+    value: "EQAm0twD5SYndyrdIvWyNZ_7oUXlrlGOhUf6iiA7q1ph-GI3",
     statusEn: "Live / fixed supply",
     statusZh: "已上线 / 固定供应",
   },
   {
     label: "SeasonVault",
-    value: "EQCdSSWPVbwh9zIzhF5pnxwRKw-I8xc4bS1iyiVcbXKfnWe-",
+    value: "EQCkI1atYYWN-2cnJJASJ1nKsu0ZbvCd_EVZQ61KcoIW-13l",
     statusEn: "Deployed / season operations not automatically open",
     statusZh: "已部署 / 赛季运营不自动开放",
   },
   {
-    label: "SeasonClaim",
-    value: "EQCYvg-_oFE8q8cweVScna-WDRzDYol-FBwHKuTcAjcFGonS",
+    label: "SeasonClaimV2",
+    value: "EQDBwNs-eQSUbl0XISsd9b9g-RvaZ-XWDa-PIVoG-wtMsf4b",
     statusEn: "Deployed / claims require official list + window",
     statusZh: "已部署 / 领取需官方名单和窗口",
   },
   {
     label: "FundVesting",
-    value: "EQDO0AMsITst5rWGcabJ8OF7Ys079UMPGNOq9H8WtiJakID4",
+    value: "EQBKuIRplvhYzL9Gbm6GpZqCxMTHApVOZMVs9T1HzXcP7inb",
     statusEn: "Deployed / failed-round vesting custody",
     statusZh: "已部署 / 失败轮锁仓托管",
   },
   {
     label: "DevelopmentFund",
-    value: "EQAPkdB1YJDEsVixATzfDjf--yl0frlKRkLPYHHUv6nVFkEU",
-    statusEn: "Deployed / development custody",
-    statusZh: "已部署 / 开发基金托管",
+    value: "EQBbRZQj_VJU2r-DAtQcHoDngRC9EBvUHFg4LoB5HXLBv1Yh",
+    statusEn: "Deployed / builder fund custody",
+    statusZh: "已部署 / 建设基金托管",
   },
   {
     label: "PresaleVault",
-    value: "EQCj56OaGFtIBgdtQjIacb7s1jlEy93vh-93PU07MDR1vpE9",
-    statusEn: "Deployed / presale not open",
-    statusZh: "已部署 / 预售未开放",
+    value: "EQDHSwsiQtB3sdoAaOdJi4kCu32GIHM4BtXd-_EtpE96EYXy",
+    statusEn: "Deployed / reservation custody",
+    statusZh: "已部署 / 预约额度托管",
   },
   {
     label: "EcosystemTreasury",
-    value: "EQARGC33uqypROhxiJMVOeKPYbYRgAEhXUkTxkrK7CrKDP3O",
+    value: "EQCy7YpjZJuQAwjCQvQK55dv4p89c5pJUR9vi8nAwoW4a_w7",
     statusEn: "Deployed / ecosystem custody",
     statusZh: "已部署 / 生态资金托管",
   },
   {
     label: "TeamVesting",
-    value: "EQD5PnUEuEUYBt1XktTPlvN7HE5n-AIBI4XiAyd4qUgHasrK",
+    value: "EQC3pNoWZHNmbcazxJV7lzcQH05Zewjl5w1KJhA4OfIPM6cy",
     statusEn: "Deployed / team vesting custody",
     statusZh: "已部署 / 团队锁仓托管",
   },
@@ -124,7 +124,7 @@ export default function Contracts() {
 
   const copy = {
     kicker: isEnglish ? "On-chain evidence" : "链上证据",
-    title: isEnglish ? "72H V2 on-chain facts." : "72H V2 的链上事实。",
+    title: isEnglish ? "72H V3 on-chain facts." : "72H V3 的链上事实。",
     lead: isEnglish
       ? "This page collects the Green Book on-chain facts: mainnet Jetton master, supply checks, tokenomics contract addresses, and source evidence."
       : "绿皮书引用的主网 Jetton Master、供应核验、合约地址与源码证据集中在这里。",
@@ -225,11 +225,11 @@ export default function Contracts() {
               <div className="flex items-center gap-3 text-primary">
                 <FileJson className="h-5 w-5" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em]">
-                  {isEnglish ? "Machine readable" : "机器可读"}
+                  {isEnglish ? "Official record" : "官网记录"}
                 </span>
               </div>
               <h2 className="text-xl font-bold tracking-tight text-foreground">
-                /contracts/72h-v2-mainnet.json
+                /contracts/72h-v3-mainnet.json
               </h2>
               <p className="text-sm leading-7 text-muted-foreground">
                 {isEnglish
@@ -245,7 +245,7 @@ export default function Contracts() {
               <div className="flex items-center gap-3 text-primary">
                 <Github className="h-5 w-5" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em]">
-                  {isEnglish ? "Source evidence" : "源码证据"}
+                  {isEnglish ? "Public source" : "公开源码"}
                 </span>
               </div>
               <h2 className="text-xl font-bold tracking-tight text-foreground">
@@ -315,8 +315,8 @@ export default function Contracts() {
             kicker={isEnglish ? "Verification" : "核验"}
             title={isEnglish ? "Use the Jetton master, not screenshots." : "请以 Jetton Master 为准，不以截图为准。"}
             body={isEnglish
-              ? "Wallets and exchanges should verify total supply, mintable=0, admin=null, metadata URI, and public source evidence."
-              : "钱包和交易所应核验 total supply、mintable=0、admin=null、metadata URI 和公开源码证据。"}
+              ? "Wallets and exchanges should verify supply, mint authority, admin status, metadata URI, and public source records."
+              : "钱包和交易所应核验供应量、增发权限、管理员状态、metadata URI 与公开源码记录。"}
             actions={[
               { label: isEnglish ? "Open public JSON" : "打开公开 JSON", href: publicJsonUrl, external: true, variant: "primary" },
               { label: "GitHub", href: githubUrl, external: true },

@@ -3,6 +3,9 @@
   "symbol": "72H",
   "network": "ton-mainnet",
   "standard": "jetton",
+  "version": "v2",
+  "status": "frozen-archive",
+  "archiveNotice": "Historical V2 archive only. The current mainnet 72H contract is /contracts/72h-v3-mainnet.json.",
   "decimals": 9,
   "totalSupply": "100000000000000000000",
   "totalSupplyFormatted": "100,000,000,000 72H",
@@ -38,5 +41,11 @@
     "sourceRepository": "https://github.com/tii-mom/72h-capital-contracts",
     "deploymentEvidence": "deployments/72h-v2-mainnet.deployed-2026-04-28.md",
     "publicInfo": "docs/72h-v2-mainnet-public-info.md"
+  },
+  "replacedBy": {
+    "version": "v3",
+    "status": "current",
+    "publicInfo": "/contracts/72h-v3-mainnet.json",
+    "jettonMaster": "EQAm0twD5SYndyrdIvWyNZ_7oUXlrlGOhUf6iiA7q1ph-GI3"
   }
 }
