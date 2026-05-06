@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "check:i18n": "node scripts/check-public-copy-i18n.mjs",
     "seo:generate": "tsx scripts/generate-static-seo.ts"
   },
   "dependencies": {
